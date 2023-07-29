@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  nestService:
+    build: .
+    container_name: nestService
+    hostname: nestService
+    ports:
+      - 3000:3000
+    networks:
+      - app-network
+    volumes:
+      - ./src/:/app/src/
+      - .env/:/app/.env
+    restart: unless-stopped
+    depends_on: 
+      - nestDatabase
+  nestDatabase:
+    image: mongo:latest
+    container_name: nestDatabase
+    hostname: nestDatabase
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+      MONGO_INITDB_DATABASE: nest
+    volumes:
+      - dbdata:/data/db
+    restart: unless-stopped
+    networks:
+      - app-network
+networks:
+  app-network:
+    name: app-network
+    driver: bridge
+volumes:
+  dbdata:
