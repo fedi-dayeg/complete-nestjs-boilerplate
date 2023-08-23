@@ -7,6 +7,7 @@ import {
     IValidationErrorImport,
 } from 'src/common/error/interfaces/error.interface';
 import { HelperModule } from 'src/common/helper/helper.module';
+import { ENUM_MESSAGE_LANGUAGE } from 'src/common/message/constants/message.enum.constant';
 import { IMessage } from 'src/common/message/interfaces/message.interface';
 import { MessageModule } from 'src/common/message/message.module';
 import { MessageService } from 'src/common/message/services/message.service';
@@ -306,6 +307,22 @@ describe('MessageService', () => {
     it('should be defined', () => {
         expect(messageService).toBeDefined();
     });
+
+    describe('getAvailableLanguages', () => {
+        it('should be success', async () => {
+            const result: string[] =
+              await messageService.getAvailableLanguages();
+
+            jest.spyOn(
+              messageService,
+              'getAvailableLanguages'
+            ).mockReturnValueOnce(result as any);
+
+            expect(result).toBeTruthy();
+            expect(result).toBeTruthy();
+        });
+    });
+
 
     describe('get', () => {
         it('should be success', async () => {
