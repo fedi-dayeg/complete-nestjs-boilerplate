@@ -16,6 +16,7 @@ import {
     RoleDoc,
     RoleEntity,
 } from 'src/modules/role/repository/entities/role.entity';
+import { IRoleDoc } from "./role.interface";
 
 export interface IRoleService {
     findAll(
@@ -23,20 +24,24 @@ export interface IRoleService {
         options?: IDatabaseFindAllOptions
     ): Promise<RoleEntity[]>;
 
-    findOneById(
-        _id: string,
-        options?: IDatabaseFindOneOptions
-    ): Promise<RoleDoc>;
+    findOneById<T>(_id: string, options?: IDatabaseFindOneOptions): Promise<T>;
 
-    findOne(
+    findOne<T>(
         find: Record<string, any>,
         options?: IDatabaseFindOneOptions
-    ): Promise<RoleDoc>;
+    ): Promise<T>;
+
+    findOneByName<T>(
+      name: string,
+      options?: IDatabaseFindOneOptions
+    ): Promise<T>;
 
     getTotal(
         find?: Record<string, any>,
         options?: IDatabaseOptions
     ): Promise<number>;
+
+    exist(_id: string, options?: IDatabaseExistOptions): Promise<boolean>;
 
     existByName(
         name: string,
@@ -44,22 +49,27 @@ export interface IRoleService {
     ): Promise<boolean>;
 
     create(
-        data: RoleCreateDto,
+      {accessFor, permissions, name}: RoleCreateDto,
         options?: IDatabaseCreateOptions
-    ): Promise<RoleEntity>;
+    ): Promise<RoleDoc>;
 
-    createSuperAdmin(options?: IDatabaseCreateOptions): Promise<RoleEntity>;
+    createSuperAdmin(options?: IDatabaseCreateOptions): Promise<RoleDoc>;
 
-    updateName(repository: RoleDoc, data: RoleUpdateNameDto): Promise<RoleDoc>;
+    updateName(
+      repository: RoleDoc,
+      {name}: RoleUpdateNameDto
+    ): Promise<RoleDoc>;
 
     updatePermission(
         repository: RoleDoc,
-        data: RoleUpdatePermissionDto
+        {accessFor, permissions}: RoleUpdatePermissionDto
     ): Promise<RoleDoc>;
 
     active(repository: RoleDoc): Promise<RoleDoc>;
 
     inactive(repository: RoleDoc): Promise<RoleDoc>;
+
+    joinWithPermission(repository: RoleDoc): Promise<IRoleDoc>;
 
     delete(repository: RoleDoc): Promise<RoleDoc>;
 
@@ -72,11 +82,6 @@ export interface IRoleService {
         data: RoleCreateDto[],
         options?: IDatabaseCreateManyOptions
     ): Promise<boolean>;
-
-    getPermissionByGroup(
-        permissions: PermissionEntity[],
-        scope: ENUM_PERMISSION_GROUP[]
-    ): Promise<PermissionEntity[]>;
 
     getAccessFor(): Promise<string[]>;
 }

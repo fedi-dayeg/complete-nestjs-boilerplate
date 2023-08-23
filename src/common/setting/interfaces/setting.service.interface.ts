@@ -35,13 +35,13 @@ export interface ISettingService {
     ): Promise<number>;
 
     create(
-        data: SettingCreateDto,
+        { name, description, type, value }: SettingCreateDto,
         options?: IDatabaseCreateOptions
     ): Promise<SettingEntity>;
 
     updateValue(
         repository: SettingDoc,
-        data: SettingUpdateValueDto,
+        { description, type, value   }: SettingUpdateValueDto,
         options?: IDatabaseOptions
     ): Promise<SettingDoc>;
 

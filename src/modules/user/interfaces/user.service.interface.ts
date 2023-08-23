@@ -11,13 +11,14 @@ import {
 import { PermissionEntity } from 'src/modules/permission/repository/entities/permission.entity';
 import { UserCreateDto } from 'src/modules/user/dtos/user.create.dto';
 import { UserUpdateNameDto } from 'src/modules/user/dtos/user.update-name.dto';
-import { IUserEntity } from 'src/modules/user/interfaces/user.interface';
+import { IUserDoc, IUserEntity } from "src/modules/user/interfaces/user.interface";
 import {
     UserDoc,
     UserEntity,
 } from 'src/modules/user/repository/entities/user.entity';
 import { UserPayloadPermissionSerialization } from 'src/modules/user/serializations/user.payload-permission.serialization';
 import { UserPayloadSerialization } from 'src/modules/user/serializations/user.payload.serialization';
+import { IPermissionGroup } from "../../permission/interfaces/permission.interface";
 
 export interface IUserService {
     findAll(
@@ -25,20 +26,17 @@ export interface IUserService {
         options?: IDatabaseFindAllOptions
     ): Promise<IUserEntity[]>;
 
-    findOneById(
-        _id: string,
-        options?: IDatabaseFindOneOptions
-    ): Promise<UserDoc>;
+    findOneById<T>(_id: string, options?: IDatabaseFindOneOptions): Promise<T>;
 
-    findOne(
+    findOne<T>(
         find: Record<string, any>,
         options?: IDatabaseFindOneOptions
-    ): Promise<UserDoc>;
+    ): Promise<T>;
 
-    findOneByUsername(
+    findOneByUsername<T>(
         username: string,
         options?: IDatabaseFindOneOptions
-    ): Promise<UserDoc>;
+    ): Promise<T>;
 
     getTotal(
         find?: Record<string, any>,
@@ -56,12 +54,14 @@ export interface IUserService {
         }: UserCreateDto,
         { passwordExpired, passwordHash, salt, passwordCreated }: IAuthPassword,
         options?: IDatabaseCreateOptions
-    ): Promise<UserEntity>;
+    ): Promise<UserDoc>;
 
     existByEmail(
         email: string,
         options?: IDatabaseExistOptions
     ): Promise<boolean>;
+
+    joinWithRole(repository: UserDoc): Promise<IUserDoc>;
 
     existByMobileNumber(
         mobileNumber: string,
@@ -111,11 +111,11 @@ export interface IUserService {
 
     createPhotoFilename(): Promise<Record<string, any>>;
 
-    payloadSerialization(data: IUserEntity): Promise<UserPayloadSerialization>;
+    payloadSerialization(data: IUserDoc): Promise<UserPayloadSerialization>;
 
     payloadPermissionSerialization(
         _id: string,
-        permissions: PermissionEntity[]
+        permissions: IPermissionGroup[]
     ): Promise<UserPayloadPermissionSerialization>;
 
     deleteMany(
