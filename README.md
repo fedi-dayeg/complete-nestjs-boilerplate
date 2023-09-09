@@ -62,6 +62,10 @@ Next development
 
 * [x] serialization update
 * [x] update unit test for common modules
+* [x] user e2e
+* [x] api key for saas, change `x-api-key` to `${key}:${secret}`
+* [ ] user plan module
+* [ ] invoicing plan module
 * [ ] excel decorator optimize
 * [ ] Authorization optimize, remove permission entity (?)
 * [ ] Google SSO

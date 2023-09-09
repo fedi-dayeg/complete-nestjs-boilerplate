@@ -3,11 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { AuthService } from 'src/common/auth/services/auth.service';
 import { UserService } from 'src/modules/user/services/user.service';
 import { RoleService } from 'src/modules/role/services/role.service';
-import {
-    RoleDoc,
-    RoleEntity,
-} from 'src/modules/role/repository/entities/role.entity';
-import { UserEntity } from 'src/modules/user/repository/entities/user.entity';
+import { RoleDoc } from 'src/modules/role/repository/entities/role.entity';
+import { UserDoc } from 'src/modules/user/repository/entities/user.entity';
 
 @Injectable()
 export class MigrationUserSeed {
@@ -36,7 +33,7 @@ export class MigrationUserSeed {
             'aaAA@@123444'
         );
 
-        const user1: Promise<UserEntity> = this.userService.create(
+        const user1: Promise<UserDoc> = this.userService.create(
             {
                 username: 'superadmin',
                 firstName: 'superadmin',
@@ -49,7 +46,7 @@ export class MigrationUserSeed {
             passwordHash
         );
 
-        const user2: Promise<UserEntity> = this.userService.create(
+        const user2: Promise<UserDoc> = this.userService.create(
             {
                 username: 'admin',
                 firstName: 'admin',
@@ -62,7 +59,7 @@ export class MigrationUserSeed {
             passwordHash
         );
 
-        const user3: Promise<UserEntity> = this.userService.create(
+        const user3: Promise<UserDoc> = this.userService.create(
             {
                 username: 'user',
                 firstName: 'user',

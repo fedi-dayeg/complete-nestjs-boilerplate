@@ -49,11 +49,13 @@ export interface IApiKeyService {
     ): Promise<number>;
 
     create(
+      user: string,
       {name, description, startDate, endDate}: ApiKeyCreateDto,
         options?: IDatabaseCreateOptions
     ): Promise<IApiKeyCreated>;
 
     createRaw(
+      user: string,
       {name, description, key, secret, startDate, endDate}: ApiKeyCreateRawDto,
         options?: IDatabaseCreateOptions
     ): Promise<IApiKeyCreated>;
