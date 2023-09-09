@@ -12,7 +12,6 @@ import {
     IDatabaseManyOptions,
     IDatabaseCreateManyOptions,
 } from 'src/common/database/interfaces/database.interface';
-import { ENUM_PERMISSION_GROUP } from 'src/modules/permission/constants/permission.enum.constant';
 import { PermissionEntity } from 'src/modules/permission/repository/entities/permission.entity';
 import { RoleCreateDto } from 'src/modules/role/dtos/role.create.dto';
 import { RoleUpdateNameDto } from 'src/modules/role/dtos/role.update-name.dto';
@@ -75,7 +74,7 @@ export class RoleService implements IRoleService {
             {
                 _id,
             },
-            { ...options, withDeleted: false }
+            options
         );
     }
 

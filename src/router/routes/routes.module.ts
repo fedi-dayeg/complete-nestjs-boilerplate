@@ -9,7 +9,9 @@ import { HealthModule } from 'src/health/health.module';
 import { RoleModule } from 'src/modules/role/role.module';
 import { UserController } from 'src/modules/user/controllers/user.controller';
 import { UserModule } from 'src/modules/user/user.module';
-import { PermissionModule } from "../../modules/permission/permission.module";
+import { PermissionModule } from 'src/modules/permission/permission.module';
+import { ApiKeyController } from 'src/common/api-key/controllers/api-key.controller';
+import { ApiKeyModule } from 'src/common/api-key/api-key.module';
 
 @Module({
     controllers: [
@@ -17,6 +19,7 @@ import { PermissionModule } from "../../modules/permission/permission.module";
         SettingController,
         MessageController,
         UserController,
+        ApiKeyController,
     ],
     providers: [],
     exports: [],
@@ -27,7 +30,8 @@ import { PermissionModule } from "../../modules/permission/permission.module";
         HealthModule,
         RoleModule,
         UserModule,
-      PermissionModule,
+        PermissionModule,
+        ApiKeyModule,
     ],
 })
 export class RoutesModule {}

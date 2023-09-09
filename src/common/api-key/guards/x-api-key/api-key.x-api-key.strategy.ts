@@ -54,7 +54,7 @@ export class ApiKeyXApiKeyStrategy extends PassportStrategy(
         }
 
         const key = xApiKey[0];
-        const hashed = xApiKey[1];
+        const secret = xApiKey[1];
         const today = this.helperDateService.create();
         const authApi: ApiKeyEntity =
             await this.apiKeyService.findOneByActiveKey(key);
@@ -94,7 +94,7 @@ export class ApiKeyXApiKeyStrategy extends PassportStrategy(
         }
 
         const validateApiKey: boolean =
-            await this.apiKeyService.validateHashApiKey(hashed, authApi.hash);
+            await this.apiKeyService.validateHashApiKey(secret, authApi.hash);
         if (!validateApiKey) {
             verified(
                 new Error(

@@ -119,6 +119,10 @@ export class AuthService implements IAuthService {
         );
     }
 
+    async createSalt(length: number): Promise<string> {
+        return this.helperHashService.randomSalt(length);
+    }
+
     async encryptAccessToken(payload: Record<string, any>): Promise<string> {
         return this.helperEncryptionService.aes256Encrypt(
             payload,
@@ -308,9 +312,7 @@ export class AuthService implements IAuthService {
     }
 
     async createPassword(password: string): Promise<IAuthPassword> {
-        const salt: string = this.helperHashService.randomSalt(
-            this.passwordSaltLength
-        );
+        const salt: string = this.helperHashService.randomSalt(length);
 
         const passwordExpired: Date = this.helperDateService.forwardInSeconds(
             this.passwordExpiredIn

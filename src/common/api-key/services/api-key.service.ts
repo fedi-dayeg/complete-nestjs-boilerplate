@@ -5,6 +5,7 @@ import {
     IDatabaseFindOneOptions,
     IDatabaseOptions,
     IDatabaseManyOptions,
+    IDatabaseExistOptions,
 } from 'src/common/database/interfaces/database.interface';
 import { IApiKeyService } from 'src/common/api-key/interfaces/api-key.service.interface';
 import { IApiKeyCreated } from 'src/common/api-key/interfaces/api-key.interface';
@@ -60,6 +61,18 @@ export class ApiKeyService implements IApiKeyService {
         return this.apiKeyRepository.findOne<ApiKeyDoc>(find, options);
     }
 
+    async existByUser(
+        user: string,
+        options?: IDatabaseExistOptions
+    ): Promise<boolean> {
+        return this.apiKeyRepository.exists(
+            {
+                user,
+            },
+            options
+        );
+    }
+
     async findOneByKey(
         key: string,
         options?: IDatabaseFindOneOptions
@@ -88,6 +101,7 @@ export class ApiKeyService implements IApiKeyService {
     }
 
     async create(
+        user: string,
         { name, description, startDate, endDate }: ApiKeyCreateDto,
         options?: IDatabaseCreateOptions
     ): Promise<IApiKeyCreated> {
@@ -96,6 +110,7 @@ export class ApiKeyService implements IApiKeyService {
         const hash: string = await this.createHashApiKey(key, secret);
 
         const dto: ApiKeyEntity = new ApiKeyEntity();
+        dto.user = user;
         dto.name = name;
         dto.description = description;
         dto.key = key;
@@ -114,6 +129,7 @@ export class ApiKeyService implements IApiKeyService {
     }
 
     async createRaw(
+      user: string,
         {
             name,
             description,
@@ -128,6 +144,7 @@ export class ApiKeyService implements IApiKeyService {
 
         const dto: ApiKeyEntity = new ApiKeyEntity();
         dto.name = name;
+        dto.user = user;
         dto.description = description;
         dto.key = key;
         dto.hash = hash;
@@ -139,7 +156,7 @@ export class ApiKeyService implements IApiKeyService {
         }
 
         const created: ApiKeyDoc =
-          await this.apiKeyRepository.create<ApiKeyEntity>(dto, options);
+            await this.apiKeyRepository.create<ApiKeyEntity>(dto, options);
 
         return { doc: created, secret };
     }
