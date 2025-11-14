@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "CommonJS",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -9,6 +9,8 @@
     "useDefineForClassFields": false,
     "target": "ESNext",
     "sourceMap": true,
+    "inlineSources": true,
+    "sourceRoot": "/",
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
@@ -16,17 +18,35 @@
     "allowJs": false,
     "esModuleInterop": true,
     "moduleResolution": "node",     
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "paths": {
+      "@app/*": ["src/app/*"],
+      "@common/*": ["src/common/*"],
+      "@configs/*":["src/configs/*"],
+      "@config": ["src/configs.index.ts"],
+      "@modules/*": ["src/modules/*"],
+      "@routes/*": ["src/router/routes/*"],
+      "@router": ["src/router/router.module.ts"],
+      "@migration/*": ["src/migration/*"],
+      "@test/*": ["test/*"]
+    }
   },
   "include": [
-    "src",
-    "test",
+    "src/**/*",
+    "test/**/*",
   ],
   "exclude": [
     "node_modules",
     "dist", 
-    "*coverage",
+    "coverage",
     "logs",
-    "scripts",
+    "keys",
+    ".warmup",
+    ".nyc-output",
+    "src/metadata.ts",
+    "src/swagger.json",
+    "**/**/templates/*"
   ]
 }

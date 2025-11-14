@@ -2,15 +2,48 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "plugins": ["@nestjs/swagger"],
+    "builder": {
+      "type": "swc",
+      "options": {
+        "swcrcPath": ".swcrc"
+      }
+    },
+    "sourceMap": true,
+    "typeCheck": true,
+    "plugins": [
+      {
+        "name": "@nestjs/swagger",
+        "options": {
+          "classValidatorShim": false,
+          "introspectComments": false
+        }
+      }
+    ],
     "assets": [
       { 
         "include": "languages/**/*", 
-        "outDir": "dist/src" 
+        "outDir": "dist"
+      },
+      {
+        "include": "**/**/templates/*",
+        "outDir": "dist"
       }
     ],
-    "webpack": false,
     "deleteOutDir": true,
     "watchAssets": false
+  },
+  "projects": {
+    "app": {
+      "type": "application",
+      "root": "src",
+      "entryFile": "main",
+      "sourceRoot": "src"
+    },
+    "migration": {
+      "type": "application",
+      "root": "src",
+      "entryFile": "migration",
+      "sourceRoot": "src"
+    }
   }
 }
