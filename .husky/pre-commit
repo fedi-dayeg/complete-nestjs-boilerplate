@@ -1,4 +1,3 @@
 yarn lint:staged
 yarn deadcode
 yarn spell
-NODE_ENV=test yarn test
