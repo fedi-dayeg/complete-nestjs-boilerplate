@@ -3,20 +3,20 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { RouterModule } from '@nestjs/core';
 import { useContainer } from 'class-validator';
-import { AuthService } from 'src/common/auth/services/auth.service';
+import { AuthService } from '@modules/auth/services/auth.service';
 import { CommonModule } from 'src/common/common.module';
 import { RoutesAdminModule } from 'src/router/routes/routes.admin.module';
 import { DatabaseDefaultUUID } from 'src/common/database/constants/database.function.constant';
-import { ENUM_API_KEY_STATUS_CODE_ERROR } from 'src/common/api-key/constants/api-key.status-code.constant';
+import { ENUM_API_KEY_STATUS_CODE_ERROR } from '@modules/api-key/constants/api-key.status-code.constant';
 import {
     E2E_API_KEY_ADMIN_ACTIVE_URL,
     E2E_API_KEY_ADMIN_INACTIVE_URL,
     E2E_API_KEY_ADMIN_UPDATE_DATE_URL,
 } from 'test/e2e/api-key/api-key.constant';
-import { ApiKeyService } from 'src/common/api-key/services/api-key.service';
+import { ApiKeyService } from '@modules/api-key/services/api-key.service';
 import { faker } from '@faker-js/faker';
 import { HelperDateService } from 'src/common/helper/services/helper.date.service';
-import { ApiKeyDoc } from 'src/common/api-key/repository/entities/api-key.entity';
+import { ApiKeyDoc } from '@modules/api-key/repository/entities/api-key.entity';
 import {
     E2E_USER_ACCESS_TOKEN_PAYLOAD_TEST,
     E2E_USER_PERMISSION_TOKEN_PAYLOAD_TEST,

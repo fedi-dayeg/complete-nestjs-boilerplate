@@ -13,9 +13,9 @@ import {
 } from './user.constant';
 import { ENUM_REQUEST_STATUS_CODE_ERROR } from 'src/common/request/constants/request.status-code.constant';
 import { ENUM_USER_STATUS_CODE_ERROR } from 'src/modules/user/constants/user.status-code.constant';
-import { AuthModule } from 'src/common/auth/auth.module';
+import { AuthModule } from '@modules/auth/auth.module';
 import { IUserDoc } from 'src/modules/user/interfaces/user.interface';
-import { AuthService } from 'src/common/auth/services/auth.service';
+import { AuthService } from '@modules/auth/services/auth.service';
 
 describe('E2E User Public', () => {
     let app: INestApplication;

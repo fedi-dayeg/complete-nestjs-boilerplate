@@ -14,13 +14,13 @@ import {
 } from './role.constant';
 import { RouterModule } from '@nestjs/core';
 import { useContainer } from 'class-validator';
-import { AuthService } from 'src/common/auth/services/auth.service';
+import { AuthService } from '@modules/auth/services/auth.service';
 import { PermissionService } from 'src/modules/permission/services/permission.service';
 import { CommonModule } from 'src/common/common.module';
 import { RoutesAdminModule } from 'src/router/routes/routes.admin.module';
 import { ENUM_REQUEST_STATUS_CODE_ERROR } from 'src/common/request/constants/request.status-code.constant';
-import { ENUM_AUTH_PERMISSIONS } from 'src/common/auth/constants/auth.enum.permission.constant';
-import { ENUM_AUTH_ACCESS_FOR } from 'src/common/auth/constants/auth.enum.constant';
+import { ENUM_AUTH_PERMISSIONS } from '@modules/auth/constants/auth.enum.permission.constant';
+import { ENUM_AUTH_ACCESS_FOR } from '@modules/auth/constants/auth.enum.constant';
 import { RoleService } from 'src/modules/role/services/role.service';
 import { RoleCreateDto } from 'src/modules/role/dtos/role.create.dto';
 import { ENUM_ROLE_STATUS_CODE_ERROR } from 'src/modules/role/constants/role.status-code.constant';

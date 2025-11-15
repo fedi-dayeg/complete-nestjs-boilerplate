@@ -14,8 +14,8 @@ import {
     HttpStatus,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ENUM_AUTH_PERMISSIONS } from 'src/common/auth/constants/auth.enum.permission.constant';
-import { AuthService } from 'src/common/auth/services/auth.service';
+import { ENUM_AUTH_PERMISSIONS } from '@modules/auth/constants/auth.enum.permission.constant';
+import { AuthService } from '@modules/auth/services/auth.service';
 import { ENUM_ERROR_STATUS_CODE_ERROR } from 'src/common/error/constants/error.status-code.constant';
 import { UploadFileSingle } from 'src/common/file/decorators/file.decorator';
 import { IFileExtract } from 'src/common/file/interfaces/file.interface';
@@ -69,8 +69,8 @@ import { UserGetSerialization } from 'src/modules/user/serializations/user.get.s
 import { UserImportSerialization } from 'src/modules/user/serializations/user.import.serialization';
 import { UserListSerialization } from 'src/modules/user/serializations/user.list.serialization';
 import { UserService } from 'src/modules/user/services/user.service';
-import { AuthJwtAdminAccessProtected } from 'src/common/auth/decorators/auth.jwt.decorator';
-import { AuthPermissionProtected } from 'src/common/auth/decorators/auth.permission.decorator';
+import { AuthJwtAdminAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
+import { AuthPermissionProtected } from '@modules/auth/decorators/auth.permission.decorator';
 import { UserUpdateNameDto } from 'src/modules/user/dtos/user.update-name.dto';
 import {
     USER_DEFAULT_AVAILABLE_ORDER_BY,
@@ -87,7 +87,7 @@ import {
     PaginationQueryFilterInBoolean,
 } from 'src/common/pagination/decorators/pagination.decorator';
 import { UserDoc } from 'src/modules/user/repository/entities/user.entity';
-import { IAuthPassword } from "../../../common/auth/interfaces/auth.interface";
+import { IAuthPassword } from "@modules/auth/interfaces/auth.interface";
 
 @ApiTags('modules.admin.user')
 @Controller({

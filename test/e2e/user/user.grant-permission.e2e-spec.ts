@@ -5,7 +5,7 @@ import { faker } from '@faker-js/faker';
 import { RouterModule } from '@nestjs/core';
 import { useContainer } from 'class-validator';
 import { UserService } from 'src/modules/user/services/user.service';
-import { AuthService } from 'src/common/auth/services/auth.service';
+import { AuthService } from '@modules/auth/services/auth.service';
 import { CommonModule } from 'src/common/common.module';
 import { RoutesModule } from 'src/router/routes/routes.module';
 import { E2E_USER_GRANT_PERMISSION } from './user.constant';

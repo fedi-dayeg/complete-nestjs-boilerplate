@@ -18,8 +18,8 @@ import {
     AuthJwtPayload,
     AuthJwtRefreshProtected,
     AuthJwtToken,
-} from 'src/common/auth/decorators/auth.jwt.decorator';
-import { AuthService } from 'src/common/auth/services/auth.service';
+} from '@modules/auth/decorators/auth.jwt.decorator';
+import { AuthService } from '@modules/auth/services/auth.service';
 import { AwsS3Serialization } from 'src/common/aws/serializations/aws.s3.serialization';
 import { AwsS3Service } from 'src/common/aws/services/aws.s3.service';
 import { ENUM_ERROR_STATUS_CODE_ERROR } from 'src/common/error/constants/error.status-code.constant';
@@ -65,7 +65,7 @@ import { UserPayloadPermissionSerialization } from 'src/modules/user/serializati
 import { UserPayloadSerialization } from 'src/modules/user/serializations/user.payload.serialization';
 import { UserProfileSerialization } from 'src/modules/user/serializations/user.profile.serialization';
 import { UserService } from 'src/modules/user/services/user.service';
-import { IAuthPassword } from "../../../common/auth/interfaces/auth.interface";
+import { IAuthPassword } from "@modules/auth/interfaces/auth.interface";
 import { IPermissionGroup } from "../../permission/interfaces/permission.interface";
 
 @ApiTags('modules.user')

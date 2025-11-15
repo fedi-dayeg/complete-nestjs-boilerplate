@@ -3,20 +3,20 @@ import { faker } from '@faker-js/faker';
 import { HelperModule } from 'src/common/helper/helper.module';
 import { ConfigModule } from '@nestjs/config';
 import configs from 'src/configs';
-import { ApiKeyService } from 'src/common/api-key/services/api-key.service';
+import { ApiKeyService } from '@modules/api-key/services/api-key.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DATABASE_CONNECTION_NAME } from 'src/common/database/constants/database.constant';
 import { DatabaseOptionsModule } from 'src/common/database/database.options.module';
 import { DatabaseOptionsService } from 'src/common/database/services/database.options.service';
 import { HelperHashService } from 'src/common/helper/services/helper.hash.service';
-import { ApiKeyModule } from 'src/common/api-key/api-key.module';
+import { ApiKeyModule } from '@modules/api-key/api-key.module';
 import { HelperDateService } from 'src/common/helper/services/helper.date.service';
 import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/constants/pagination.enum.constant';
 import {
     ApiKeyDoc,
     ApiKeyEntity,
-} from 'src/common/api-key/repository/entities/api-key.entity';
-import { IApiKeyCreated } from 'src/common/api-key/interfaces/api-key.interface';
+} from '@modules/api-key/repository/entities/api-key.entity';
+import { IApiKeyCreated } from '@modules/api-key/interfaces/api-key.interface';
 
 describe('ApiKeyService', () => {
     const apiKeyName1: string = faker.random.alphaNumeric(15);

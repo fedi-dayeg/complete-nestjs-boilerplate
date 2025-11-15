@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ENUM_AUTH_ACCESS_FOR } from 'src/common/auth/constants/auth.enum.constant';
+import { ENUM_AUTH_ACCESS_FOR } from '@modules/auth/constants/auth.enum.constant';
 
 export class RoleAccessForSerialization {
     @ApiProperty({

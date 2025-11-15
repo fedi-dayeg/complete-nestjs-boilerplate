@@ -1,6 +1,6 @@
 import { Command } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
-import { ENUM_AUTH_PERMISSIONS } from 'src/common/auth/constants/auth.enum.permission.constant';
+import { ENUM_AUTH_PERMISSIONS } from '@modules/auth/constants/auth.enum.permission.constant';
 import { PermissionCreateDto } from 'src/modules/permission/dtos/permission.create.dto';
 import { ENUM_PERMISSION_GROUP } from 'src/modules/permission/constants/permission.enum.constant';
 import { PermissionEntity } from 'src/modules/permission/repository/entities/permission.entity';

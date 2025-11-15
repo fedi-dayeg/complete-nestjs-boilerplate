@@ -1,63 +1,95 @@
+import { _Object } from '@aws-sdk/client-s3';
 import {
-    CompletedPart,
-    HeadBucketCommandOutput,
-    UploadPartRequest,
-} from '@aws-sdk/client-s3';
-import { IAwsS3PutItemOptions } from 'src/common/aws/interfaces/aws.interface';
+    IAwsS3CreateMultiplePart,
+    IAwsS3DeleteDirOptions,
+    IAwsS3GetItemsOptions,
+    IAwsS3MultipartOptions,
+    IAwsS3Options,
+    IAwsS3PresignOptions,
+    IAwsS3PutItem,
+    IAwsS3PutItemWithAclOptions,
+} from 'src/common/aws/interfaces/aws.interface';
+import { AwsS3Dto } from '@common/aws/dtos/aws.s3.dto';
 import {
-    AwsS3MultipartPartsSerialization,
-    AwsS3MultipartSerialization,
-} from 'src/common/aws/serializations/aws.s3-multipart.serialization';
-import { AwsS3Serialization } from 'src/common/aws/serializations/aws.s3.serialization';
-import { Readable } from 'stream';
+    AwsS3MultipartDto,
+    AwsS3MultipartPartDto,
+} from '@common/aws/dtos/aws.s3-multipart.dto';
+import {
+    AwsS3PresignPartRequestDto,
+    AwsS3PresignRequestDto,
+} from '@common/aws/dtos/request/aws.s3-presign.request.dto';
+import {
+    AwsS3PresignDto,
+    AwsS3PresignPartDto,
+} from '@common/aws/dtos/aws.s3-presign.dto';
 
 export interface IAwsS3Service {
-    checkConnection(): Promise<HeadBucketCommandOutput>;
-
-    listBucket(): Promise<string[]>;
-
-    listItemInBucket(prefix?: string): Promise<AwsS3Serialization[]>;
-
-    getItemInBucket(
-        filename: string,
-        path?: string
-    ): Promise<Readable | ReadableStream<any> | Blob>;
-
-    putItemInBucket(
-        filename: string,
-        content:
-            | string
-            | Uint8Array
-            | Buffer
-            | Readable
-            | ReadableStream
-            | Blob,
-        options?: IAwsS3PutItemOptions
-    ): Promise<AwsS3Serialization>;
-
-    deleteItemInBucket(filename: string): Promise<void>;
-
-    deleteItemsInBucket(filenames: string[]): Promise<void>;
-
-    deleteFolder(dir: string): Promise<void>;
-
+    checkConnection(): Promise<boolean>;
+    checkBucket(options?: IAwsS3Options): Promise<boolean>;
+    checkItem(key: string, options?: IAwsS3Options): Promise<AwsS3Dto>;
+    getItems(
+        path: string,
+        options?: IAwsS3GetItemsOptions
+    ): Promise<AwsS3Dto[]>;
+    getItem(key: string, options?: IAwsS3Options): Promise<AwsS3Dto>;
+    putItem(file: IAwsS3PutItem, options?: IAwsS3Options): Promise<AwsS3Dto>;
+    putItemWithAcl(
+        file: IAwsS3PutItem,
+        options?: IAwsS3PutItemWithAclOptions
+    ): Promise<AwsS3Dto>;
+    deleteItem(key: string, options?: IAwsS3Options): Promise<void>;
+    deleteItems(keys: string[], options?: IAwsS3Options): Promise<void>;
+    deleteDir(
+        path: string,
+        options?: IAwsS3DeleteDirOptions
+    ): Promise<void | _Object[]>;
     createMultiPart(
-        filename: string,
-        options?: IAwsS3PutItemOptions
-    ): Promise<AwsS3MultipartSerialization>;
-
-    uploadPart(
-        path: string,
-        content: UploadPartRequest['Body'] | string | Uint8Array | Buffer,
-        uploadId: string,
-        partNumber: number
-    ): Promise<AwsS3MultipartPartsSerialization>;
-
+        file: IAwsS3CreateMultiplePart,
+        maxPartNumber: number,
+        options?: IAwsS3MultipartOptions
+    ): Promise<AwsS3MultipartDto>;
+    createMultiPartWithAcl(
+        file: IAwsS3CreateMultiplePart,
+        maxPartNumber: number,
+        options?: IAwsS3PutItemWithAclOptions
+    ): Promise<AwsS3MultipartDto>;
+    putItemMultiPart(
+        multipart: AwsS3MultipartDto,
+        partNumber: number,
+        file: Buffer,
+        options?: IAwsS3Options
+    ): Promise<AwsS3MultipartDto>;
     completeMultipart(
-        path: string,
+        key: string,
         uploadId: string,
-        parts: CompletedPart[]
+        parts: AwsS3MultipartPartDto[],
+        options?: IAwsS3Options
     ): Promise<void>;
-
-    abortMultipart(path: string, uploadId: string): Promise<void>;
+    abortMultipart(
+        key: string,
+        uploadId: string,
+        options?: IAwsS3Options
+    ): Promise<void>;
+    presignPutItem(
+        { key, size }: AwsS3PresignRequestDto,
+        options?: IAwsS3PresignOptions
+    ): Promise<AwsS3PresignDto>;
+    presignPutItemPart(
+        { key, size, uploadId, partNumber }: AwsS3PresignPartRequestDto,
+        options?: IAwsS3PresignOptions
+    ): Promise<AwsS3PresignPartDto>;
+    mapPresign(
+        { key, size }: AwsS3PresignRequestDto,
+        options?: IAwsS3Options
+    ): AwsS3Dto;
+    moveItem(
+        source: AwsS3Dto,
+        destinationKey: string,
+        options?: IAwsS3Options
+    ): Promise<AwsS3Dto>;
+    moveItems(
+        sources: AwsS3Dto[],
+        destination: string,
+        options?: IAwsS3Options
+    ): Promise<AwsS3Dto[]>;
 }

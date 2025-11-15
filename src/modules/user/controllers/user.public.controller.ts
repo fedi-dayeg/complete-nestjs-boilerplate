@@ -10,8 +10,8 @@ import { ApiTags } from '@nestjs/swagger';
 import {
     AuthJwtPayload,
     AuthJwtPublicAccessProtected,
-} from 'src/common/auth/decorators/auth.jwt.decorator';
-import { AuthService } from 'src/common/auth/services/auth.service';
+} from '@modules/auth/decorators/auth.jwt.decorator';
+import { AuthService } from '@modules/auth/services/auth.service';
 import { ENUM_ERROR_STATUS_CODE_ERROR } from 'src/common/error/constants/error.status-code.constant';
 import { Response } from 'src/common/response/decorators/response.decorator';
 import { RoleDoc } from 'src/modules/role/repository/entities/role.entity';

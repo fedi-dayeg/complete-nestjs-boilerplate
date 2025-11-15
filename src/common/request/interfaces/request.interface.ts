@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { IApiKeyPayload } from 'src/common/api-key/interfaces/api-key.interface';
+import { IApiKeyPayload } from '@modules/api-key/interfaces/api-key.interface';
 import { RequestPaginationSerialization } from 'src/common/request/serializations/request.pagination.serialization';
 import { IResult } from 'ua-parser-js';
 

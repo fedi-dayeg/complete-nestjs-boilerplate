@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Exclude, Expose, Transform } from 'class-transformer';
-import { ENUM_AUTH_ACCESS_FOR } from 'src/common/auth/constants/auth.enum.constant';
+import { ENUM_AUTH_ACCESS_FOR } from '@modules/auth/constants/auth.enum.constant';
 import { AwsS3Serialization } from 'src/common/aws/serializations/aws.s3.serialization';
 import { UserGetSerialization } from 'src/modules/user/serializations/user.get.serialization';
 

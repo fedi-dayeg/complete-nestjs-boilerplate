@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CommandModule } from 'nestjs-command';
-import { ApiKeyModule } from 'src/common/api-key/api-key.module';
-import { AuthModule } from 'src/common/auth/auth.module';
+import { ApiKeyModule } from '@modules/api-key/api-key.module';
+import { AuthModule } from '@modules/auth/auth.module';
 import { CommonModule } from 'src/common/common.module';
 import { MigrationApiKeySeed } from 'src/migration/seeds/migration.api-key.seed';
 import { MigrationPermissionSeed } from 'src/migration/seeds/migration.permission.seed';

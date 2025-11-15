@@ -10,7 +10,7 @@ import {
     IsArray,
     IsUUID,
 } from 'class-validator';
-import { ENUM_AUTH_ACCESS_FOR_DEFAULT } from 'src/common/auth/constants/auth.enum.constant';
+import { ENUM_AUTH_ACCESS_FOR_DEFAULT } from '@modules/auth/constants/auth.enum.constant';
 
 export class RoleCreateDto {
     @ApiProperty({

@@ -11,7 +11,7 @@ import {
 } from './permission.constant';
 import { RouterModule } from '@nestjs/core';
 import { useContainer } from 'class-validator';
-import { AuthService } from 'src/common/auth/services/auth.service';
+import { AuthService } from '@modules/auth/services/auth.service';
 import { PermissionService } from 'src/modules/permission/services/permission.service';
 import { CommonModule } from 'src/common/common.module';
 import { RoutesAdminModule } from 'src/router/routes/routes.admin.module';

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UserPublicController } from "../../modules/user/controllers/user.public.controller";
 import { UserModule } from "../../modules/user/user.module";
-import { AuthModule } from "../../common/auth/auth.module";
+import { AuthModule } from "@modules/auth/auth.module";
 import { RoleModule } from "../../modules/role/role.module";
 // import { AuthModule } from 'src/common/auth/auth.module';
 // import { RoleModule } from 'src/modules/role/role.module';

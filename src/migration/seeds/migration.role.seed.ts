@@ -1,7 +1,7 @@
 import { Command } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
 import { PermissionService } from 'src/modules/permission/services/permission.service';
-import { ENUM_AUTH_ACCESS_FOR } from 'src/common/auth/constants/auth.enum.constant';
+import { ENUM_AUTH_ACCESS_FOR } from '@modules/auth/constants/auth.enum.constant';
 import { RoleService } from 'src/modules/role/services/role.service';
 import { PermissionEntity } from 'src/modules/permission/repository/entities/permission.entity';
 import { RoleCreateDto } from 'src/modules/role/dtos/role.create.dto';

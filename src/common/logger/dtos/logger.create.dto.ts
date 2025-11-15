@@ -1,4 +1,4 @@
-import { ENUM_AUTH_ACCESS_FOR } from 'src/common/auth/constants/auth.enum.constant';
+import { ENUM_AUTH_ACCESS_FOR } from '@modules/auth/constants/auth.enum.constant';
 import {
     ENUM_LOGGER_ACTION,
     ENUM_LOGGER_LEVEL,

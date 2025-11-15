@@ -1,8 +1,8 @@
 import { HttpStatus, INestApplication } from "@nestjs/common";
-import { AuthService } from "../../../src/common/auth/services/auth.service";
-import { ApiKeyService } from "../../../src/common/api-key/services/api-key.service";
+import { AuthService } from "@modules/auth/services/auth.service";
+import { ApiKeyService } from "@modules/api-key/services/api-key.service";
 import { HelperDateService } from "../../../src/common/helper/services/helper.date.service";
-import { ApiKeyDoc } from "../../../src/common/api-key/repository/entities/api-key.entity";
+import { ApiKeyDoc } from "@modules/api-key/repository/entities/api-key.entity";
 import { faker } from '@faker-js/faker';
 import * as process from "process";
 import { Test } from "@nestjs/testing";
@@ -18,7 +18,7 @@ import {
 } from "./api-key.constant";
 import request from "supertest";
 import { DatabaseDefaultUUID } from "../../../src/common/database/constants/database.function.constant";
-import { ENUM_API_KEY_STATUS_CODE_ERROR } from "../../../src/common/api-key/constants/api-key.status-code.constant";
+import { ENUM_API_KEY_STATUS_CODE_ERROR } from "@modules/api-key/constants/api-key.status-code.constant";
 import { ENUM_REQUEST_STATUS_CODE_ERROR } from "../../../src/common/request/constants/request.status-code.constant";
 import { response } from "express";
 

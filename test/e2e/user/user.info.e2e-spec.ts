@@ -4,7 +4,7 @@ import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { useContainer } from 'class-validator';
 import { CommonModule } from 'src/common/common.module';
-import { AuthService } from 'src/common/auth/services/auth.service';
+import { AuthService } from '@modules/auth/services/auth.service';
 import { RoutesModule } from 'src/router/routes/routes.module';
 import {
     E2E_USER_ACCESS_TOKEN_PAYLOAD_TEST,

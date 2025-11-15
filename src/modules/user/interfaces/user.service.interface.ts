@@ -1,4 +1,4 @@
-import { IAuthPassword } from 'src/common/auth/interfaces/auth.interface';
+import { IAuthPassword } from '@modules/auth/interfaces/auth.interface';
 import { AwsS3Serialization } from 'src/common/aws/serializations/aws.s3.serialization';
 import {
     IDatabaseCreateOptions,

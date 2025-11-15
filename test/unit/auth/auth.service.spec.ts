@@ -1,13 +1,13 @@
 import { Test } from '@nestjs/testing';
 import { faker } from '@faker-js/faker';
-import { AuthService } from 'src/common/auth/services/auth.service';
-import { ENUM_AUTH_ACCESS_FOR } from 'src/common/auth/constants/auth.enum.constant';
+import { AuthService } from '@modules/auth/services/auth.service';
+import { ENUM_AUTH_ACCESS_FOR } from '@modules/auth/constants/auth.enum.constant';
 import configs from 'src/configs';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HelperModule } from 'src/common/helper/helper.module';
-import { IAuthPassword } from 'src/common/auth/interfaces/auth.interface';
+import { IAuthPassword } from '@modules/auth/interfaces/auth.interface';
 import { HelperDateService } from 'src/common/helper/services/helper.date.service';
-import { AuthModule } from 'src/common/auth/auth.module';
+import { AuthModule } from '@modules/auth/auth.module';
 
 describe('AuthService', () => {
     let authService: AuthService;

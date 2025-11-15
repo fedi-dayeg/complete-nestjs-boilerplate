@@ -17,7 +17,7 @@ import { HelperDateService } from 'src/common/helper/services/helper.date.servic
 import { ConfigService } from '@nestjs/config';
 import { HelperStringService } from 'src/common/helper/services/helper.string.service';
 import { UserCreateDto } from 'src/modules/user/dtos/user.create.dto';
-import { IAuthPassword } from 'src/common/auth/interfaces/auth.interface';
+import { IAuthPassword } from '@modules/auth/interfaces/auth.interface';
 import { AwsS3Serialization } from 'src/common/aws/serializations/aws.s3.serialization';
 import { UserUpdateNameDto } from 'src/modules/user/dtos/user.update-name.dto';
 import { IUserDoc, IUserEntity } from "src/modules/user/interfaces/user.interface";

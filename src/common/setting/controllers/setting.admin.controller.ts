@@ -6,9 +6,9 @@ import {
     Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ENUM_AUTH_PERMISSIONS } from 'src/common/auth/constants/auth.enum.permission.constant';
-import { AuthJwtAdminAccessProtected } from 'src/common/auth/decorators/auth.jwt.decorator';
-import { AuthPermissionProtected } from 'src/common/auth/decorators/auth.permission.decorator';
+import { ENUM_AUTH_PERMISSIONS } from '@modules/auth/constants/auth.enum.permission.constant';
+import { AuthJwtAdminAccessProtected } from '@modules/auth/decorators/auth.jwt.decorator';
+import { AuthPermissionProtected } from '@modules/auth/decorators/auth.permission.decorator';
 import { ENUM_ERROR_STATUS_CODE_ERROR } from 'src/common/error/constants/error.status-code.constant';
 import { RequestParamGuard } from 'src/common/request/decorators/request.decorator';
 import { Response } from 'src/common/response/decorators/response.decorator';

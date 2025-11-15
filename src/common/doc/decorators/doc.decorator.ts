@@ -14,8 +14,8 @@ import {
     getSchemaPath,
 } from '@nestjs/swagger';
 import { APP_LANGUAGE } from 'src/app/constants/app.constant';
-import { ENUM_API_KEY_STATUS_CODE_ERROR } from 'src/common/api-key/constants/api-key.status-code.constant';
-import { ENUM_AUTH_STATUS_CODE_ERROR } from 'src/common/auth/constants/auth.status-code.constant';
+import { ENUM_API_KEY_STATUS_CODE_ERROR } from '@modules/api-key/constants/api-key.status-code.constant';
+import { ENUM_AUTH_STATUS_CODE_ERROR } from '@modules/auth/constants/auth.status-code.constant';
 import {
     ENUM_DOC_REQUEST_BODY_TYPE,
     ENUM_DOC_RESPONSE_BODY_TYPE,

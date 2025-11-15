@@ -5,7 +5,7 @@ import { useContainer } from 'class-validator';
 import { E2E_SETTING_ADMIN_UPDATE_URL } from './setting.constant';
 import request from 'supertest';
 import { faker } from '@faker-js/faker';
-import { AuthService } from 'src/common/auth/services/auth.service';
+import { AuthService } from '@modules/auth/services/auth.service';
 import { CommonModule } from 'src/common/common.module';
 import { RoutesAdminModule } from 'src/router/routes/routes.admin.module';
 import { ENUM_REQUEST_STATUS_CODE_ERROR } from 'src/common/request/constants/request.status-code.constant';
