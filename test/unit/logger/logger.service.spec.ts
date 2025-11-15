@@ -9,7 +9,7 @@ import { ENUM_AUTH_ACCESS_FOR } from '@modules/auth/constants/auth.enum.constant
 import { DATABASE_CONNECTION_NAME } from 'src/common/database/constants/database.constant';
 import { DatabaseDefaultUUID } from 'src/common/database/constants/database.function.constant';
 import { DatabaseOptionsModule } from 'src/common/database/database.options.module';
-import { DatabaseOptionsService } from 'src/common/database/services/database.options.service';
+import { DatabaseService } from '@common/database/services/database.service';
 import { HelperModule } from 'src/common/helper/helper.module';
 import {
     ENUM_LOGGER_ACTION,
@@ -63,9 +63,9 @@ describe('LoggerService', () => {
                 MongooseModule.forRootAsync({
                     connectionName: DATABASE_CONNECTION_NAME,
                     imports: [DatabaseOptionsModule],
-                    inject: [DatabaseOptionsService],
+                    inject: [DatabaseService],
                     useFactory: (
-                        databaseOptionsService: DatabaseOptionsService
+                        databaseOptionsService: DatabaseService
                     ) => databaseOptionsService.createOptions(),
                 }),
                 ConfigModule.forRoot({

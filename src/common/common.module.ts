@@ -15,7 +15,7 @@ import configs from 'src/configs';
 import { SettingModule } from 'src/common/setting/setting.module';
 import { ApiKeyModule } from '@modules/api-key/api-key.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { DatabaseOptionsService } from 'src/common/database/services/database.options.service';
+import { DatabaseService } from '@common/database/services/database.service';
 import { DatabaseOptionsModule } from 'src/common/database/database.options.module';
 import { DATABASE_CONNECTION_NAME } from 'src/common/database/constants/database.constant';
 import { ENUM_APP_ENVIRONMENT } from 'src/app/constants/app.enum.constant';
@@ -159,8 +159,8 @@ import { APP_LANGUAGE } from 'src/app/constants/app.constant';
         MongooseModule.forRootAsync({
             connectionName: DATABASE_CONNECTION_NAME,
             imports: [DatabaseOptionsModule],
-            inject: [DatabaseOptionsService],
-            useFactory: (databaseOptionsService: DatabaseOptionsService) =>
+            inject: [DatabaseService],
+            useFactory: (databaseOptionsService: DatabaseService) =>
                 databaseOptionsService.createOptions(),
         }),
         MessageModule,

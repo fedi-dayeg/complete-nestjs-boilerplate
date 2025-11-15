@@ -396,7 +396,7 @@ You can check The ApiSpec after running this project. [here][api-reference-docs]
 
 > Optional, if your mongodb version is < 5
 
-Go to file `src/common/database/services/database.options.service.ts` and add `useMongoClient` to `mongooseOptions` then set value to `true`.
+Go to file `src/common/database/services/database.service.ts` and add `useMongoClient` to `mongooseOptions` then set value to `true`.
 
 ```typescript
 const mongooseOptions: MongooseModuleOptions = {

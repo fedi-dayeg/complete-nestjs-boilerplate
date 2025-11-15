@@ -2,12 +2,12 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModuleOptions } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
 import { DatabaseOptionsModule } from 'src/common/database/database.options.module';
-import { DatabaseOptionsService } from 'src/common/database/services/database.options.service';
+import { DatabaseService } from '@common/database/services/database.service';
 import { HelperModule } from 'src/common/helper/helper.module';
 import configs from 'src/configs';
 
 describe('DatabaseOptionsService', () => {
-    let databaseOptionsService: DatabaseOptionsService;
+    let databaseOptionsService: DatabaseService;
 
     beforeEach(async () => {
         process.env.APP_ENV = 'development';
@@ -31,8 +31,8 @@ describe('DatabaseOptionsService', () => {
             ],
         }).compile();
 
-        databaseOptionsService = moduleRef.get<DatabaseOptionsService>(
-            DatabaseOptionsService
+        databaseOptionsService = moduleRef.get<DatabaseService>(
+            DatabaseService
         );
     });
 

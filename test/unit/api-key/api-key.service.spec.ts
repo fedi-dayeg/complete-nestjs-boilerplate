@@ -7,7 +7,7 @@ import { ApiKeyService } from '@modules/api-key/services/api-key.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DATABASE_CONNECTION_NAME } from 'src/common/database/constants/database.constant';
 import { DatabaseOptionsModule } from 'src/common/database/database.options.module';
-import { DatabaseOptionsService } from 'src/common/database/services/database.options.service';
+import { DatabaseService } from '@common/database/services/database.service';
 import { HelperHashService } from 'src/common/helper/services/helper.hash.service';
 import { ApiKeyModule } from '@modules/api-key/api-key.module';
 import { HelperDateService } from 'src/common/helper/services/helper.date.service';
@@ -36,9 +36,9 @@ describe('ApiKeyService', () => {
                 MongooseModule.forRootAsync({
                     connectionName: DATABASE_CONNECTION_NAME,
                     imports: [DatabaseOptionsModule],
-                    inject: [DatabaseOptionsService],
+                    inject: [DatabaseService],
                     useFactory: (
-                        databaseOptionsService: DatabaseOptionsService
+                        databaseOptionsService: DatabaseService
                     ) => databaseOptionsService.createOptions(),
                 }),
                 ConfigModule.forRoot({

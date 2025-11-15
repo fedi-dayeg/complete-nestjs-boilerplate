@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
 import { DATABASE_CONNECTION_NAME } from 'src/common/database/constants/database.constant';
 import { DatabaseOptionsModule } from 'src/common/database/database.options.module';
-import { DatabaseOptionsService } from 'src/common/database/services/database.options.service';
+import { DatabaseService } from '@common/database/services/database.service';
 import { HelperModule } from 'src/common/helper/helper.module';
 import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/constants/pagination.enum.constant';
 import { ENUM_SETTING_DATA_TYPE } from 'src/common/setting/constants/setting.enum.constant';
@@ -30,9 +30,9 @@ describe('SettingService', () => {
                 MongooseModule.forRootAsync({
                     connectionName: DATABASE_CONNECTION_NAME,
                     imports: [DatabaseOptionsModule],
-                    inject: [DatabaseOptionsService],
+                    inject: [DatabaseService],
                     useFactory: (
-                        databaseOptionsService: DatabaseOptionsService
+                        databaseOptionsService: DatabaseService
                     ) => databaseOptionsService.createOptions(),
                 }),
                 ConfigModule.forRoot({
