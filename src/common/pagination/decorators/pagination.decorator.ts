@@ -1,85 +1,168 @@
 import { Query } from '@nestjs/common';
-import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/constants/pagination.enum.constant';
+import { PaginationOrderPipe } from '@common/pagination/pipes/pagination.order.pipe';
+import { PaginationSearchPipe } from '@common/pagination/pipes/pagination.search.pipe';
 import {
-    IPaginationFilterDateOptions,
-    IPaginationFilterStringContainOptions,
-    IPaginationFilterStringEqualOptions,
-} from 'src/common/pagination/interfaces/pagination.interface';
-import { PaginationFilterContainPipe } from 'src/common/pagination/pipes/pagination.filter-contain.pipe';
-import { PaginationFilterDatePipe } from 'src/common/pagination/pipes/pagination.filter-date.pipe';
-import { PaginationFilterEqualObjectIdPipe } from 'src/common/pagination/pipes/pagination.filter-equal-object-id.pipe';
-import { PaginationFilterEqualPipe } from 'src/common/pagination/pipes/pagination.filter-equal.pipe';
-import { PaginationFilterInBooleanPipe } from 'src/common/pagination/pipes/pagination.filter-in-boolean.pipe';
-import { PaginationFilterInEnumPipe } from 'src/common/pagination/pipes/pagination.filter-in-enum.pipe';
-import { PaginationOrderPipe } from 'src/common/pagination/pipes/pagination.order.pipe';
-import { PaginationPagingPipe } from 'src/common/pagination/pipes/pagination.paging.pipe';
-import { PaginationSearchPipe } from 'src/common/pagination/pipes/pagination.search.pipe';
+    IPaginationQueryCursorOptions,
+    IPaginationQueryFilterDateOptions,
+    IPaginationQueryFilterEnumOptions,
+    IPaginationQueryFilterEqualOptions,
+    IPaginationQueryFilterOptions,
+    IPaginationQueryOffsetOptions,
+} from '@common/pagination/interfaces/pagination.interface';
+import {
+    PaginationQueryFilterDatePipe,
+    PaginationQueryFilterEqualPipe,
+    PaginationQueryFilterInEnumPipe,
+    PaginationQueryFilterNinEnumPipe,
+    PaginationQueryFilterNotEqualPipe,
+} from '@common/pagination/pipes/pagination.filter.pipe';
+import { PaginationOffsetPipe } from '@common/pagination/pipes/pagination.offset.pipe';
+import { PaginationCursorPipe } from '@common/pagination/pipes/pagination.cursor.pipe';
 
-export function PaginationQuery(
-    defaultPerPage: number,
-    defaultOrderBy: string,
-    defaultOrderDirection: ENUM_PAGINATION_ORDER_DIRECTION_TYPE,
-    availableSearch: string[],
-    availableOrderBy: string[]
+/**
+ * Creates a parameter decorator for handling pagination query parameters.
+ * Converts request query parameters to database query format with search, paging, and ordering.
+ * @param {IPaginationQueryOffsetOptions} [options] - Optional configuration for pagination behavior
+ * @returns {ParameterDecorator} Parameter decorator that applies pagination pipes for database queries
+ */
+export function PaginationOffsetQuery(
+    options?: IPaginationQueryOffsetOptions
 ): ParameterDecorator {
     return Query(
-        PaginationSearchPipe(availableSearch),
-        PaginationPagingPipe(defaultPerPage),
-        PaginationOrderPipe(
-            defaultOrderBy,
-            defaultOrderDirection,
-            availableOrderBy
-        )
+        PaginationSearchPipe(options?.availableSearch),
+        PaginationOffsetPipe(options?.defaultPerPage),
+        PaginationOrderPipe(options?.availableOrderBy)
     );
 }
 
-export function PaginationQuerySearch(
-    availableSearch: string[]
+/**
+ * Creates a parameter decorator for handling cursor-based pagination query parameters.
+ * Converts request query parameters to database query format with search, cursor paging, and ordering.
+ * @param {IPaginationQueryCursorOptions} [options] - Optional configuration for cursor pagination behavior
+ * @returns {ParameterDecorator} Parameter decorator that applies pagination pipes for cursor-based database queries
+ */
+export function PaginationCursorQuery(
+    options?: IPaginationQueryCursorOptions
 ): ParameterDecorator {
-    return Query(PaginationSearchPipe(availableSearch));
+    return Query(
+        PaginationSearchPipe(options?.availableSearch),
+        PaginationCursorPipe(options?.defaultPerPage, options?.cursorField),
+        PaginationOrderPipe(options?.availableOrderBy)
+    );
 }
 
-export function PaginationQueryFilterInBoolean(
-    field: string,
-    defaultValue: boolean[]
-): ParameterDecorator {
-    return Query(field, PaginationFilterInBooleanPipe(defaultValue));
-}
-
+/**
+ * Creates a parameter decorator for enum filtering using 'in' operator for database queries.
+ * Converts query parameter to database 'in' filter format.
+ * @template T - Type of enum values
+ * @param {string} field - The query parameter field name
+ * @param {T[]} defaultEnum - Array of default enum values
+ * @param {IPaginationQueryFilterEnumOptions} [options] - Optional filter configuration
+ * @returns {ParameterDecorator} Parameter decorator that converts to database 'in' filter
+ */
 export function PaginationQueryFilterInEnum<T>(
     field: string,
-    defaultValue: T,
-    defaultEnum: Record<string, any>
+    defaultEnum: T[],
+    options?: IPaginationQueryFilterEnumOptions
+): ParameterDecorator {
+    return Query(field, PaginationQueryFilterInEnumPipe(defaultEnum, options));
+}
+
+/**
+ * Creates a parameter decorator for enum filtering using 'not in' operator for database queries.
+ * Converts query parameter to database 'not in' filter format.
+ * @template T - Type of enum values
+ * @param {string} field - The query parameter field name
+ * @param {T[]} defaultEnum - Array of default enum values
+ * @param {IPaginationQueryFilterEnumOptions} [options] - Optional filter configuration
+ * @returns {ParameterDecorator} Parameter decorator that converts to database 'not in' filter
+ */
+export function PaginationQueryFilterNinEnum<T>(
+    field: string,
+    defaultEnum: T[],
+    options?: IPaginationQueryFilterEnumOptions
+): ParameterDecorator {
+    return Query(field, PaginationQueryFilterNinEnumPipe(defaultEnum, options));
+}
+
+/**
+ * Creates a parameter decorator for boolean equality filtering in database queries.
+ * Converts query parameter to database boolean equality filter format.
+ * @param {string} field - The query parameter field name
+ * @param {IPaginationQueryFilterOptions} [options] - Optional filter configuration
+ * @returns {ParameterDecorator} Parameter decorator that converts to database boolean filter
+ */
+export function PaginationQueryFilterEqualBoolean(
+    field: string,
+    options?: IPaginationQueryFilterOptions
 ): ParameterDecorator {
     return Query(
         field,
-        PaginationFilterInEnumPipe<T>(defaultValue, defaultEnum)
+        PaginationQueryFilterEqualPipe({
+            ...options,
+            isBoolean: true,
+        })
     );
 }
 
-export function PaginationQueryFilterEqual(
+/**
+ * Creates a parameter decorator for number equality filtering in database queries.
+ * Converts query parameter to database number equality filter format.
+ * @param {string} field - The query parameter field name
+ * @param {IPaginationQueryFilterOptions} [options] - Optional filter configuration
+ * @returns {ParameterDecorator} Parameter decorator that converts to database number filter
+ */
+export function PaginationQueryFilterEqualNumber(
     field: string,
-    options?: IPaginationFilterStringEqualOptions
+    options?: IPaginationQueryFilterOptions
 ): ParameterDecorator {
-    return Query(field, PaginationFilterEqualPipe(options));
+    return Query(
+        field,
+        PaginationQueryFilterEqualPipe({
+            ...options,
+            isNumber: true,
+        })
+    );
 }
 
-export function PaginationQueryFilterContain(
+/**
+ * Creates a parameter decorator for string equality filtering in database queries.
+ * Converts query parameter to database string equality filter format.
+ * @param {string} field - The query parameter field name
+ * @param {IPaginationQueryFilterEqualOptions} [options] - Optional filter configuration
+ * @returns {ParameterDecorator} Parameter decorator that converts to database string filter
+ */
+export function PaginationQueryFilterEqualString(
     field: string,
-    options?: IPaginationFilterStringContainOptions
+    options?: IPaginationQueryFilterEqualOptions
 ): ParameterDecorator {
-    return Query(field, PaginationFilterContainPipe(options));
+    return Query(field, PaginationQueryFilterEqualPipe(options));
 }
 
+/**
+ * Creates a parameter decorator for inequality filtering in database queries.
+ * Converts query parameter to database inequality filter format.
+ * @param {string} field - The query parameter field name
+ * @param {IPaginationQueryFilterEqualOptions} [options] - Optional filter configuration
+ * @returns {ParameterDecorator} Parameter decorator that converts to database inequality filter
+ */
+export function PaginationQueryFilterNotEqual(
+    field: string,
+    options?: IPaginationQueryFilterEqualOptions
+): ParameterDecorator {
+    return Query(field, PaginationQueryFilterNotEqualPipe(options));
+}
+
+/**
+ * Creates a parameter decorator for date range filtering in database queries.
+ * Converts query parameter to database date range filter format.
+ * @param {string} field - The query parameter field name
+ * @param {IPaginationQueryFilterDateOptions} [options] - Optional date filter configuration
+ * @returns {ParameterDecorator} Parameter decorator that converts to database date filter
+ */
 export function PaginationQueryFilterDate(
     field: string,
-    options?: IPaginationFilterDateOptions
+    options?: IPaginationQueryFilterDateOptions
 ): ParameterDecorator {
-    return Query(field, PaginationFilterDatePipe(options));
-}
-
-export function PaginationQueryFilterEqualObjectId(
-    field: string
-): ParameterDecorator {
-    return Query(field, PaginationFilterEqualObjectIdPipe);
+    return Query(field, PaginationQueryFilterDatePipe(options));
 }
