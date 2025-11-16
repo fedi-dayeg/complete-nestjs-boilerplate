@@ -1,49 +1,65 @@
-import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
-import { AUTH_ACCESS_FOR_META_KEY } from '@modules/auth/constants/auth.constant';
-import { ENUM_AUTH_ACCESS_FOR } from '@modules/auth/constants/auth.enum.constant';
-import { AuthJwtAccessGuard } from '@modules/auth/guards/jwt-access/auth.jwt-access.guard';
-import { AuthJwtRefreshGuard } from '@modules/auth/guards/jwt-refresh/auth.jwt-refresh.guard';
-import { AuthPayloadAccessForGuard } from '@modules/auth/guards/payload/auth.payload.access-for.guard';
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { ExecutionContext, UseGuards, applyDecorators } from '@nestjs/common';
+import { createParamDecorator } from '@nestjs/common';
+import { IRequestApp } from '@common/request/interfaces/request.interface';
+import { AuthJwtAccessGuard } from '@modules/auth/guards/jwt/auth.jwt.access.guard';
+import { AuthJwtRefreshGuard } from '@modules/auth/guards/jwt/auth.jwt.refresh.guard';
+import { IAuthJwtAccessTokenPayload } from '@modules/auth/interfaces/auth.interface';
 
+/**
+ * Parameter decorator to extract JWT payload from the authenticated user
+ * Can extract the entire user payload or a specific property from it.
+ *
+ * @param data - Optional property name to extract from user payload
+ * @param ctx - Execution context containing the request information
+ * @returns The user payload or a specific property from it
+ */
 export const AuthJwtPayload = createParamDecorator(
-    (data: string, ctx: ExecutionContext): Record<string, any> => {
-        const { user } = ctx.switchToHttp().getRequest();
+    <T = IAuthJwtAccessTokenPayload>(
+        data: string,
+        ctx: ExecutionContext
+    ): T | undefined => {
+        const { user } = ctx
+            .switchToHttp()
+            .getRequest<IRequestApp & { user: T }>();
         return data ? user[data] : user;
     }
 );
 
+/**
+ * Parameter decorator to extract the raw JWT token from the Authorization header
+ * Parses the Authorization header and returns the token part (without the prefix).
+ *
+ * @param _ - Unused parameter
+ * @param ctx - Execution context containing the request information
+ * @returns The JWT token string or undefined if not found
+ */
 export const AuthJwtToken = createParamDecorator(
-    (data: string, ctx: ExecutionContext): string => {
-        const { headers } = ctx.switchToHttp().getRequest();
+    (_: unknown, ctx: ExecutionContext): string | undefined => {
+        const { headers } = ctx.switchToHttp().getRequest<IRequestApp>();
         const { authorization } = headers;
-        const authorizations: string[] = authorization.split(' ');
+        const authorizations: string[] = authorization?.split(' ') ?? [];
 
         return authorizations.length >= 2 ? authorizations[1] : undefined;
     }
 );
 
+/**
+ * Method decorator to protect routes with JWT access token authentication
+ * Applies the AuthJwtAccessGuard to the decorated method or class.
+ *
+ * @returns A method decorator that applies JWT access token protection
+ */
 export function AuthJwtAccessProtected(): MethodDecorator {
     return applyDecorators(UseGuards(AuthJwtAccessGuard));
 }
 
-export function AuthJwtPublicAccessProtected(): MethodDecorator {
-    return applyDecorators(
-        UseGuards(AuthJwtAccessGuard, AuthPayloadAccessForGuard),
-        SetMetadata(AUTH_ACCESS_FOR_META_KEY, [ENUM_AUTH_ACCESS_FOR.USER])
-    );
-}
-
-export function AuthJwtAdminAccessProtected(): MethodDecorator {
-    return applyDecorators(
-        UseGuards(AuthJwtAccessGuard, AuthPayloadAccessForGuard),
-        SetMetadata(AUTH_ACCESS_FOR_META_KEY, [
-            ENUM_AUTH_ACCESS_FOR.SUPER_ADMIN,
-            ENUM_AUTH_ACCESS_FOR.ADMIN,
-        ])
-    );
-}
-
+/**
+ * Method decorator to protect routes with JWT refresh token authentication
+ * Applies the AuthJwtRefreshGuard to the decorated method or class.
+ * Used specifically for token refresh endpoints.
+ *
+ * @returns A method decorator that applies JWT refresh token protection
+ */
 export function AuthJwtRefreshProtected(): MethodDecorator {
     return applyDecorators(UseGuards(AuthJwtRefreshGuard));
 }
