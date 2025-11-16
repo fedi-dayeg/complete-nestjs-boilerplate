@@ -1,32 +1,27 @@
 import { Module } from '@nestjs/common';
-import { CommandModule } from 'nestjs-command';
-import { ApiKeyModule } from '@modules/api-key/api-key.module';
+import { CommonModule } from '@common/common.module';
+import { MigrationApiKeySeed } from '@migration/seeds/migration.api-key.seed';
+import { CountryModule } from '@modules/country/country.module';
 import { AuthModule } from '@modules/auth/auth.module';
-import { CommonModule } from 'src/common/common.module';
-import { MigrationApiKeySeed } from 'src/migration/seeds/migration.api-key.seed';
-import { MigrationPermissionSeed } from 'src/migration/seeds/migration.permission.seed';
-import { MigrationRoleSeed } from 'src/migration/seeds/migration.role.seed';
-import { MigrationSettingSeed } from 'src/migration/seeds/migration.setting.seed';
-import { MigrationUserSeed } from 'src/migration/seeds/migration.user.seed';
-import { PermissionModule } from 'src/modules/permission/permission.module';
-import { RoleModule } from 'src/modules/role/role.module';
-import { UserModule } from 'src/modules/user/user.module';
+import { UserModule } from '@modules/user/user.module';
+import { MigrationCountrySeed } from '@migration/seeds/migration.country.seed';
+import { MigrationFeatureFlagSeed } from '@migration/seeds/migration.feature-flag.seed';
+import { MigrationRoleSeed } from '@migration/seeds/migration.role.seed';
+import { MigrationTermPolicySeed } from '@migration/seeds/migration.term-policy.seed';
+import { MigrationUserSeed } from '@migration/seeds/migration.user.seed';
 
+/**
+ * Migration module that provides database seeding functionality.
+ * Contains seed providers for API keys, countries, roles, users, and feature flags.
+ */
 @Module({
-    imports: [
-        CommonModule,
-        CommandModule,
-        ApiKeyModule,
-        AuthModule,
-        PermissionModule,
-        UserModule,
-        RoleModule,
-    ],
+    imports: [CommonModule, CountryModule, AuthModule, UserModule],
     providers: [
         MigrationApiKeySeed,
-        MigrationSettingSeed,
-        MigrationPermissionSeed,
+        MigrationCountrySeed,
+        MigrationFeatureFlagSeed,
         MigrationRoleSeed,
+        MigrationTermPolicySeed,
         MigrationUserSeed,
     ],
     exports: [],

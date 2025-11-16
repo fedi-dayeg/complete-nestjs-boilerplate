@@ -1,96 +1,317 @@
-import { Command } from 'nestjs-command';
-import { Injectable } from '@nestjs/common';
-import { AuthService } from '@modules/auth/services/auth.service';
-import { UserService } from 'src/modules/user/services/user.service';
-import { RoleService } from 'src/modules/role/services/role.service';
-import { RoleDoc } from '@modules/role/repositories/entities/role.entity';
-import { UserDoc } from '@modules/user/repositories/entities/user.entity';
+import { ENUM_APP_ENVIRONMENT } from '@app/enums/app.enum';
+import { DatabaseService } from '@common/database/services/database.service';
+import { DatabaseUtil } from '@common/database/utils/database.util';
+import { HelperService } from '@common/helper/services/helper.service';
+import { faker } from '@faker-js/faker';
+import { MigrationSeedBase } from '@migration/bases/migration.seed.base';
+import { migrationUserData } from '@migration/data/migration.user.data';
+import { IMigrationSeed } from '@migration/interfaces/migration.seed.interface';
+import { AuthUtil } from '@modules/auth/utils/auth.util';
+import { UserUtil } from '@modules/user/utils/user.util';
+import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import {
+    ENUM_ACTIVITY_LOG_ACTION,
+    ENUM_PASSWORD_HISTORY_TYPE,
+    ENUM_TERM_POLICY_STATUS,
+    ENUM_TERM_POLICY_TYPE,
+    ENUM_USER_SIGN_UP_FROM,
+    ENUM_USER_SIGN_UP_WITH,
+    ENUM_USER_STATUS,
+    ENUM_VERIFICATION_TYPE,
+    Prisma,
+} from '@prisma/client';
+import { Command } from 'nest-commander';
+import { UAParser } from 'ua-parser-js';
 
-@Injectable()
-export class MigrationUserSeed {
+@Command({
+    name: 'user',
+    description: 'Seed/Remove Users',
+    allowUnknownOptions: false,
+})
+export class MigrationUserSeed
+    extends MigrationSeedBase
+    implements IMigrationSeed
+{
+    private readonly logger = new Logger(MigrationUserSeed.name);
+
+    private readonly env: ENUM_APP_ENVIRONMENT;
+    private readonly users: {
+        country: string;
+        email: string;
+        name: string;
+        role: string;
+        password: string;
+    }[] = [];
+
     constructor(
-        private readonly authService: AuthService,
-        private readonly userService: UserService,
-        private readonly roleService: RoleService
-    ) {}
+        private readonly databaseService: DatabaseService,
+        private readonly configService: ConfigService,
+        private readonly databaseUtil: DatabaseUtil,
+        private readonly authUtil: AuthUtil,
+        private readonly userUtil: UserUtil,
+        private readonly helperService: HelperService
+    ) {
+        super();
 
-    @Command({
-        command: 'seed:user',
-        describe: 'seed users',
-    })
-    async seeds(): Promise<void> {
-        const password = 'aaAA@@123444';
-        const superadminRole: RoleDoc = await this.roleService.findOne({
-            name: 'superadmin',
-        });
-        const adminRole: RoleDoc = await this.roleService.findOne({
-            name: 'admin',
-        });
-        const userRole: RoleDoc = await this.roleService.findOne({
-            name: 'user',
-        });
-        const passwordHash = await this.authService.createPassword(
-            'aaAA@@123444'
-        );
+        this.env = this.configService.get<ENUM_APP_ENVIRONMENT>('app.env');
+        this.users = migrationUserData[this.env];
+    }
 
-        const user1: Promise<UserDoc> = this.userService.create(
-            {
-                username: 'superadmin',
-                firstName: 'superadmin',
-                lastName: 'test',
-                email: 'superadmin@mail.com',
-                password,
-                mobileNumber: '08111111222',
-                role: superadminRole._id,
+    async seed(): Promise<void> {
+        this.logger.log('Seeding Users...');
+        this.logger.log(`Found ${this.users.length} Users to seed.`);
+
+        const existingUsers = await this.databaseService.user.findMany({
+            where: {
+                email: {
+                    in: this.users.map(user => user.email),
+                },
             },
-            passwordHash
-        );
-
-        const user2: Promise<UserDoc> = this.userService.create(
-            {
-                username: 'admin',
-                firstName: 'admin',
-                lastName: 'test',
-                email: 'admin@mail.com',
-                password,
-                mobileNumber: '08111111111',
-                role: adminRole._id,
+            select: {
+                id: true,
             },
-            passwordHash
-        );
-
-        const user3: Promise<UserDoc> = this.userService.create(
-            {
-                username: 'user',
-                firstName: 'user',
-                lastName: 'test',
-                email: 'user@mail.com',
-                password,
-                mobileNumber: '08111111333',
-                role: userRole._id,
-            },
-            passwordHash
-        );
-
-        try {
-            await Promise.all([user1, user2, user3]);
-        } catch (err: any) {
-            throw new Error(err.message);
+        });
+        if (existingUsers.length > 0) {
+            this.logger.warn('Users already exist, skipping seed.');
+            return;
         }
+
+        const uniqueRoles = this.helperService.arrayUnique(
+            this.users.map(user => user.role)
+        );
+        const roles = await this.databaseService.role.findMany({
+            where: {
+                name: {
+                    in: uniqueRoles,
+                },
+            },
+            select: {
+                id: true,
+                name: true,
+            },
+        });
+        if (roles.length !== uniqueRoles.length) {
+            this.logger.warn('Roles not found for users, cannot seed.');
+            return;
+        }
+
+        const uniqueCountries = this.helperService.arrayUnique(
+            this.users.map(user => user.country)
+        );
+        const countries = await this.databaseService.country.findMany({
+            where: {
+                alpha2Code: {
+                    in: uniqueCountries,
+                },
+            },
+            select: {
+                id: true,
+                alpha2Code: true,
+            },
+        });
+        if (countries.length !== uniqueCountries.length) {
+            this.logger.error('Countries not found for users, cannot seed.');
+            return;
+        }
+
+        const termPolicies = await this.databaseService.termPolicy.findMany({
+            where: {
+                type: {
+                    in: [
+                        ENUM_TERM_POLICY_TYPE.termsOfService,
+                        ENUM_TERM_POLICY_TYPE.privacy,
+                    ],
+                },
+                status: ENUM_TERM_POLICY_STATUS.published,
+            },
+            select: {
+                id: true,
+                type: true,
+            },
+        });
+        if (termPolicies.length !== 2) {
+            this.logger.error('TermPolicies not found for users, cannot seed.');
+            return;
+        }
+
+        const today = this.helperService.dateCreate();
+
+        const userAgent = UAParser(faker.internet.userAgent());
+        const ip = faker.internet.ip();
+
+        await this.databaseService.$transaction([
+            ...this.users.flatMap(user => {
+                const userId = this.databaseUtil.createId();
+                const { passwordCreated, passwordExpired, passwordHash, salt } =
+                    this.authUtil.createPassword(user.password);
+                const { reference, token, type } =
+                    this.userUtil.verificationCreateVerification(
+                        ENUM_VERIFICATION_TYPE.email
+                    );
+
+                return [
+                    this.databaseService.user.create({
+                        data: {
+                            id: userId,
+                            email: user.email.toLowerCase(),
+                            name: user.name,
+                            countryId: countries.find(
+                                country => country.alpha2Code === user.country
+                            ).id,
+                            roleId: roles.find(role => role.name === user.role)
+                                .id,
+                            salt,
+                            password: passwordHash,
+                            passwordCreated,
+                            passwordExpired,
+                            passwordAttempt: 0,
+                            signUpAt: today,
+                            isVerified: true,
+                            signUpWith: ENUM_USER_SIGN_UP_WITH.credential,
+                            signUpFrom: ENUM_USER_SIGN_UP_FROM.system,
+                            status: ENUM_USER_STATUS.active,
+                            termPolicy: {
+                                [ENUM_TERM_POLICY_TYPE.cookie]: false,
+                                [ENUM_TERM_POLICY_TYPE.marketing]: false,
+                                [ENUM_TERM_POLICY_TYPE.privacy]: true,
+                                [ENUM_TERM_POLICY_TYPE.termsOfService]: true,
+                            },
+                            username: this.userUtil.createRandomUsername(),
+                            deletedAt: null,
+                            passwordHistories: {
+                                create: {
+                                    password: passwordHash,
+                                    salt,
+                                    type: ENUM_PASSWORD_HISTORY_TYPE.admin,
+                                    expiredAt: passwordExpired,
+                                    createdAt: passwordCreated,
+                                    createdBy: userId,
+                                },
+                            },
+                            verifications: {
+                                create: {
+                                    expiredAt: this.helperService.dateCreate(),
+                                    verifiedAt: this.helperService.dateCreate(),
+                                    reference,
+                                    token,
+                                    type,
+                                    createdBy: userId,
+                                    to: user.email,
+                                    isUsed: true,
+                                },
+                            },
+                            activityLogs: {
+                                createMany: {
+                                    data: [
+                                        {
+                                            action: ENUM_ACTIVITY_LOG_ACTION.userCreated,
+                                            ipAddress: ip,
+                                            userAgent:
+                                                this.databaseUtil.toPlainObject(
+                                                    userAgent
+                                                ),
+                                            createdBy: userId,
+                                        },
+                                        {
+                                            action: ENUM_ACTIVITY_LOG_ACTION.userVerifiedEmail,
+                                            ipAddress: ip,
+                                            userAgent:
+                                                this.databaseUtil.toPlainObject(
+                                                    userAgent
+                                                ),
+                                            createdBy: userId,
+                                        },
+                                        ...termPolicies.map(termPolicy => ({
+                                            action: ENUM_ACTIVITY_LOG_ACTION.userAcceptTermPolicy,
+                                            metadata: {
+                                                termPolicyType: termPolicy.type,
+                                                termPolicyId: termPolicy.id,
+                                            },
+                                            ipAddress: ip,
+                                            userAgent:
+                                                this.databaseUtil.toPlainObject(
+                                                    userAgent
+                                                ),
+                                            createdBy: userId,
+                                        })),
+                                    ],
+                                },
+                            },
+                        },
+                    }),
+                    ...termPolicies.map(termPolicy =>
+                        this.databaseService.termPolicyUserAcceptance.create({
+                            data: {
+                                userId: userId,
+                                termPolicyId: termPolicy.id,
+                                createdBy: userId,
+                            },
+                        })
+                    ),
+                ];
+            }),
+        ]);
+
+        this.logger.log('Users seeded successfully.');
 
         return;
     }
 
-    @Command({
-        command: 'remove:user',
-        describe: 'remove users',
-    })
     async remove(): Promise<void> {
-        try {
-            await this.userService.deleteMany({});
-        } catch (err: any) {
-            throw new Error(err.message);
+        this.logger.log('Removing back Users...');
+        this.logger.log(`Found ${this.users.length} Users to remove.`);
+
+        const existingUsers = await this.databaseService.user.findMany({
+            where: {
+                email: {
+                    in: this.users.map(user => user.email),
+                },
+            },
+            select: {
+                id: true,
+            },
+        });
+        if (existingUsers.length === 0) {
+            this.logger.warn('Users do not exist, skipping remove.');
+            return;
         }
+
+        const transaction: Prisma.PrismaPromise<unknown>[] = [];
+        const postTransaction: Prisma.PrismaPromise<unknown>[] = [];
+
+        for (const user of existingUsers) {
+            postTransaction.push(
+                this.databaseService.user.deleteMany({
+                    where: { id: user.id },
+                })
+            );
+            transaction.push(
+                this.databaseService.session.deleteMany({
+                    where: { userId: user.id },
+                }),
+                this.databaseService.userMobileNumber.deleteMany({
+                    where: { userId: user.id },
+                }),
+                this.databaseService.verification.deleteMany({
+                    where: { userId: user.id },
+                }),
+                this.databaseService.passwordHistory.deleteMany({
+                    where: { userId: user.id },
+                }),
+                this.databaseService.activityLog.deleteMany({
+                    where: { userId: user.id },
+                }),
+                this.databaseService.termPolicyUserAcceptance.deleteMany({
+                    where: { userId: user.id },
+                })
+            );
+        }
+
+        await this.databaseService.$transaction(transaction);
+        await this.databaseService.$transaction(postTransaction);
+
+        this.logger.log('Users removed completed.');
 
         return;
     }
