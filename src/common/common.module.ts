@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MessageModule } from '@common/message/message.module';
 import { HelperModule } from '@common/helper/helper.module';
 import { RequestModule } from '@common/request/request.module';
-import configs from '@config';
+
 import { PolicyModule } from '@modules/policy/policy.module';
 import { FileModule } from '@common/file/file.module';
 import { AuthModule } from '@modules/auth/auth.module';
@@ -17,6 +17,7 @@ import { CacheMainModule } from '@common/cache/cache.module';
 import { LoggerModule } from '@common/logger/logger.module';
 import { QueueRegisterModule } from 'src/queues/queue.register.module';
 import { TermPolicyModule } from '@modules/term-policy/term-policy.module';
+import configs from '@configs/index';
 
 /**
  * Common module that provides shared functionality across the application.

@@ -79,6 +79,7 @@ class JwtKeysGenerator {
                 console.warn(`Could not set permissions for ${privateKeyPath}`);
             }
         }
+
         return {
             privateKey: keyPair.privateKey,
             publicKey: keyPair.publicKey,
@@ -565,23 +566,23 @@ class JwtKeysGenerator {
     }
 }
 
-    function main() {
-        const argv = process.argv.slice(2);
-        const command = argv[0] || 'generate';
-        const keyDir = argv[1] || join(process.cwd(), 'keys');
+function main() {
+    const argv = process.argv.slice(2);
+    const command = argv[0] || 'generate';
+    const keyDir = argv[1] || join(process.cwd(), 'keys');
 
-        const generator = new JwtKeysGenerator(keyDir);
+    const generator = new JwtKeysGenerator(keyDir);
 
-        if (command === 'generate') {
-            generator.generateKeys();
-            // Note: generateKeys() now handles all three outputs:
-            // 1. Console printing
-            // 2. File creation
-            // 3. .env update
-        } else if (command === 'rollback') {
-            generator.rollbackKeys();
-        } else {
-            console.log(`
+    if (command === 'generate') {
+        generator.generateKeys();
+        // Note: generateKeys() now handles all three outputs:
+        // 1. Console printing
+        // 2. File creation
+        // 3. .env update
+    } else if (command === 'rollback') {
+        generator.rollbackKeys();
+    } else {
+        console.log(`
 Usage: node generate-keys.js [command] [keysDir]
 
 Commands:
@@ -599,12 +600,11 @@ Examples:
   node generate-keys.js generate
   node generate-keys.js rollback ./keys
         `);
-        }
     }
+}
 
-    /**
-     * CLI entry point that processes command line arguments and executes appropriate operations.
-     * Supports generate and rollback commands with configurable key directory.
-     */
-    main();
-
+/**
+ * CLI entry point that processes command line arguments and executes appropriate operations.
+ * Supports generate and rollback commands with configurable key directory.
+ */
+main();

@@ -6,7 +6,7 @@ import tsEslint from 'typescript-eslint';
 const rules = tsEslint.configs.recommended
     .map(config => config.rules)
     .filter(rules => rules !== undefined)
-    .reduce((a, b) => ({...b, ...a }), {});
+    .reduce((a, b) => ({ ...b, ...a }), {});
 
 // Enhanced code quality rules
 const codeQualityRules = {

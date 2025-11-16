@@ -1,49 +1,49 @@
 {
-  "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
-  "compilerOptions": {
-    "builder": {
-      "type": "swc",
-      "options": {
-        "swcrcPath": ".swcrc"
-      }
+    "collection": "@nestjs/schematics",
+    "sourceRoot": "src",
+    "compilerOptions": {
+        "builder": {
+            "type": "swc",
+            "options": {
+                "swcrcPath": ".swcrc"
+            }
+        },
+        "sourceMap": true,
+        "typeCheck": true,
+        "plugins": [
+            {
+                "name": "@nestjs/swagger",
+                "options": {
+                    "classValidatorShim": false,
+                    "introspectComments": false
+                }
+            }
+        ],
+        "assets": [
+            {
+                "include": "languages/**/*",
+                "outDir": "dist"
+            },
+            {
+                "include": "**/**/templates/*",
+                "outDir": "dist"
+            }
+        ],
+        "deleteOutDir": true,
+        "watchAssets": true
     },
-    "sourceMap": true,
-    "typeCheck": true,
-    "plugins": [
-      {
-        "name": "@nestjs/swagger",
-        "options": {
-          "classValidatorShim": false,
-          "introspectComments": false
+    "projects": {
+        "app": {
+            "type": "application",
+            "root": "src",
+            "entryFile": "main",
+            "sourceRoot": "src"
+        },
+        "migration": {
+            "type": "application",
+            "root": "src",
+            "entryFile": "migration",
+            "sourceRoot": "src"
         }
-      }
-    ],
-    "assets": [
-      { 
-        "include": "languages/**/*", 
-        "outDir": "dist"
-      },
-      {
-        "include": "**/**/templates/*",
-        "outDir": "dist"
-      }
-    ],
-    "deleteOutDir": true,
-    "watchAssets": false
-  },
-  "projects": {
-    "app": {
-      "type": "application",
-      "root": "src",
-      "entryFile": "main",
-      "sourceRoot": "src"
-    },
-    "migration": {
-      "type": "application",
-      "root": "src",
-      "entryFile": "migration",
-      "sourceRoot": "src"
     }
-  }
 }

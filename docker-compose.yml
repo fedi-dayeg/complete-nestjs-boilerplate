@@ -1,37 +1,165 @@
-version: '3.8'
+name: ack-nestjs-boilerplate
+
 services:
-  nestService:
-    build: .
-    container_name: nestService
-    hostname: nestService
+  apis:
+    build:
+      context: .
+    hostname: apis
     ports:
       - 3000:3000
-    networks:
-      - app-network
     volumes:
       - ./src/:/app/src/
       - .env/:/app/.env
-    restart: unless-stopped
-    depends_on: 
-      - nestDatabase
-  nestDatabase:
-    image: mongo:latest
-    container_name: nestDatabase
-    hostname: nestDatabase
-    ports:
-      - 27017:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 123456
-      MONGO_INITDB_DATABASE: nest
-    volumes:
-      - dbdata:/data/db
-    restart: unless-stopped
+    restart: on-failure
     networks:
       - app-network
+    depends_on:
+      redis:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      jwks-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    profiles: ["api", "full"]
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 2G
+
+  jwks-server:
+    image: nginx:alpine
+    hostname: jwks-server
+    ports:
+      - "3011:80"
+    volumes:
+      - ./keys/jwks.json:/usr/share/nginx/html/.well-known/jwks.json
+      - ./ci/jwks-server/jwks.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - app-network
+    profiles: ["jwks", "full"]
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: 128M
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://localhost:80/.well-known/jwks.json",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  redis:
+    image: redis:latest
+    hostname: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+
+  # Bull dashboard for queue monitoring
+  redis-bullboard:
+    image: deadly0/bull-board:3.2.6
+    hostname: redis-bullboard
+    ports:
+      - 3010:3000
+    networks:
+      - app-network
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - BULL_PREFIX=queue
+      - USER_LOGIN=admin
+      - USER_PASSWORD=admin123
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: 128M
+
+  mongo:
+    image: mongo:latest
+    hostname: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
+    volumes:
+      - mongo_data:/data/db
+    command: mongod --bind_ip_all --replSet rs0 --port 27017
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1GB
+    healthcheck:
+      test: mongosh --eval "db.adminCommand('ping')" --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  mongo-init:
+    image: mongo:latest
+    restart: "no"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - app-network
+    command: >
+      bash -c "
+      echo 'Waiting for MongoDB instance to be ready...' &&
+      mongosh --host host.docker.internal:27017 --eval '
+      config = {
+              \"_id\": \"rs0\",
+              \"members\": [
+              { \"_id\": 0, \"host\": \"host.docker.internal:27017\", \"priority\": 1 }
+          ]
+      };
+      rs.initiate(config);
+      rs.status();'&&
+      echo 'Single-node replica set initialized successfully. Container will exit now.'
+      "
+    deploy:
+      restart_policy:
+        condition: none
+    profiles: ["init"]
+
+volumes:
+  mongo_data:
+  redis_data:
+
 networks:
   app-network:
-    name: app-network
     driver: bridge
-volumes:
-  dbdata:
