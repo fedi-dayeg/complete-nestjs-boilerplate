@@ -1,66 +1,65 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiParamOptions, ApiQueryOptions } from '@nestjs/swagger';
 import { ClassConstructor } from 'class-transformer';
-import {
-    ENUM_DOC_REQUEST_BODY_TYPE,
-    ENUM_DOC_RESPONSE_BODY_TYPE,
-} from 'src/common/doc/constants/doc.enum.constant';
+import { ENUM_DOC_REQUEST_BODY_TYPE } from '@common/doc/enums/doc.enum';
+import { ENUM_FILE_EXTENSION } from '@common/file/enums/file.enum';
 
-export interface IDocOfOptions {
-    messagePath: string;
-    statusCode: number;
-    serialization?: ClassConstructor<any>;
+export interface IDocOptions {
+    summary?: string;
+    operation?: string;
+    deprecated?: boolean;
+    description?: string;
 }
 
-export interface IDocDefaultOptions {
+export interface IDocOfOptions<T = unknown> {
+    statusCode: number;
+    messagePath: string;
+    dto?: ClassConstructor<T>;
+}
+
+export interface IDocDefaultOptions<T = unknown> extends IDocOfOptions<T> {
     httpStatus: HttpStatus;
-    messagePath: string;
-    statusCode: number;
-    serialization?: ClassConstructor<any>;
-}
-
-export interface IDocOptions<T> {
-    auth?: IDocAuthOptions;
-    requestHeader?: IDocRequestHeaderOptions;
-    response?: IDocResponseOptions<T>;
-    request?: IDocRequestOptions;
-}
-
-export interface IDocPagingOptions<T>
-    extends Omit<IDocOptions<T>, 'response' | 'request'> {
-    response: IDocPagingResponseOptions<T>;
-    request?: Omit<IDocRequestOptions, 'bodyType' | 'file'>;
-}
-
-export interface IDocResponseOptions<T> {
-    statusCode?: number;
-    httpStatus?: HttpStatus;
-    bodyType?: ENUM_DOC_RESPONSE_BODY_TYPE;
-    serialization?: ClassConstructor<T>;
-}
-
-export interface IDocPagingResponseOptions<T>
-    extends Pick<IDocResponseOptions<T>, 'statusCode'> {
-    serialization: ClassConstructor<T>;
 }
 
 export interface IDocAuthOptions {
     jwtAccessToken?: boolean;
     jwtRefreshToken?: boolean;
-    apiKey?: boolean;
-    permissionToken?: boolean;
+    xApiKey?: boolean;
+    google?: boolean;
+    apple?: boolean;
 }
 
-export interface IDocRequestHeaderOptions {
-    userAgent?: boolean;
-    timestamp?: boolean;
-}
-
-export interface IDocRequestOptions {
+export interface IDocRequestOptions<T = unknown> {
     params?: ApiParamOptions[];
     queries?: ApiQueryOptions[];
     bodyType?: ENUM_DOC_REQUEST_BODY_TYPE;
-    file?: {
-        multiple: boolean;
-    };
+    dto?: ClassConstructor<T>;
+}
+
+export type IDocRequestFileOptions<T = unknown> = Omit<
+    IDocRequestOptions<T>,
+    'bodyType'
+>;
+
+export interface IDocGuardOptions {
+    policy?: boolean;
+    role?: boolean;
+    twoFactor?: boolean;
+}
+
+export interface IDocResponseOptions<T = unknown> {
+    statusCode?: number;
+    httpStatus?: HttpStatus;
+    dto?: ClassConstructor<T>;
+}
+
+export interface IDocResponsePagingOptions<T = unknown>
+    extends IDocResponseOptions<T> {
+    availableSearch?: string[];
+    availableOrder?: string[];
+}
+
+export interface IDocResponseFileOptions
+    extends Omit<IDocResponseOptions, 'dto' | 'statusCode'> {
+    extension?: ENUM_FILE_EXTENSION;
 }
