@@ -16,7 +16,7 @@ import {
 import { ApiKeyService } from '@modules/api-key/services/api-key.service';
 import { faker } from '@faker-js/faker';
 import { HelperDateService } from 'src/common/helper/services/helper.date.service';
-import { ApiKeyDoc } from '@modules/api-key/repository/entities/api-key.entity';
+import { ApiKeyDoc } from '@modules/api-key/repositories/entities/api-key.entity';
 import {
     E2E_USER_ACCESS_TOKEN_PAYLOAD_TEST,
     E2E_USER_PERMISSION_TOKEN_PAYLOAD_TEST,

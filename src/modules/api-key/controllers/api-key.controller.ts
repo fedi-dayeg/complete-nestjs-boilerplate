@@ -38,7 +38,7 @@ import { IApiKeyCreated } from '@modules/api-key/interfaces/api-key.interface';
 import {
   ApiKeyDoc,
   ApiKeyEntity,
-} from '@modules/api-key/repository/entities/api-key.entity';
+} from '@modules/api-key/repositories/entities/api-key.entity';
 import { ApiKeyCreateSerialization } from '@modules/api-key/serializations/api-key.create.serialization';
 import { ApiKeyGetSerialization } from '@modules/api-key/serializations/api-key.get.serialization';
 import { ApiKeyListSerialization } from '@modules/api-key/serializations/api-key.list.serialization';

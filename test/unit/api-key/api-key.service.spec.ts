@@ -15,7 +15,7 @@ import { ENUM_PAGINATION_ORDER_DIRECTION_TYPE } from 'src/common/pagination/cons
 import {
     ApiKeyDoc,
     ApiKeyEntity,
-} from '@modules/api-key/repository/entities/api-key.entity';
+} from '@modules/api-key/repositories/entities/api-key.entity';
 import { IApiKeyCreated } from '@modules/api-key/interfaces/api-key.interface';
 
 describe('ApiKeyService', () => {

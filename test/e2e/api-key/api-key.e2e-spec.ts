@@ -2,7 +2,7 @@ import { HttpStatus, INestApplication } from "@nestjs/common";
 import { AuthService } from "@modules/auth/services/auth.service";
 import { ApiKeyService } from "@modules/api-key/services/api-key.service";
 import { HelperDateService } from "../../../src/common/helper/services/helper.date.service";
-import { ApiKeyDoc } from "@modules/api-key/repository/entities/api-key.entity";
+import { ApiKeyDoc } from "@modules/api-key/repositories/entities/api-key.entity";
 import { faker } from '@faker-js/faker';
 import * as process from "process";
 import { Test } from "@nestjs/testing";

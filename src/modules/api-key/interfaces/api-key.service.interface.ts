@@ -1,92 +1,55 @@
 import {
-    ApiKeyCreateDto,
-    ApiKeyCreateRawDto,
-} from '@modules/api-key/dtos/api-key.create.dto';
-import { ApiKeyUpdateDateDto } from '@modules/api-key/dtos/api-key.update-date.dto';
-import { ApiKeyUpdateDto } from '@modules/api-key/dtos/api-key.update.dto';
-import { IApiKeyCreated } from '@modules/api-key/interfaces/api-key.interface';
+    IPaginationEqual,
+    IPaginationIn,
+    IPaginationQueryOffsetParams,
+} from '@common/pagination/interfaces/pagination.interface';
+import { IRequestApp } from '@common/request/interfaces/request.interface';
 import {
-    ApiKeyDoc,
-    ApiKeyEntity,
-} from '@modules/api-key/repository/entities/api-key.entity';
-import {
-    IDatabaseCreateOptions,
-    IDatabaseFindAllOptions,
-    IDatabaseFindOneOptions,
-    IDatabaseManyOptions,
-    IDatabaseOptions,
-} from '@common/database/interfaces/database.interface';
+    IResponsePagingReturn,
+    IResponseReturn,
+} from '@common/response/interfaces/response.interface';
+import { ApiKeyDto } from '@modules/api-key/dtos/api-key.dto';
+import { ApiKeyCreateRequestDto } from '@modules/api-key/dtos/request/api-key.create.request.dto';
+import { ApiKeyUpdateDateRequestDto } from '@modules/api-key/dtos/request/api-key.update-date.request.dto';
+import { ApiKeyUpdateStatusRequestDto } from '@modules/api-key/dtos/request/api-key.update-status.request.dto';
+import { ApiKeyUpdateRequestDto } from '@modules/api-key/dtos/request/api-key.update.request.dto';
+import { ApiKeyCreateResponseDto } from '@modules/api-key/dtos/response/api-key.create.response.dto';
+import { ApiKey, ENUM_API_KEY_TYPE } from '@prisma/client';
 
 export interface IApiKeyService {
-    findAll(
-        find?: Record<string, any>,
-        options?: IDatabaseFindAllOptions
-    ): Promise<ApiKeyEntity[]>;
-
-    findOneById(
-        _id: string,
-        options?: IDatabaseFindOneOptions
-    ): Promise<ApiKeyDoc>;
-
-    findOne(
-        find: Record<string, any>,
-        options?: IDatabaseFindOneOptions
-    ): Promise<ApiKeyDoc>;
-
-    findOneByKey(
-        key: string,
-        options?: IDatabaseFindOneOptions
-    ): Promise<ApiKeyDoc>;
-
-    findOneByActiveKey(
-        key: string,
-        options?: IDatabaseFindOneOptions
-    ): Promise<ApiKeyDoc>;
-
-    getTotal(
-        find?: Record<string, any>,
-        options?: IDatabaseOptions
-    ): Promise<number>;
-
-    create(
-      user: string,
-      {name, description, startDate, endDate}: ApiKeyCreateDto,
-        options?: IDatabaseCreateOptions
-    ): Promise<IApiKeyCreated>;
-
-    createRaw(
-      user: string,
-      {name, description, key, secret, startDate, endDate}: ApiKeyCreateRawDto,
-        options?: IDatabaseCreateOptions
-    ): Promise<IApiKeyCreated>;
-
-    active(repository: ApiKeyDoc): Promise<ApiKeyDoc>;
-
-    inactive(repository: ApiKeyDoc): Promise<ApiKeyDoc>;
-
-    update(repository: ApiKeyDoc, data: ApiKeyUpdateDto): Promise<ApiKeyDoc>;
-
-    updateDate(
-        repository: ApiKeyDoc,
-        {startDate, endDate}: ApiKeyUpdateDateDto
-    ): Promise<ApiKeyDoc>;
-
-    reset(repository: ApiKeyDoc, secret: string): Promise<ApiKeyDoc>;
-
-    delete(repository: ApiKeyDoc): Promise<ApiKeyDoc>;
-
-    validateHashApiKey(hashFromRequest: string, hash: string): Promise<boolean>;
-
-    createKey(): Promise<string>;
-
-    createSecret(): Promise<string>;
-
-    createHashApiKey(key: string, secret: string): Promise<string>;
-
-    deleteMany(
-        find: Record<string, any>,
-        options?: IDatabaseManyOptions
-    ): Promise<boolean>;
-
-    inactiveManyByEndDate(options?: IDatabaseManyOptions): Promise<boolean>;
+    getList(
+        { where, ...params }: IPaginationQueryOffsetParams,
+        isActive?: Record<string, IPaginationEqual>,
+        type?: Record<string, IPaginationIn>
+    ): Promise<IResponsePagingReturn<ApiKeyDto>>;
+    create({
+        name,
+        type,
+        startAt,
+        endAt,
+    }: ApiKeyCreateRequestDto): Promise<
+        IResponseReturn<ApiKeyCreateResponseDto>
+    >;
+    updateStatus(
+        id: string,
+        data: ApiKeyUpdateStatusRequestDto
+    ): Promise<IResponseReturn<ApiKeyDto>>;
+    update(
+        id: string,
+        { name }: ApiKeyUpdateRequestDto
+    ): Promise<IResponseReturn<ApiKeyDto>>;
+    updateDates(
+        id: string,
+        { startAt, endAt }: ApiKeyUpdateDateRequestDto
+    ): Promise<IResponseReturn<ApiKeyDto>>;
+    reset(id: string): Promise<IResponseReturn<ApiKeyCreateResponseDto>>;
+    delete(id: string): Promise<IResponseReturn<ApiKeyDto>>;
+    findOneActiveByKeyAndCache(key: string): Promise<ApiKey | null>;
+    validateApiKey(apiKey: ApiKey, includeActive: boolean): void;
+    findOneActiveByKeyAndCache(key: string): Promise<ApiKey | null>;
+    validateXApiKeyGuard(request: IRequestApp): Promise<ApiKey>;
+    validateXApiKeyTypeGuard(
+        request: IRequestApp,
+        apiKeyTypes: ENUM_API_KEY_TYPE[]
+    ): boolean;
 }

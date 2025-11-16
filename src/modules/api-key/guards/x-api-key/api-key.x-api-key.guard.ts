@@ -1,86 +1,27 @@
-import { AuthGuard } from '@nestjs/passport';
-import {
-    ExecutionContext,
-    ForbiddenException,
-    Injectable,
-    UnauthorizedException,
-} from '@nestjs/common';
-import { HelperNumberService } from '@common/helper/services/helper.number.service';
-import { ENUM_API_KEY_STATUS_CODE_ERROR } from '@modules/api-key/constants/api-key.status-code.constant';
-import { BadRequestError } from 'passport-headerapikey';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { IRequestApp } from '@common/request/interfaces/request.interface';
+import { ApiKeyService } from '@modules/api-key/services/api-key.service';
 
+/**
+ * Guard that validates X-API-Key header authentication.
+ * Extracts and validates the API key from request headers and attaches it to the request object.
+ */
 @Injectable()
-export class ApiKeyXApiKeyGuard extends AuthGuard('api-key') {
-    constructor(private readonly helperNumberService: HelperNumberService) {
-        super();
-    }
+export class ApiKeyXApiKeyGuard implements CanActivate {
+    constructor(private readonly apiKeyService: ApiKeyService) {}
 
-    canActivate(context: ExecutionContext) {
-        return super.canActivate(context);
-    }
+    /**
+     * Validates the X-API-Key header and attaches the API key to the request.
+     *
+     * @param {ExecutionContext} context - The execution context containing request information
+     * @returns {Promise<boolean>} Promise that resolves to true if API key is valid
+     */
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        const request = context.switchToHttp().getRequest<IRequestApp>();
+        const apiKey = await this.apiKeyService.validateXApiKeyGuard(request);
 
-    handleRequest<IApiKeyPayload = any>(
-        err: Record<string, any>,
-        apiKey: IApiKeyPayload,
-        info: Error | string
-    ): IApiKeyPayload {
-        if (err || !apiKey) {
-            if (
-                info instanceof BadRequestError &&
-                info.message === 'Missing API Key'
-            ) {
-                throw new UnauthorizedException({
-                    statusCode:
-                        ENUM_API_KEY_STATUS_CODE_ERROR.API_KEY_NEEDED_ERROR,
-                    message: 'apiKey.error.keyNeeded',
-                });
-            } else if (err) {
-                const statusCode: number = this.helperNumberService.create(
-                    err.message as string
-                );
+        request.__apiKey = apiKey;
 
-                if (
-                    statusCode ===
-                    ENUM_API_KEY_STATUS_CODE_ERROR.API_KEY_NOT_FOUND_ERROR
-                ) {
-                    throw new ForbiddenException({
-                        statusCode,
-                        message: 'apiKey.error.notFound',
-                    });
-                } else if (
-                    statusCode ===
-                    ENUM_API_KEY_STATUS_CODE_ERROR.API_KEY_IS_ACTIVE_ERROR
-                ) {
-                    throw new ForbiddenException({
-                        statusCode,
-                        message: 'apiKey.error.inactive',
-                    });
-                } else if (
-                    statusCode ===
-                    ENUM_API_KEY_STATUS_CODE_ERROR.API_KEY_EXPIRED_ERROR
-                ) {
-                    throw new ForbiddenException({
-                        statusCode,
-                        message: 'apiKey.error.expired',
-                    });
-                } else if (
-                    statusCode ===
-                    ENUM_API_KEY_STATUS_CODE_ERROR.API_KEY_WRONG_ERROR
-                ) {
-                    throw new ForbiddenException({
-                        statusCode,
-                        message: 'apiKey.error.wrong',
-                    });
-                }
-            }
-
-            throw new UnauthorizedException({
-                statusCode:
-                    ENUM_API_KEY_STATUS_CODE_ERROR.API_KEY_INVALID_ERROR,
-                message: 'apiKey.error.invalid',
-            });
-        }
-
-        return apiKey;
+        return true;
     }
 }

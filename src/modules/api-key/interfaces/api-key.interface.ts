@@ -1,12 +1,5 @@
-import { ApiKeyDoc } from "@modules/api-key/repository/entities/api-key.entity";
-
-export interface IApiKeyPayload {
-    _id: string;
+export interface IApiKeyGenerateCredential {
     key: string;
-    name: string;
-}
-
-export interface IApiKeyCreated {
     secret: string;
-    doc: ApiKeyDoc;
+    hash: string;
 }
