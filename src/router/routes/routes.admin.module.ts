@@ -1,31 +1,39 @@
-import { Module } from '@nestjs/common';
-import { ApiKeyModule } from '@modules/api-key/api-key.module';
+import { ActivityLogModule } from '@modules/activity-log/activity-log.module';
+import { ActivityLogAdminController } from '@modules/activity-log/controllers/activity-log.admin.controller';
 import { ApiKeyAdminController } from '@modules/api-key/controllers/api-key.admin.controller';
-import { AuthModule } from '@modules/auth/auth.module';
-import { SettingAdminController } from 'src/common/setting/controllers/setting.admin.controller';
-import { PermissionAdminController } from 'src/modules/permission/controllers/permission.admin.controller';
-import { PermissionModule } from 'src/modules/permission/permission.module';
-import { RoleAdminController } from 'src/modules/role/controllers/role.admin.controller';
-import { RoleModule } from 'src/modules/role/role.module';
-import { UserAdminController } from 'src/modules/user/controllers/user.admin.controller';
-import { UserModule } from 'src/modules/user/user.module';
+import { FeatureFlagAdminController } from '@modules/feature-flag/controllers/feature-flag.admin.controller';
+import { PasswordHistoryAdminController } from '@modules/password-history/controllers/password-history.admin.controller';
+import { PasswordHistoryModule } from '@modules/password-history/password-history.module';
+import { RoleAdminController } from '@modules/role/controllers/role.admin.controller';
+import { SessionAdminController } from '@modules/session/controllers/session.admin.controller';
+import { SessionModule } from '@modules/session/session.module';
+import { TermPolicyAdminController } from '@modules/term-policy/controllers/term-policy.admin.controller';
+import { UserAdminController } from '@modules/user/controllers/user.admin.controller';
+import { UserModule } from '@modules/user/user.module';
+import { Module } from '@nestjs/common';
 
+/**
+ * Admin routes module that provides administrative endpoints.
+ * Contains controllers for managing API keys, roles, users, password history, activity logs, sessions, term policies, and feature flags.
+ */
 @Module({
     controllers: [
-        SettingAdminController,
         ApiKeyAdminController,
-        PermissionAdminController,
         RoleAdminController,
         UserAdminController,
+        PasswordHistoryAdminController,
+        ActivityLogAdminController,
+        SessionAdminController,
+        TermPolicyAdminController,
+        FeatureFlagAdminController,
     ],
     providers: [],
     exports: [],
     imports: [
-        AuthModule,
-        ApiKeyModule,
-        PermissionModule,
-        RoleModule,
         UserModule,
+        PasswordHistoryModule,
+        ActivityLogModule,
+        SessionModule,
     ],
 })
 export class RoutesAdminModule {}
