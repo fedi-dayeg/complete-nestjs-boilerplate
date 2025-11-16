@@ -1,88 +1,80 @@
 import {
+    DynamicModule,
     HttpStatus,
     Module,
-    UnprocessableEntityException,
-    ValidationError,
     ValidationPipe,
 } from '@nestjs/common';
-import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
-import { RequestTimeoutInterceptor } from 'src/common/request/interceptors/request.timeout.interceptor';
-import { RequestMiddlewareModule } from 'src/common/request/middleware/request.middleware.module';
-import { MaxDateTodayConstraint } from 'src/common/request/validations/request.max-date-today.validation';
-import { MinDateTodayConstraint } from 'src/common/request/validations/request.min-date-today.validation';
-import { MobileNumberAllowedConstraint } from 'src/common/request/validations/request.mobile-number-allowed.validation';
-import { ENUM_REQUEST_STATUS_CODE_ERROR } from './constants/request.status-code.constant';
-import { IsPasswordMediumConstraint } from './validations/request.is-password-medium.validation';
-import { IsPasswordStrongConstraint } from './validations/request.is-password-strong.validation';
-import { IsPasswordWeakConstraint } from './validations/request.is-password-weak.validation';
-import { IsStartWithConstraint } from './validations/request.is-start-with.validation';
-import { MaxGreaterThanEqualConstraint } from './validations/request.max-greater-than-equal.validation';
-import { MaxGreaterThanConstraint } from './validations/request.max-greater-than.validation';
-import { MinGreaterThanEqualConstraint } from './validations/request.min-greater-than-equal.validation';
-import { MinGreaterThanConstraint } from './validations/request.min-greater-than.validation';
-import { IsOnlyDigitsConstraint } from './validations/request.only-digits.validation';
-import { SafeStringConstraint } from './validations/request.safe-string.validation';
-import { SkipConstraint } from './validations/request.skip.validation';
-import { MaxBinaryFileConstraint } from 'src/common/request/validations/request.max-binary-file.validation';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { ValidationError } from 'class-validator';
+import { RequestValidationException } from '@common/request/exceptions/request.validation.exception';
+import { RequestTimeoutInterceptor } from '@common/request/interceptors/request.timeout.interceptor';
+import { IsCustomEmailConstraint } from '@common/request/validations/request.custom-email.validation';
+import { IsAfterNowConstraint } from '@common/request/validations/request.is-after-now.validation';
+import {
+    GreaterThanEqualOtherPropertyConstraint,
+    GreaterThanOtherPropertyConstraint,
+} from '@common/request/validations/request.greater-than-other-property.validation';
+import { IsPasswordConstraint } from '@common/request/validations/request.is-password.validation';
+import {
+    LessThanEqualOtherPropertyConstraint,
+    LessThanOtherPropertyConstraint,
+} from '@common/request/validations/request.less-than-other-property.validation';
+import { RequestMiddlewareModule } from '@common/request/request.middleware.module';
 
-@Module({
-    controllers: [],
-    providers: [
-        {
-            provide: APP_INTERCEPTOR,
-            useClass: RequestTimeoutInterceptor,
-        },
-        {
-            provide: APP_PIPE,
-            useFactory: () =>
-                new ValidationPipe({
-                    transform: true,
-                    skipNullProperties: false,
-                    skipUndefinedProperties: false,
-                    skipMissingProperties: false,
-                    forbidUnknownValues: false,
-                    errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-                    exceptionFactory: async (errors: ValidationError[]) =>
-                        new UnprocessableEntityException({
-                            statusCode:
-                                ENUM_REQUEST_STATUS_CODE_ERROR.REQUEST_VALIDATION_ERROR,
-                            message: 'request.validation',
-                            errors,
+/**
+ * Core request module providing validation, interceptors, and middleware configuration.
+ * Configures global validation pipes, timeout handling, and custom validators.
+ */
+@Module({})
+export class RequestModule {
+    /**
+     * Creates and configures the request module with all necessary providers.
+     *
+     * @returns Dynamic module configuration with validation and interceptor setup
+     */
+    static forRoot(): DynamicModule {
+        return {
+            module: RequestModule,
+            controllers: [],
+            providers: [
+                {
+                    provide: APP_INTERCEPTOR,
+                    useClass: RequestTimeoutInterceptor,
+                },
+                {
+                    provide: APP_PIPE,
+                    useFactory: () =>
+                        new ValidationPipe({
+                            transform: true,
+                            skipMissingProperties: false,
+                            skipNullProperties: false,
+                            skipUndefinedProperties: false,
+                            forbidUnknownValues: false,
+                            whitelist: true,
+                            forbidNonWhitelisted: true,
+                            transformOptions: {
+                                excludeExtraneousValues: false,
+                            },
+                            validationError: {
+                                target: false,
+                                value: true,
+                            },
+                            errorHttpStatusCode:
+                                HttpStatus.UNPROCESSABLE_ENTITY,
+                            exceptionFactory: async (
+                                errors: ValidationError[]
+                            ) => new RequestValidationException(errors),
                         }),
-                }),
-        },
-        {
-            provide: APP_GUARD,
-            useClass: ThrottlerGuard,
-        },
-        IsPasswordStrongConstraint,
-        IsPasswordMediumConstraint,
-        IsPasswordWeakConstraint,
-        IsStartWithConstraint,
-        MaxGreaterThanEqualConstraint,
-        MaxGreaterThanConstraint,
-        MinGreaterThanEqualConstraint,
-        MinGreaterThanConstraint,
-        SkipConstraint,
-        SafeStringConstraint,
-        IsOnlyDigitsConstraint,
-        MinDateTodayConstraint,
-        MobileNumberAllowedConstraint,
-        MaxDateTodayConstraint,
-        MaxBinaryFileConstraint,
-    ],
-    imports: [
-        RequestMiddlewareModule,
-        ThrottlerModule.forRootAsync({
-            imports: [ConfigModule],
-            inject: [ConfigService],
-            useFactory: (config: ConfigService) => ({
-                ttl: config.get('request.throttle.ttl'),
-                limit: config.get('request.throttle.limit'),
-            }),
-        }),
-    ],
-})
-export class RequestModule {}
+                },
+                GreaterThanEqualOtherPropertyConstraint,
+                GreaterThanOtherPropertyConstraint,
+                IsAfterNowConstraint,
+                IsPasswordConstraint,
+                IsCustomEmailConstraint,
+                LessThanEqualOtherPropertyConstraint,
+                LessThanOtherPropertyConstraint,
+            ],
+            imports: [RequestMiddlewareModule],
+        };
+    }
+}

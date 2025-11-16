@@ -1,0 +1,18 @@
+import { HttpStatus, ValidationError } from '@nestjs/common';
+import { ENUM_REQUEST_STATUS_CODE_ERROR } from '@common/request/enums/request.status-code.enum';
+
+/**
+ * Custom exception class for request validation errors.
+ * Thrown when request data fails validation rules.
+ */
+export class RequestValidationException extends Error {
+    readonly httpStatus: HttpStatus = HttpStatus.UNPROCESSABLE_ENTITY;
+    readonly statusCode: number = ENUM_REQUEST_STATUS_CODE_ERROR.VALIDATION;
+    readonly errors: ValidationError[];
+
+    constructor(errors: ValidationError[]) {
+        super('request.error.validation');
+
+        this.errors = errors;
+    }
+}
