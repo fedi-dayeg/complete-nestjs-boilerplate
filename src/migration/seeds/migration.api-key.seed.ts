@@ -2,7 +2,7 @@ import { Command } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
 import { ApiKeyService } from '@modules/api-key/services/api-key.service';
 import { UserService } from 'src/modules/user/services/user.service';
-import { UserDoc } from 'src/modules/user/repository/entities/user.entity';
+import { UserDoc } from '@modules/user/repositories/entities/user.entity';
 
 @Injectable()
 export class MigrationApiKeySeed {

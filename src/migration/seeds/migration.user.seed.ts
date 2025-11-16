@@ -4,7 +4,7 @@ import { AuthService } from '@modules/auth/services/auth.service';
 import { UserService } from 'src/modules/user/services/user.service';
 import { RoleService } from 'src/modules/role/services/role.service';
 import { RoleDoc } from 'src/modules/role/repository/entities/role.entity';
-import { UserDoc } from 'src/modules/user/repository/entities/user.entity';
+import { UserDoc } from '@modules/user/repositories/entities/user.entity';
 
 @Injectable()
 export class MigrationUserSeed {

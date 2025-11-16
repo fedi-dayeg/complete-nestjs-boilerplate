@@ -26,7 +26,7 @@ import { ENUM_USER_STATUS_CODE_ERROR } from 'src/modules/user/constants/user.sta
 import { RoleService } from 'src/modules/role/services/role.service';
 import { ENUM_ROLE_STATUS_CODE_ERROR } from 'src/modules/role/constants/role.status-code.constant';
 import { DatabaseDefaultUUID } from 'src/common/database/constants/database.function.constant';
-import { UserDoc } from 'src/modules/user/repository/entities/user.entity';
+import { UserDoc } from '@modules/user/repositories/entities/user.entity';
 import { RoleDoc } from 'src/modules/role/repository/entities/role.entity';
 import { IUserDoc } from 'src/modules/user/interfaces/user.interface';
 

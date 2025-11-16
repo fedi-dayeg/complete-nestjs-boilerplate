@@ -57,7 +57,7 @@ import {
     IUserDoc,
     IUserEntity,
 } from 'src/modules/user/interfaces/user.interface';
-import { UserDoc } from 'src/modules/user/repository/entities/user.entity';
+import { UserDoc } from '@modules/user/repositories/entities/user.entity';
 import { UserGrantPermissionSerialization } from 'src/modules/user/serializations/user.grant-permission.serialization';
 import { UserInfoSerialization } from 'src/modules/user/serializations/user.info.serialization';
 import { UserLoginSerialization } from 'src/modules/user/serializations/user.login.serialization';

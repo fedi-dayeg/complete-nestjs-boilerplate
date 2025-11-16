@@ -17,7 +17,7 @@ import { PermissionModule } from 'src/modules/permission/permission.module';
 import {
     UserDoc,
     UserEntity,
-} from 'src/modules/user/repository/entities/user.entity';
+} from '@modules/user/repositories/entities/user.entity';
 import { RoleDoc } from 'src/modules/role/repository/entities/role.entity';
 import { IUserDoc } from 'src/modules/user/interfaces/user.interface';
 import { DatabaseDefaultUUID } from 'src/common/database/constants/database.function.constant';
