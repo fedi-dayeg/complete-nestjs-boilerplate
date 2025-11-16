@@ -1,50 +1,47 @@
-import { ClassConstructor } from 'class-transformer';
-import { ENUM_HELPER_FILE_TYPE } from 'src/common/helper/constants/helper.enum.constant';
-import { IHelperFileRows } from 'src/common/helper/interfaces/helper.interface';
-import { IMessageOptionsProperties } from 'src/common/message/interfaces/message.interface';
+import { HttpStatus } from '@nestjs/common';
+import { IMessageProperties } from '@common/message/interfaces/message.interface';
+import { IFileSheet } from '@common/file/interfaces/file.interface';
+import {
+    IPaginationCursorReturn,
+    IPaginationOffsetReturn,
+} from '@common/pagination/interfaces/pagination.interface';
+import { ENUM_FILE_EXTENSION_EXCEL } from '@common/file/enums/file.enum';
+import { IActivityLogMetadata } from '@modules/activity-log/interfaces/activity-log.interface';
 
-export interface IResponseCustomPropertyMetadata {
-    statusCode?: number;
-    message?: string;
-    messageProperties?: IMessageOptionsProperties;
-}
-
-// metadata
 export interface IResponseMetadata {
-    customProperty?: IResponseCustomPropertyMetadata;
-    [key: string]: any;
+    statusCode?: number;
+    httpStatus?: HttpStatus;
+    messagePath?: string;
+    messageProperties?: IMessageProperties;
 }
 
-// decorator options
-
-export interface IResponseOptions<T> {
-    serialization?: ClassConstructor<T>;
-    messageProperties?: IMessageOptionsProperties;
+export interface IResponseCacheOptions {
+    key?: string;
+    ttl?: number;
 }
 
-export type IResponsePagingOptions<T> = IResponseOptions<T>;
-
-export interface IResponseExcelOptions<T> extends IResponseOptions<T> {
-    fileType?: ENUM_HELPER_FILE_TYPE;
+export interface IResponseActivityLogReturn {
+    metadataActivityLog?: IActivityLogMetadata;
 }
 
-// type
-export interface IResponse {
-    _metadata?: IResponseMetadata;
-    data: Record<string, any>;
+export interface IResponseOptions {
+    cache?: IResponseCacheOptions | boolean;
 }
 
-export interface IResponsePagingPagination {
-    totalPage: number;
-    total: number;
+export interface IResponseReturn<T = unknown>
+    extends IResponseActivityLogReturn {
+    metadata?: IResponseMetadata;
+    data?: T;
 }
 
-export interface IResponsePaging {
-    _metadata?: IResponseMetadata;
-    _pagination: IResponsePagingPagination;
-    data: Record<string, any>[];
-}
+export type IResponsePagingReturn<T> = (
+    | IPaginationOffsetReturn<T>
+    | IPaginationCursorReturn<T>
+) & {
+    metadata?: IResponseMetadata;
+} & IResponseActivityLogReturn;
 
-export interface IResponseExcel {
-    data: IHelperFileRows[];
+export interface IResponseFileReturn<T> extends IResponseActivityLogReturn {
+    extension: ENUM_FILE_EXTENSION_EXCEL;
+    data: IFileSheet<T>[];
 }
