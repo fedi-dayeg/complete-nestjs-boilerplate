@@ -1,5 +1,4 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import { CacheMainProvider } from '@common/cache/constants/cache.constant';
 import {
     CACHE_MANAGER,
     CacheModule as CacheManagerModule,
@@ -8,6 +7,7 @@ import {
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisClientCachedProvider } from '@common/redis/constants/redis.constant';
 import KeyvRedis from '@keyv/redis';
+import { CacheMainProvider } from '@common/cache/constants/cache.constant';
 
 /**
  * Global cache module that provides Redis-based caching functionality throughout the application.
@@ -27,6 +27,7 @@ export class CacheMainModule {
             provide: CacheMainProvider,
             useExisting: CACHE_MANAGER,
         };
+
         return {
             module: CacheMainModule,
             providers: [provider],
@@ -34,7 +35,7 @@ export class CacheMainModule {
             imports: [
                 CacheManagerModule.registerAsync({
                     imports: [ConfigModule],
-                    inject: [ConfigModule, RedisClientCachedProvider],
+                    inject: [ConfigService, RedisClientCachedProvider],
                     useFactory: (
                         configService: ConfigService,
                         redisClient: KeyvRedis<unknown>
