@@ -1,62 +1,112 @@
 import { registerAs } from '@nestjs/config';
-import { seconds } from 'src/common/helper/constants/helper.function.constant';
+import ms from 'ms';
+
+export interface IConfigAuth {
+    jwt: {
+        accessToken: {
+            kid: string;
+            privateKey: string;
+            publicKey: string;
+            expirationTimeInSeconds: number;
+        };
+        refreshToken: {
+            kid: string;
+            privateKey: string;
+            publicKey: string;
+            expirationTimeInSeconds: number;
+        };
+        algorithm: string;
+        jwksUri: string;
+        audience: string;
+        issuer: string;
+        header: string;
+        prefix: string;
+    };
+    password: {
+        attempt: boolean;
+        maxAttempt: number;
+        saltLength: number;
+        expiredInSeconds: number;
+        expiredTemporaryInSeconds: number;
+        periodInSeconds: number;
+    };
+    apple: {
+        header: string;
+        prefix: string;
+        clientId?: string;
+        signInClientId?: string;
+    };
+    google: {
+        header: string;
+        prefix: string;
+        clientId?: string;
+        clientSecret?: string;
+    };
+    xApiKey: {
+        header: string;
+        cachePrefixKey: string;
+    };
+}
 
 export default registerAs(
     'auth',
-    (): Record<string, any> => ({
-        accessToken: {
-            secretKey: process.env.AUTH_JWT_ACCESS_TOKEN_SECRET_KEY ?? '123456',
-            expirationTime: seconds(
-                process.env.AUTH_JWT_ACCESS_TOKEN_EXPIRED ?? '15m'
-            ), // recommendation for production is 15m
-            notBeforeExpirationTime: seconds('0'), // keep it in zero value
+    (): IConfigAuth => ({
+        jwt: {
+            accessToken: {
+                kid: process.env.AUTH_JWT_ACCESS_TOKEN_KID,
+                privateKey: process.env.AUTH_JWT_ACCESS_TOKEN_PRIVATE_KEY,
+                publicKey: process.env.AUTH_JWT_ACCESS_TOKEN_PUBLIC_KEY,
+                expirationTimeInSeconds:
+                    ms(
+                        process.env
+                            .AUTH_JWT_ACCESS_TOKEN_EXPIRED as ms.StringValue
+                    ) / 1000,
+            },
 
-            encryptKey: process.env.AUTH_JWT_PAYLOAD_ACCESS_TOKEN_ENCRYPT_KEY,
-            encryptIv: process.env.AUTH_JWT_PAYLOAD_ACCESS_TOKEN_ENCRYPT_IV,
-        },
+            refreshToken: {
+                kid: process.env.AUTH_JWT_REFRESH_TOKEN_KID,
+                privateKey: process.env.AUTH_JWT_REFRESH_TOKEN_PRIVATE_KEY,
+                publicKey: process.env.AUTH_JWT_REFRESH_TOKEN_PUBLIC_KEY,
+                expirationTimeInSeconds:
+                    ms(
+                        process.env
+                            .AUTH_JWT_REFRESH_TOKEN_EXPIRED as ms.StringValue
+                    ) / 1000,
+            },
 
-        refreshToken: {
-            secretKey:
-                process.env.AUTH_JWT_REFRESH_TOKEN_SECRET_KEY ?? '123456000',
-            expirationTime: seconds(
-                process.env.AUTH_JWT_REFRESH_TOKEN_EXPIRED ?? '7d'
-            ), // recommendation for production is 7d
-            expirationTimeRememberMe: seconds(
-                process.env.AUTH_JWT_REFRESH_TOKEN_REMEMBER_ME_EXPIRED ?? '30d'
-            ), // recommendation for production is 30d
-            notBeforeExpirationTime: seconds(
-                process.env.AUTH_JWT_REFRESH_TOKEN_NOT_BEFORE_EXPIRATION ??
-                    '15m'
-            ), // recommendation for production is 15m
+            algorithm: 'ES512',
+            jwksUri: process.env.AUTH_JWT_JWKS_URI,
 
-            encryptKey: process.env.AUTH_JWT_PAYLOAD_REFRESH_TOKEN_ENCRYPT_KEY,
-            encryptIv: process.env.AUTH_JWT_PAYLOAD_REFRESH_TOKEN_ENCRYPT_IV,
-        },
-
-        subject: process.env.AUTH_JWT_SUBJECT ?? 'nestDevelopment',
-        audience: process.env.AUTH_JWT_AUDIENCE ?? 'https://example.com',
-        issuer: process.env.AUTH_JWT_ISSUER ?? 'nest',
-        prefixAuthorization: 'Bearer',
-        payloadEncryption:
-            process.env.AUTH_JWT_PAYLOAD_ENCRYPT === 'true' ? true : false,
-
-        permissionToken: {
-            headerName: 'x-permission-token',
-            secretKey: process.env.AUTH_PERMISSION_TOKEN_SECRET_KEY ?? '123456',
-            expirationTime: seconds(
-                process.env.AUTH_PERMISSION_TOKEN_EXPIRED ?? '5m'
-            ), // recommendation for production is 5m
-            notBeforeExpirationTime: seconds('0'), // keep it in zero value
-
-            encryptKey: process.env.AUTH_PAYLOAD_PERMISSION_TOKEN_ENCRYPT_KEY,
-            encryptIv: process.env.AUTH_PAYLOAD_PERMISSION_TOKEN_ENCRYPT_IV,
+            audience: process.env.AUTH_JWT_AUDIENCE,
+            issuer: process.env.AUTH_JWT_ISSUER,
+            header: 'Authorization',
+            prefix: 'Bearer',
         },
 
         password: {
             attempt: true,
-            maxAttempt: 3,
+            maxAttempt: 5,
             saltLength: 8,
-            expiredIn: seconds('182d'), // recommendation for production is 182 days
+            expiredInSeconds: ms('182d') / 1000,
+            expiredTemporaryInSeconds: ms('3d') / 1000,
+            periodInSeconds: ms('90d') / 1000,
+        },
+
+        apple: {
+            header: 'Authorization',
+            prefix: 'Bearer',
+            clientId: process.env.AUTH_SOCIAL_APPLE_CLIENT_ID,
+            signInClientId: process.env.AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID,
+        },
+        google: {
+            header: 'Authorization',
+            prefix: 'Bearer',
+            clientId: process.env.AUTH_SOCIAL_GOOGLE_CLIENT_ID,
+            clientSecret: process.env.AUTH_SOCIAL_GOOGLE_CLIENT_SECRET,
+        },
+        xApiKey: {
+            header: 'x-api-key',
+            cachePrefixKey: 'ApiKey',
         },
     })
 );
