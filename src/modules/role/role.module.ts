@@ -1,11 +1,17 @@
-import { Module } from '@nestjs/common';
-import { RoleRepositoryModule } from 'src/modules/role/repository/role.repository.module';
-import { RoleService } from './services/role.service';
+import { DynamicModule, Global, Module } from '@nestjs/common';
+import { RoleService } from '@modules/role/services/role.service';
+import { RoleUtil } from '@modules/role/utils/role.util';
+import { RoleRepository } from '@modules/role/repositories/role.repository';
 
-@Module({
-    controllers: [],
-    providers: [RoleService],
-    exports: [RoleService],
-    imports: [RoleRepositoryModule],
-})
-export class RoleModule {}
+@Global()
+@Module({})
+export class RoleModule {
+    static forRoot(): DynamicModule {
+        return {
+            module: RoleModule,
+            providers: [RoleService, RoleUtil, RoleRepository],
+            exports: [RoleService, RoleUtil, RoleRepository],
+            imports: [],
+        };
+    }
+}

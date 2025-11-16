@@ -21,7 +21,7 @@ import {
   UserDoc,
   UserEntity,
 } from '@modules/user/repositories/entities/user.entity';
-import { RoleDoc } from 'src/modules/role/repository/entities/role.entity';
+import { RoleDoc } from '@modules/role/repositories/entities/role.entity';
 describe('E2E User Login', () => {
     let app: INestApplication;
     let userService: UserService;

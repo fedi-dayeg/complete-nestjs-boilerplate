@@ -18,7 +18,7 @@ import {
     UserDoc,
     UserEntity,
 } from '@modules/user/repositories/entities/user.entity';
-import { RoleDoc } from 'src/modules/role/repository/entities/role.entity';
+import { RoleDoc } from '@modules/role/repositories/entities/role.entity';
 import { IUserDoc } from 'src/modules/user/interfaces/user.interface';
 import { DatabaseDefaultUUID } from 'src/common/database/constants/database.function.constant';
 import { ENUM_PERMISSION_GROUP } from 'src/modules/permission/constants/permission.enum.constant';

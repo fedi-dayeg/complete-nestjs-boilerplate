@@ -24,7 +24,7 @@ import { ENUM_AUTH_ACCESS_FOR } from '@modules/auth/constants/auth.enum.constant
 import { RoleService } from 'src/modules/role/services/role.service';
 import { RoleCreateDto } from 'src/modules/role/dtos/role.create.dto';
 import { ENUM_ROLE_STATUS_CODE_ERROR } from 'src/modules/role/constants/role.status-code.constant';
-import { RoleEntity } from 'src/modules/role/repository/entities/role.entity';
+import { RoleEntity } from '@modules/role/repositories/entities/role.entity';
 import { PermissionEntity } from 'src/modules/permission/repository/entities/permission.entity';
 import { DatabaseDefaultUUID } from 'src/common/database/constants/database.function.constant';
 import {
