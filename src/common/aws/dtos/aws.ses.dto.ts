@@ -14,6 +14,7 @@ import {
     IsString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsCustomEmail } from '@common/request/validations/request.custom-email.validation';
 
 /**
  * DTO for AWS SES email template configuration.

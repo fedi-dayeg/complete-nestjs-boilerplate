@@ -75,6 +75,7 @@ import {
     AwsS3PresignPartRequestDto,
     AwsS3PresignRequestDto,
 } from '@common/aws/dtos/request/aws.s3-presign.request.dto';
+import { FileService } from '@common/file/services/file.service';
 
 /**
  * AWS S3 service for managing file operations in Amazon S3 buckets.
@@ -95,9 +96,7 @@ export class AwsS3Service implements IAwsS3Service {
 
     constructor(
         private readonly configService: ConfigService,
-
-        //TODO add this later after refactor the file service
-        private readonly fileService: any
+        private readonly fileService: FileService
     ) {
         this.presignExpired = this.configService.get<number>(
             'aws.s3.presignExpired'
