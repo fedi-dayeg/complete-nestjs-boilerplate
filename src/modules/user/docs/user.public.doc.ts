@@ -12,6 +12,9 @@ import { UserSignUpRequestDto } from '@modules/user/dtos/request/user.sign-up.re
 import { UserVerifyEmailRequestDto } from '@modules/user/dtos/request/user.verify-email.request.dto';
 import { UserTokenResponseDto } from '@modules/user/dtos/response/user.token.response.dto';
 import { HttpStatus, applyDecorators } from '@nestjs/common';
+import {
+    UserSendEmailVerificationRequestDto
+} from '@modules/user/dtos/request/user.send-email-verification.request.dto.ts‎';
 
 export function UserPublicLoginCredentialDoc(): MethodDecorator {
     return applyDecorators(
@@ -70,6 +73,22 @@ export function UserPublicSignUpDoc(): MethodDecorator {
         DocResponse('user.signUp', {
             httpStatus: HttpStatus.CREATED,
         })
+    );
+}
+
+export function UserPublicSendEmailVerificationDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'User resend email verification',
+        }),
+        DocAuth({
+            xApiKey: true,
+        }),
+        DocRequest({
+            bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+            dto: UserSendEmailVerificationRequestDto,
+        }),
+        DocResponse('user.sendEmailVerification')
     );
 }
 

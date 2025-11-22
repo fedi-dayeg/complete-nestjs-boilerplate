@@ -6,15 +6,10 @@ import { PaginationService } from '@common/pagination/services/pagination.servic
  * Configures and exports pagination functionality for handling paginated data requests.
  */
 @Global()
-@Module({})
-export class PaginationModule {
-    static forRoot(): DynamicModule {
-        return {
-            module: PaginationModule,
-            providers: [PaginationService],
-            exports: [PaginationService],
-            imports: [],
-            controllers: [],
-        };
-    }
-}
+@Module({
+    providers: [PaginationService],
+    exports: [PaginationService],
+    imports: [],
+    controllers: [],
+})
+export class PaginationModule {}

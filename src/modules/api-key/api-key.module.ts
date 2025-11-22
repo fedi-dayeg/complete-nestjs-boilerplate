@@ -4,14 +4,9 @@ import { ApiKeyUtil } from '@modules/api-key/utils/api-key.util';
 import { ApiKeyRepository } from '@modules/api-key/repositories/api-key.repository';
 
 @Global()
-@Module({})
-export class ApiKeyModule {
-    static forRoot(): DynamicModule {
-        return {
-            module: ApiKeyModule,
-            providers: [ApiKeyService, ApiKeyUtil, ApiKeyRepository],
-            exports: [ApiKeyService, ApiKeyUtil, ApiKeyRepository],
-            imports: [],
-        };
-    }
-}
+@Module({
+    providers: [ApiKeyService, ApiKeyUtil, ApiKeyRepository],
+    exports: [ApiKeyService, ApiKeyUtil, ApiKeyRepository],
+    imports: [],
+})
+export class ApiKeyModule {}

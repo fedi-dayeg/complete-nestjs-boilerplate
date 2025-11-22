@@ -18,6 +18,7 @@ import { LoggerModule } from '@common/logger/logger.module';
 import { QueueRegisterModule } from 'src/queues/queue.register.module';
 import { TermPolicyModule } from '@modules/term-policy/term-policy.module';
 import configs from '@configs/index';
+import { SessionModule } from '@modules/session/session.module';
 
 /**
  * Common module that provides shared functionality across the application.
@@ -35,7 +36,6 @@ import configs from '@configs/index';
             envFilePath: ['.env', `.env.${process.env.NODE_ENV ?? 'local'}`],
             expandVariables: false,
         }),
-        HelperModule.forRoot(),
         MessageModule.forRoot(),
         LoggerModule.forRoot(),
         RedisCacheModule.forRoot(),
@@ -44,16 +44,19 @@ import configs from '@configs/index';
         CacheMainModule.forRoot(),
         DatabaseModule.forRoot(),
         RequestModule.forRoot(),
-        FileModule.forRoot(),
-        PaginationModule.forRoot(),
 
-        ApiKeyModule.forRoot(),
-        AuthModule.forRoot(),
-        PolicyModule.forRoot(),
-        PolicyModule.forRoot(),
-        RoleModule.forRoot(),
-        FeatureFlagModule.forRoot(),
-        TermPolicyModule.forRoot(),
+        HelperModule,
+        PaginationModule,
+        FileModule,
+
+        ApiKeyModule,
+        AuthModule,
+        PolicyModule,
+        PolicyModule,
+        RoleModule,
+        FeatureFlagModule,
+        TermPolicyModule,
+        SessionModule,
     ],
 })
 export class CommonModule {}

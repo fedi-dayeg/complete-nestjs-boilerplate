@@ -44,6 +44,9 @@ import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile
 import { UserTokenResponseDto } from '@modules/user/dtos/response/user.token.response.dto';
 import { IUser } from '@modules/user/interfaces/user.interface';
 import { ENUM_USER_LOGIN_WITH } from '@prisma/client';
+import {
+    UserSendEmailVerificationRequestDto
+} from '@modules/user/dtos/request/user.send-email-verification.request.dto.ts‎';
 
 export interface IUserService {
     validateUserGuard(
@@ -161,6 +164,10 @@ export interface IUserService {
     ): Promise<void>;
     verifyEmail(
         { token }: UserVerifyEmailRequestDto,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<void>>;
+    sendEmail(
+        { email }: UserSendEmailVerificationRequestDto,
         requestLog: IRequestLog
     ): Promise<IResponseReturn<void>>;
     forgotPassword(

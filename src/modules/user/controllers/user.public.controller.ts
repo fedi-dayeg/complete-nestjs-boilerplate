@@ -19,6 +19,7 @@ import {
     UserPublicForgotPasswordDoc,
     UserPublicLoginCredentialDoc,
     UserPublicResetPasswordDoc,
+    UserPublicSendEmailVerificationDoc,
     UserPublicSignUpDoc,
     UserPublicVerifyEmailDoc,
 } from '@modules/user/docs/user.public.doc';
@@ -30,9 +31,20 @@ import { UserSignUpRequestDto } from '@modules/user/dtos/request/user.sign-up.re
 import { UserVerifyEmailRequestDto } from '@modules/user/dtos/request/user.verify-email.request.dto';
 import { UserTokenResponseDto } from '@modules/user/dtos/response/user.token.response.dto';
 import { UserService } from '@modules/user/services/user.service';
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    HttpCode,
+    HttpStatus,
+    Patch,
+    Post,
+    Put,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ENUM_USER_LOGIN_WITH } from '@prisma/client';
+import {
+    UserSendEmailVerificationRequestDto
+} from '@modules/user/dtos/request/user.send-email-verification.request.dto.ts‎';
 
 @ApiTags('modules.public.user')
 @Controller({
@@ -126,13 +138,29 @@ export class UserPublicController {
     @Response('user.verifyEmail')
     @ApiKeyProtected()
     @HttpCode(HttpStatus.OK)
-    @Post('/verify/email')
+    @Patch('/verify/email')
     async verifyEmail(
         @Body() body: UserVerifyEmailRequestDto,
         @RequestIPAddress() ipAddress: string,
         @RequestUserAgent() userAgent: RequestUserAgentDto
     ): Promise<IResponseReturn<void>> {
         return this.userService.verifyEmail(body, {
+            ipAddress,
+            userAgent,
+        });
+    }
+
+    @UserPublicSendEmailVerificationDoc()
+    @Response('user.sendEmailVerification')
+    @ApiKeyProtected()
+    @HttpCode(HttpStatus.OK)
+    @Post('/send/email')
+    async sendEmailVerification(
+        @Body() body: UserSendEmailVerificationRequestDto,
+        @RequestIPAddress() ipAddress: string,
+        @RequestUserAgent() userAgent: RequestUserAgentDto
+    ): Promise<IResponseReturn<void>> {
+        return this.userService.sendEmail(body, {
             ipAddress,
             userAgent,
         });
@@ -160,7 +188,7 @@ export class UserPublicController {
     @FeatureFlag('changePassword.forgotAllowed')
     @ApiKeyProtected()
     @HttpCode(HttpStatus.OK)
-    @Post('/password/reset')
+    @Put('/password/reset')
     async reset(
         @Body() body: UserForgotPasswordResetRequestDto,
         @RequestIPAddress() ipAddress: string,
