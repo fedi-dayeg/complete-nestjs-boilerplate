@@ -31,9 +31,8 @@ export class EmailUtil {
         private readonly helperService: HelperService,
         private readonly configService: ConfigService
     ) {
-        this.fromEmail = this.configService.get<string>('email.fromEmail');
-        this.supportEmail =
-            this.configService.get<string>('email.supportEmail');
+        this.fromEmail = this.configService.get<string>('email.noreply');
+        this.supportEmail = this.configService.get<string>('email.support');
 
         this.homeName = this.configService.get<string>('home.name');
         this.homeUrl = this.configService.get<string>('home.url');

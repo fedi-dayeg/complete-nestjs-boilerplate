@@ -35,7 +35,7 @@ export default registerAs(
     (): IConfigAws => ({
         s3: {
             presignExpired: 30 * 60, // 30 mins
-            region: process.env.AWS_S3_PUBLIC_REGION,
+            region: process.env.AWS_S3_REGION,
             credential: {
                 key: process.env.AWS_S3_PUBLIC_CREDENTIAL_KEY,
                 secret: process.env.AWS_S3_PUBLIC_CREDENTIAL_SECRET,

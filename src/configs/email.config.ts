@@ -9,8 +9,8 @@ export interface IConfigEmail {
 export default registerAs(
     'email',
     (): IConfigEmail => ({
-        noreply: 'noreply@mail.com',
-        support: 'support@mail.com',
-        admin: 'admin@mail.com',
+        noreply: 'contact@fedidayeg.fr',
+        support: 'contact@fedidayeg.fr',
+        admin: 'contact@fedidayeg.fr',
     })
 );

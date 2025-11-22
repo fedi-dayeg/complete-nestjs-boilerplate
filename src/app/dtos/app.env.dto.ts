@@ -77,7 +77,8 @@ export class AppEnvDto {
      */
     @IsNotEmpty()
     @IsString()
-    @IsIP('4')
+    //
+    // @IsIP('4')
     HTTP_HOST: string;
 
     /**
@@ -199,7 +200,7 @@ export class AppEnvDto {
      */
     @IsString()
     @IsNotEmpty()
-    @IsUrl()
+    //@IsUrl()
     AUTH_JWT_JWKS_URI: string;
 
     /**
@@ -270,16 +271,16 @@ export class AppEnvDto {
     /**
      * AWS S3 access key for authentication
      */
-    @IsNotEmpty()
+    //@IsNotEmpty()
     @IsString()
-    AWS_S3_CREDENTIAL_KEY: string;
+    AWS_S3_PUBLIC_CREDENTIAL_KEY?: string;
 
     /**
      * AWS S3 secret key for authentication
      */
-    @IsNotEmpty()
+    //@IsNotEmpty()
     @IsString()
-    AWS_S3_CREDENTIAL_SECRET: string;
+    AWS_S3_PUBLIC_CREDENTIAL_SECRET?: string;
 
     /**
      * AWS S3 region where the buckets are located
@@ -353,7 +354,7 @@ export class AppEnvDto {
             o.AUTH_SOCIAL_GOOGLE_CLIENT_ID !== undefined &&
             o.AUTH_SOCIAL_GOOGLE_CLIENT_ID !== ''
     )
-    @IsNotEmpty()
+    // @IsNotEmpty()
     @IsString()
     AUTH_SOCIAL_GOOGLE_CLIENT_ID?: string;
 
@@ -365,7 +366,7 @@ export class AppEnvDto {
             o.AUTH_SOCIAL_GOOGLE_CLIENT_SECRET !== undefined &&
             o.AUTH_SOCIAL_GOOGLE_CLIENT_SECRET !== ''
     )
-    @IsNotEmpty()
+    //@IsNotEmpty()
     @IsString()
     AUTH_SOCIAL_GOOGLE_CLIENT_SECRET?: string;
 
@@ -377,7 +378,7 @@ export class AppEnvDto {
             o.AUTH_SOCIAL_APPLE_CLIENT_ID !== undefined &&
             o.AUTH_SOCIAL_APPLE_CLIENT_ID !== ''
     )
-    @IsNotEmpty()
+    //@IsNotEmpty()
     @IsString()
     AUTH_SOCIAL_APPLE_CLIENT_ID?: string;
 
@@ -389,7 +390,7 @@ export class AppEnvDto {
             o.AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID !== undefined &&
             o.AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID !== ''
     )
-    @IsNotEmpty()
+    //@IsNotEmpty()
     @IsString()
     AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID?: string;
 

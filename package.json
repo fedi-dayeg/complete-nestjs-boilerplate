@@ -15,7 +15,7 @@
     "scripts": {
         "prepare": "husky",
         "prebuild": "rimraf dist",
-        "clean": "rimraf dist && rimaraf node_modules && yarn cache clean",
+        "clean": "rimraf dist && rimraf node_modules && yarn cache clean",
         "generate:keys": "npx ts-node scripts/generate-keys.ts",
         "format": "prettier --write '{src,test}/**/*.{ts,json,yml,yaml}' && prettier --write '*.{ts,json,yml,yaml,mjs}'",
         "deadcode": "ts-prune --project tsconfig.json --skip *.json | grep -v 'used in module'",
@@ -31,7 +31,7 @@
         "lint:staged": "lint-staged",
         "lint:fix": "eslint --fix",
         "test": "TZ=UTC jest --config test/jest.json --passWithNoTests --forceExit",
-        "package:upgrade": "npx npm-check-updates -i",
+        "package:upgrade": "npx npm-check-updates -u",
         "package:check": "npx npm-check-updates -i",
         "migration": "nest build migration --config nest-cli.json && node dist/migration.js",
         "migration:seed": "nest build migration --config nest-cli.json && node dist/migration.js apiKey --type seed && node dist/migration.js country --type seed && node dist/migration.js featureFlag --type seed && node dist/migration.js role --type seed && node dist/migration.js termPolicy --type seed && node dist/migration.js user --type seed",

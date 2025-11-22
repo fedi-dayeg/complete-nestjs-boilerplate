@@ -115,12 +115,16 @@ export class AwsS3Service implements IAwsS3Service {
         });
 
         this.config.set(ENUM_AWS_S3_ACCESSIBILITY.PUBLIC, {
-            ...this.configService.get<IAwsS3ConfigBucket>('aws.s3.public'),
+            ...this.configService.get<IAwsS3ConfigBucket>(
+                'aws.s3.config.public'
+            ),
             access: ENUM_AWS_S3_ACCESSIBILITY.PUBLIC,
         });
 
         this.config.set(ENUM_AWS_S3_ACCESSIBILITY.PRIVATE, {
-            ...this.configService.get<IAwsS3ConfigBucket>('aws.s3.private'),
+            ...this.configService.get<IAwsS3ConfigBucket>(
+                'aws.s3.config.private'
+            ),
             access: ENUM_AWS_S3_ACCESSIBILITY.PRIVATE,
         });
     }
