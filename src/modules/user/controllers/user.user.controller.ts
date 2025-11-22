@@ -37,6 +37,8 @@ import {
     Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { ENUM_ROLE_TYPE } from '@prisma/client';
 
 @ApiTags('modules.user.user')
 @Controller({
@@ -48,6 +50,7 @@ export class UserUserController {
 
     @UserUserDeleteSelfDoc()
     @Response('user.deleteSelf')
+    @RoleProtected(ENUM_ROLE_TYPE.user)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -66,6 +69,7 @@ export class UserUserController {
     @UserUserAddMobileNumberDoc()
     @Response('user.addMobileNumber')
     @TermPolicyAcceptanceProtected()
+    @RoleProtected(ENUM_ROLE_TYPE.user)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -86,6 +90,7 @@ export class UserUserController {
     @UserUserUpdateMobileNumberDoc()
     @Response('user.updateMobileNumber')
     @TermPolicyAcceptanceProtected()
+    @RoleProtected(ENUM_ROLE_TYPE.user)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -112,6 +117,7 @@ export class UserUserController {
     @UserUserDeleteMobileNumberDoc()
     @Response('user.deleteMobileNumber')
     @TermPolicyAcceptanceProtected()
+    @RoleProtected(ENUM_ROLE_TYPE.user)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
@@ -134,6 +140,7 @@ export class UserUserController {
     @UserUserClaimUsernameDoc()
     @Response('user.claimUsername')
     @TermPolicyAcceptanceProtected()
+    @RoleProtected(ENUM_ROLE_TYPE.user)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()
