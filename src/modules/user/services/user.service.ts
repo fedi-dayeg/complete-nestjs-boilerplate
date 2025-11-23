@@ -88,6 +88,7 @@ import { AuthService } from '@modules/auth/services/auth.service.ts‎';
 import {
     UserSendEmailVerificationRequestDto
 } from '@modules/user/dtos/request/user.send-email-verification.request.dto.ts‎';
+import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -514,7 +515,7 @@ export class UserService implements IUserService {
         userId: string,
         { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
         requestLog: IRequestLog
-    ): Promise<IResponseReturn<DatabaseIdDto>> {
+    ): Promise<IResponseReturn<UserMobileNumberResponseDto>> {
         const checkCountry =
             await this.countryRepository.findOneById(countryId);
         if (!checkCountry) {
@@ -555,11 +556,9 @@ export class UserService implements IUserService {
                 userId,
                 requestLog
             );
-
+            const mapped = this.userUtil.mapMobileNumber(updated);
             return {
-                data: {
-                    id: updated.id,
-                },
+                data: mapped,
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
@@ -575,7 +574,7 @@ export class UserService implements IUserService {
         mobileNumberId: string,
         { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
         requestLog: IRequestLog
-    ): Promise<IResponseReturn<void>> {
+    ): Promise<IResponseReturn<UserMobileNumberResponseDto>> {
         const [checkMobileNumberExist, checkCountry] = await Promise.all([
             this.userRepository.findOneMobileNumber(userId, mobileNumberId),
             this.countryRepository.findOneById(countryId),
@@ -616,7 +615,7 @@ export class UserService implements IUserService {
         }
 
         try {
-            await this.userRepository.updateMobileNumber(
+            const updated = await this.userRepository.updateMobileNumber(
                 userId,
                 checkMobileNumberExist,
                 {
@@ -627,7 +626,11 @@ export class UserService implements IUserService {
                 requestLog
             );
 
-            return;
+            const mapped = this.userUtil.mapMobileNumber(updated);
+
+            return {
+                data: mapped,
+            };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
                 statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
@@ -641,7 +644,7 @@ export class UserService implements IUserService {
         userId: string,
         mobileNumberId: string,
         requestLog: IRequestLog
-    ): Promise<IResponseReturn<void>> {
+    ): Promise<IResponseReturn<UserMobileNumberResponseDto>> {
         const checkExist = await this.userRepository.findOneMobileNumber(
             userId,
             mobileNumberId
@@ -654,13 +657,17 @@ export class UserService implements IUserService {
         }
 
         try {
-            await this.userRepository.deleteMobileNumber(
+            const updated = await this.userRepository.deleteMobileNumber(
                 userId,
                 mobileNumberId,
                 requestLog
             );
 
-            return;
+            const mapped = this.userUtil.mapMobileNumber(updated);
+
+            return {
+                data: mapped,
+            };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
                 statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
@@ -1247,6 +1254,35 @@ export class UserService implements IUserService {
                 message: 'user.error.emailAlreadyVerified',
             });
         }
+        const lastVerification =
+            await this.userRepository.findOneLatestByVerificationEmail(user.id);
+        if (lastVerification) {
+            const today = this.helperService.dateCreate();
+            const canResendAt = this.helperService.dateForward(
+                lastVerification.createdAt,
+                Duration.fromObject({
+                    minutes: this.userUtil.verificationExpiredInMinutes,
+                })
+            );
+
+            if (today < canResendAt) {
+                throw new BadRequestException({
+                    statusCode:
+                        ENUM_USER_STATUS_CODE_ERROR.VERIFICATION_EMAIL_RESEND_LIMIT_EXCEEDED,
+                    message: 'user.error.verificationEmailResendLimitExceeded',
+                    _metadata: {
+                        customProperty: {
+                            messageProperties: {
+                                resendIn: this.helperService.dateDiff(
+                                    today,
+                                    canResendAt
+                                ).minutes,
+                            },
+                        },
+                    },
+                });
+            }
+        }
 
         try {
             const emailVerification =
@@ -1295,6 +1331,35 @@ export class UserService implements IUserService {
                 statusCode: ENUM_USER_STATUS_CODE_ERROR.NOT_FOUND,
                 message: 'user.error.notFound',
             });
+        }
+        const lastForgotPassword =
+            await this.userRepository.findOneLatestByForgotPassword(user.id);
+        if (lastForgotPassword) {
+            const today = this.helperService.dateCreate();
+            const canResendAt = this.helperService.dateForward(
+                lastForgotPassword.createdAt,
+                Duration.fromObject({
+                    minutes: this.userUtil.forgotResendInMinutes,
+                })
+            );
+
+            if (today < canResendAt) {
+                throw new BadRequestException({
+                    statusCode:
+                        ENUM_USER_STATUS_CODE_ERROR.FORGOT_PASSWORD_REQUEST_LIMIT_EXCEEDED,
+                    message: 'user.error.forgotPasswordRequestLimitExceeded',
+                    _metadata: {
+                        customProperty: {
+                            messageProperties: {
+                                resendIn: this.helperService.dateDiff(
+                                    today,
+                                    canResendAt
+                                ).minutes,
+                            },
+                        },
+                    },
+                });
+            }
         }
 
         try {

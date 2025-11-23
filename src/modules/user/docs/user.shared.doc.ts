@@ -16,7 +16,14 @@ import {
 } from '@modules/user/dtos/request/user.profile.request.dto';
 import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
 import { UserTokenResponseDto } from '@modules/user/dtos/response/user.token.response.dto';
-import { applyDecorators } from '@nestjs/common';
+import {HttpStatus, applyDecorators, } from '@nestjs/common';
+import {
+    UserAddMobileNumberRequestDto,
+    UserUpdateMobileNumberRequestDto,
+} from '@modules/user/dtos/request/user.mobile-number.request.dto';
+import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
+import { UserDocParamsMobileNumberId } from '@modules/user/constants/user.doc.constant';
+import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
 
 export function UserSharedRefreshDoc(): MethodDecorator {
     return applyDecorators(
@@ -131,5 +138,80 @@ export function UserSharedChangePasswordDoc(): MethodDecorator {
             dto: UserChangePasswordRequestDto,
         }),
         DocResponse('user.changePassword')
+    );
+}
+
+export function UserSharedAddMobileNumberDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'user add mobile number',
+        }),
+        DocRequest({
+            bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+            dto: UserAddMobileNumberRequestDto,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocResponse('user.addMobileNumber', {
+            httpStatus: HttpStatus.CREATED,
+            dto: UserMobileNumberResponseDto,
+        })
+    );
+}
+
+export function UserSharedUpdateMobileNumberDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'user update mobile number',
+        }),
+        DocRequest({
+            bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+            dto: UserUpdateMobileNumberRequestDto,
+            params: UserDocParamsMobileNumberId,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocResponse('user.updateMobileNumber', {
+            dto: UserMobileNumberResponseDto,
+        })
+    );
+}
+
+export function UserSharedDeleteMobileNumberDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'user delete mobile number',
+        }),
+        DocRequest({
+            params: UserDocParamsMobileNumberId,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocResponse('user.deleteMobileNumber', {
+            dto: UserMobileNumberResponseDto,
+        })
+    );
+}
+
+export function UserSharedClaimUsernameDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'user claim username',
+        }),
+        DocRequest({
+            bodyType: ENUM_DOC_REQUEST_BODY_TYPE.JSON,
+            dto: UserClaimUsernameRequestDto,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocResponse('user.claimUsername')
     );
 }

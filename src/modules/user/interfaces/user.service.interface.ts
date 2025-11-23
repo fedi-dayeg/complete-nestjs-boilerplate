@@ -47,6 +47,7 @@ import { ENUM_USER_LOGIN_WITH } from '@prisma/client';
 import {
     UserSendEmailVerificationRequestDto
 } from '@modules/user/dtos/request/user.send-email-verification.request.dto.ts‎';
+import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 
 export interface IUserService {
     validateUserGuard(
@@ -112,18 +113,18 @@ export interface IUserService {
         userId: string,
         { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
         requestLog: IRequestLog
-    ): Promise<IResponseReturn<DatabaseIdDto>>;
+    ): Promise<IResponseReturn<UserMobileNumberResponseDto>>;
     updateMobileNumber(
         userId: string,
         mobileNumberId: string,
         { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
         requestLog: IRequestLog
-    ): Promise<IResponseReturn<void>>;
+    ): Promise<IResponseReturn<UserMobileNumberResponseDto>>;
     deleteMobileNumber(
         userId: string,
         mobileNumberId: string,
         requestLog: IRequestLog
-    ): Promise<IResponseReturn<void>>;
+    ): Promise<IResponseReturn<UserMobileNumberResponseDto>>;
     claimUsername(
         userId: string,
         { username }: UserClaimUsernameRequestDto,

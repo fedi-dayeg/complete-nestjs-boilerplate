@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@2toad/profanity@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@2toad/profanity/-/profanity-3.2.0.tgz#eb33e43fc71f074272e17abc5cfa34ba0cf2734a"
+  integrity sha512-1wF0F9SXBS8zsn74ZyDKhClSH+5Tupycq2F1x34+/1YKhrq49ejs+imH8/YIS/JwXoj2oUY+KTpoyOxJeNA2mQ==
+
 "@angular-devkit/core@19.2.15":
   version "19.2.15"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-19.2.15.tgz#35af566f9c69d3eca9c183936ee8527d9725a006"
@@ -3855,11 +3860,6 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
-"@types/bad-words@^3.0.3":
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/@types/bad-words/-/bad-words-3.0.3.tgz#fcda6626a916d8de76f605f64e33a3c6162b6f57"
-  integrity sha512-jYdpTxDOJ+EENnsCwt8cOZhV/+4+qcwhks1igrOSg4zwwA17rsPqLsZpTo1l+OwViNu+5SPus0v5g7iGx+ofzA==
-
 "@types/body-parser@*":
   version "1.19.2"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.19.2.tgz#aea2059e28b7658639081347ac4fab3de166e6f0"
@@ -5054,18 +5054,6 @@ babel-preset-jest@30.2.0:
   dependencies:
     babel-plugin-jest-hoist "30.2.0"
     babel-preset-current-node-syntax "^1.2.0"
-
-bad-words@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/bad-words/-/bad-words-4.0.0.tgz#6d71274b7747a751a61f000127345523144faa90"
-  integrity sha512-fLjG/I0N3I7xhurqGnGitSRD10UeEE63a7hyXtutQDpxo4+Eal+i7veWeZxZJPNtsl6X1mUIoWPwt8gQ7NMQUw==
-  dependencies:
-    badwords-list "^2.0.1-4"
-
-badwords-list@^2.0.1-4:
-  version "2.0.1-4"
-  resolved "https://registry.yarnpkg.com/badwords-list/-/badwords-list-2.0.1-4.tgz#a6705b6f1c775f795bce1f34b854e44b44bf64a0"
-  integrity sha512-FxfZUp7B9yCnesNtFQS9v6PvZdxTYa14Q60JR6vhjdQdWI4naTjJIyx22JzoER8ooeT8SAAKoHLjKfCV7XgYUQ==
 
 balanced-match@^1.0.0:
   version "1.0.2"
