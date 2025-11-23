@@ -157,7 +157,8 @@ export interface IUserService {
     ): Promise<IResponseReturn<UserTokenResponseDto>>;
     refreshToken(
         user: IUser,
-        refreshToken: string
+        refreshToken: string,
+        requestLog: IRequestLog
     ): Promise<IResponseReturn<UserTokenResponseDto>>;
     signUp(
         { countryId, email, password, ...others }: UserSignUpRequestDto,
