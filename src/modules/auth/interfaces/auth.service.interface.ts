@@ -1,5 +1,4 @@
 import { IRequestApp } from '@common/request/interfaces/request.interface';
-import { AuthTokenResponseDto } from '@modules/auth/dtos/response/auth.token.response.dto';
 import {
     IAuthJwtAccessTokenPayload,
     IAuthJwtRefreshTokenPayload,

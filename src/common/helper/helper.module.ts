@@ -1,4 +1,4 @@
-import { DynamicModule, Global, Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { HelperService } from '@common/helper/services/helper.service';
 
 /**
