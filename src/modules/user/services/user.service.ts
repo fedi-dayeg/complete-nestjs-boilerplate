@@ -792,13 +792,16 @@ export class UserService implements IUserService {
                 temporary: true,
             });
 
-            const updated = await this.userRepository.updatePasswordByAdmin(
-                userId,
-                password,
-                requestLog,
-                updatedBy
-            );
-
+            const sessions = await this.sessionRepository.findAllByUser(userId);
+            const [updated] = await Promise.all([
+                this.userRepository.updatePasswordByAdmin(
+                    userId,
+                    password,
+                    requestLog,
+                    updatedBy
+                ),
+                this.sessionUtil.deleteAllLogins(userId, sessions),
+            ]);
             // @note: send email after all creation
             await this.emailService.sendTemporaryPassword(
                 updated.id,
@@ -834,6 +837,11 @@ export class UserService implements IUserService {
         const user = await this.userRepository.findOneActiveById(userId);
 
         if (this.authUtil.checkPasswordAttempt(user)) {
+            await this.userRepository.reachMaxPasswordAttempt(
+                user.id,
+                requestLog
+            );
+
             throw new ForbiddenException({
                 statusCode: ENUM_USER_STATUS_CODE_ERROR.PASSWORD_ATTEMPT_MAX,
                 message: 'auth.error.passwordAttemptMax',

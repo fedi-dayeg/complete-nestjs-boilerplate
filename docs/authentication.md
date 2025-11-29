@@ -1,23 +1,36 @@
-
 # Authentication
 
 ## Overview
 
 This document provides a comprehensive overview of authentication and session management in the Complete NestJS Boilerplate. It covers:
 
+- **Password Security**: Passwords are securely hashed (bcrypt), have configurable expiration and rotation, login attempt limits, history tracking, and support for reset/change/temporary password with session invalidation.
 - **JWT Authentication**: Stateless authentication using access and refresh tokens, with configurable expiration and security mechanisms such as fingerprint validation.
 - **Session Management**: Dual storage strategy using Redis for high-performance validation and automatic expiration, and a database for session listing, management, and audit trail. Sessions are validated on every API request and can be revoked instantly.
 - **Social Authentication**: Integration with Google OAuth 2.0 and Apple Sign In, allowing users to authenticate using third-party providers. The backend validates OAuth tokens and manages sessions similarly to credential-based authentication.
 - **API Key Authentication**: Stateless authentication for machine-to-machine and system integrations, supporting both default and system API keys with caching for performance.
 - **Session Lifecycle and Validation**: Detailed flows for login, token refresh, session revocation, and validation, ensuring secure and manageable user sessions across devices and integrations.
 
-Configuration for tokens, sessions, social providers, and API keys is managed in `src/configs/auth.config.ts`.
+Configuration for tokens, sessions, password, social providers, and API keys is managed di `src/configs/auth.config.ts`.
 
 # Table of Contents
 
 - [Overview](#overview)
-- [JWT (JSON Web Token) Authentication](#jwt-json-web-token-authentication)
+- [Password](#password)
     - [Configuration](#configuration)
+    - [Password Features](#password-features)
+        - [Password Expiration](#password-expiration)
+        - [Password Period (Rotation)](#password-period-rotation)
+        - [Attempt Limiting](#attempt-limiting)
+    - [Password Lifecycle](#password-lifecycle)
+    - [Implementation](#implementation)
+    - [Password Endpoints](#password-endpoints)
+        - [Forgot Password](#forgot-password)
+        - [Reset Password](#reset-password)
+        - [Change Password](#change-password)
+        - [Admin Temporary Password](#admin-temporary-password)
+- [JWT (JSON Web Token) Authentication](#jwt-json-web-token-authentication)
+    - [Configuration](#configuration-1)
     - [Tokens](#tokens)
         - [Access Token](#access-token)
         - [Refresh Token](#refresh-token)
@@ -28,7 +41,7 @@ Configuration for tokens, sessions, social providers, and API keys is managed in
         - [Login](#login)
         - [Refresh Token](#refresh-token-1)
         - [Profile](#profile)
-    - [Implementation](#implementation)
+    - [Implementation](#implementation-1)
         - [Protecting Endpoints](#protecting-endpoints)
         - [Getting JWT Payload](#getting-jwt-payload)
         - [Getting Raw Token](#getting-raw-token)
@@ -37,28 +50,28 @@ Configuration for tokens, sessions, social providers, and API keys is managed in
     - [Security: Fingerprint](#security-fingerprint)
 - [Social Authentication](#social-authentication)
     - [Google Authentication](#google-authentication)
-        - [Configuration](#configuration-1)
-        - [Setup Google OAuth 2.0](#setup-google-oauth-20)
-        - [Endpoint](#endpoint-3)
-        - [Request Header](#request-header-2)
-        - [Response Structure](#response-structure-3)
-        - [Implementation](#implementation-1)
-    - [Apple Authentication](#apple-authentication)
         - [Configuration](#configuration-2)
-        - [Setup Apple Sign In](#setup-apple-sign-in)
-        - [Endpoint](#endpoint-4)
-        - [Request Header](#request-header-3)
-        - [Response Structure](#response-structure-4)
+        - [Setup Google OAuth 2.0](#setup-google-oauth-20)
+        - [Endpoint](#endpoint-1)
+        - [Request Header](#request-header-1)
+        - [Response Structure](#response-structure-1)
         - [Implementation](#implementation-2)
+    - [Apple Authentication](#apple-authentication)
+        - [Configuration](#configuration-3)
+        - [Setup Apple Sign In](#setup-apple-sign-in)
+        - [Endpoint](#endpoint-2)
+        - [Request Header](#request-header-2)
+        - [Response Structure](#response-structure-2)
+        - [Implementation](#implementation-3)
     - [Social Authentication Flow](#social-authentication-flow)
 - [API Key Authentication](#api-key-authentication)
-    - [Configuration](#configuration-3)
+    - [Configuration](#configuration-4)
     - [API Key Types](#api-key-types)
         - [Default API Key](#default-api-key)
         - [System API Key](#system-api-key)
     - [Request Format](#request-format)
-    - [Implementation](#implementation-3)
-        - [Protecting Endpoints](#protecting-endpoints-2)
+    - [Implementation](#implementation-4)
+        - [Protecting Endpoints](#protecting-endpoints-1)
         - [Getting API Key Payload](#getting-api-key-payload)
         - [API Key Schema](#api-key-schema)
     - [Api Key Authentication Flow](#api-key-authentication-flow)
@@ -74,7 +87,80 @@ Configuration for tokens, sessions, social providers, and API keys is managed in
     - [Session Lifecycle](#session-lifecycle)
     - [Session Validation Flow](#session-validation-flow)
 
+## Password
 
+Secures passwords with bcrypt hashing, enforces expiration and rotation, tracks history, limits login attempts, and supports reset, change, and temporary password creation with session invalidation.
+
+### Configuration
+- **Password Hashing:** Uses bcrypt with salt length of 8.
+- **Password Expiration:** Default expiration is 182 days.
+- **Password Rotation Period:** A password cannot be reused for 90 days.
+- **Max Login Attempts:** 5 failed attempts before user is inactivated (configurable in `src/configs/auth.config.ts`).
+- **Password History:** All passwords are stored in a history table for audit purposes.
+- **Temporary Passwords:** Admins can set temporary passwords with a 3-day lifetime.
+- **Forgot Password Token:** Expires in 5 minutes, can be resent every 2 minutes.
+
+### Password Features
+
+#### Password Expiration
+- Passwords expire after 182 days by default.
+- Expiration is configurable.
+
+#### Password Period (Rotation)
+- Users cannot reuse the same password within 90 days.
+- Enforced via password history table.
+
+#### Attempt Limiting
+- Users are allowed up to 5 failed login attempts.
+- Exceeding this limit sets the user to inactive.
+- Configurable via `src/configs/auth.config.ts`.
+
+### Password Lifecycle
+```mermaid
+graph TD
+    A[User Registration/Password Set] --> B[Password Hashed with Bcrypt]
+    B --> C[Password Stored in LevelDB]
+    C --> D[Password History Updated]
+    D --> E[Password Expiration Timer Started]
+    E --> F{Login Attempt}
+    F -->|Success| G[Session Created]
+    F -->|Fail| H[Attempt Counter Incremented]
+    H --> I{Max Attempts Reached?}
+    I -->|No| F
+    I -->|Yes| J[User Inactivated]
+    G --> K{Password Expired?}
+    K -->|No| G
+    K -->|Yes| L[Prompt Password Change]
+    L --> M[Update Password]
+    M --> D
+    G --> N{Password Change/Forgot/Temporary}
+    N -->|Change/Forgot| O[Invalidate All Sessions]
+    N -->|Temporary| P[Admin Sets Temporary Password]
+    P --> O
+```
+
+### Implementation
+- Passwords are hashed and stored in LevelDB.
+- Password history is maintained in a dedicated table for audit and rotation enforcement.
+- All password-related configurations are dynamic and can be adjusted in `src/configs/auth.config.ts`.
+- On password change, forgot password, or temporary password set, all user sessions are invalidated.
+
+### Password Endpoints
+#### Forgot Password
+- **Endpoint:** `POST /public/user/password/forgot`
+- **Behavior:** Sends a reset link to the user's email. Token expires in 5 minutes. Resend allowed every 2 minutes.
+
+#### Reset Password
+- **Endpoint:** `PUT /public/user/password/reset`
+- **Behavior:** If token is valid and not expired, password is updated. All sessions invalidated.
+
+#### Change Password
+- **Endpoint:** `PATCH /shared/user/change-password`
+- **Behavior:** If old password matches, password is updated. All sessions invalidated.
+
+#### Admin Temporary Password
+- **Endpoint:** `PUT /admin/user/update/:userId/password`
+- **Behavior:** Admin sets a temporary password (valid for 3 days). All sessions invalidated.
 
 ## JWT (JSON Web Token) Authentication
 
@@ -1454,85 +1540,142 @@ sequenceDiagram
     end
 ```
 
-
-
 <!-- REFERENCES -->
 
 <!-- BADGE LINKS -->
 
 [ack-contributors-shield]: https://img.shields.io/github/contributors/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
+
 [ack-forks-shield]: https://img.shields.io/github/forks/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
+
 [ack-stars-shield]: https://img.shields.io/github/stars/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
+
 [ack-issues-shield]: https://img.shields.io/github/issues/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
+
 [ack-license-shield]: https://img.shields.io/github/license/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
+
 [nestjs-shield]: https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white
+
 [nodejs-shield]: https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white
+
 [typescript-shield]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
+
 [mongodb-shield]: https://img.shields.io/badge/MongoDB-white?style=for-the-badge&logo=mongodb&logoColor=4EA94B
+
 [jwt-shield]: https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white
+
 [jest-shield]: https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white
+
 [yarn-shield]: https://img.shields.io/badge/yarn-%232C8EBB.svg?style=for-the-badge&logo=yarn&logoColor=white
+
 [docker-shield]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
+
 [github-shield]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
+
 [linkedin-shield]: https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white
 
 <!-- CONTACTS -->
 
 [ref-author-linkedin]: https://www.linkedin.com/in/fedi-dayeg-192288369/
+
 [ref-author-email]: mailto:contact@fedidayeg.fr
+
 [ref-author-github]: https://github.com/fedi-dayeg
+
 [ref-author-paypal]: https://paypal.me/Fedidayeg25
+
 [ref-author-kofi]: https://ko-fi.com/fedidayeg
 
 <!-- Repo LINKS -->
 
 [ref-ack]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate
+
 [ref-ack-issues]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/issues
+
 [ref-ack-stars]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/stargazers
+
 [ref-ack-forks]:https://github.com/fedi-dayeg/complete-nestjs-boilerplate/network/members
+
 [ref-ack-contributors]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/graphs/contributors
+
 [ref-ack-license]: LICENSE.md
 
 <!-- THIRD PARTY -->
 
 [ref-nestjs]: http://nestjs.com
+
 [ref-prisma]: https://www.prisma.io
+
 [ref-mongodb]: https://docs.mongodb.com/
+
 [ref-redis]: https://redis.io
+
 [ref-bullmq]: https://bullmq.io
+
 [ref-nodejs]: https://nodejs.org/
+
 [ref-typescript]: https://www.typescriptlang.org/
+
 [ref-docker]: https://docs.docker.com
+
 [ref-dockercompose]: https://docs.docker.com/compose/
+
 [ref-yarn]: https://yarnpkg.com
+
 [ref-12factor]: https://12factor.net
+
 [ref-commander]: https://nest-commander.jaymcdoniel.dev
+
 [ref-package-json]: package.json
+
 [ref-jwt]: https://jwt.io
+
 [ref-jest]: https://jestjs.io/docs/getting-started
+
 [ref-git]: https://git-scm.com
+
 [ref-google-console]: https://console.cloud.google.com/
+
 [ref-google-client-secret]: https://developers.google.com/identity/protocols/oauth2
 
 <!-- DOCUMENTS -->
 
 [ref-doc-root]: readme.md
+
 [ref-doc-audit-activity-log]: docs/audit-activity-log.md
+
 [ref-doc-authentication]: docs/authentication.md
+
 [ref-doc-authorization]: docs/authorization.md
+
 [ref-doc-cache]: docs/cache.md
+
 [ref-doc-configuration]: docs/configuration.md
+
 [ref-doc-database]: docs/database.md
+
 [ref-doc-environment]: docs/environment.md
+
 [ref-doc-feature-flag]: docs/feature-flag.md
+
 [ref-doc-how-to-handling-error]: docs/how-to-handling-error.md
+
 [ref-doc-installation]: docs/installation.md
+
 [ref-doc-internationalization]: docs/internationalization.md
+
 [ref-doc-logger]: docs/logger.md
+
 [ref-doc-project-structure]: docs/project-structure.md
+
 [ref-doc-queue]: docs/queue.md
+
 [ref-doc-request-validation]: docs/request-validation.md
+
 [ref-doc-response-structure]: docs/response-structure.md
+
 [ref-doc-security-and-middleware]: docs/security-and-middleware.md
+
 [ref-doc-service-side-pagination]: docs/service-side-pagination.md
+
 [ref-doc-third-party-integration]: docs/third-party-integration.md

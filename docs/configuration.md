@@ -735,7 +735,7 @@ cachePrefix: string             // Cache prefix for API response data
 [ref-doc-authorization]: docs/authorization.md
 [ref-doc-cache]: docs/cache.md
 [ref-doc-feature-flag]: docs/feature-flag.md
-[ref-doc-how-to-handling-error]: docs/how-to-handling-error.md
+[ref-doc-handling-error]: docs/handling-error.md
 [ref-doc-database]: docs/database.md
 [ref-doc-environment]: docs/environment.md
 [ref-doc-configuration]: docs/configuration.md

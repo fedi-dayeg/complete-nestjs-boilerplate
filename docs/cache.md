@@ -1,3 +1,10 @@
+
+<!-- TODO: NEXT -->
+
+<!-- REFERENCES -->
+
+<!-- BADGE LINKS -->
+
 [ack-contributors-shield]: https://img.shields.io/github/contributors/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
 [ack-forks-shield]: https://img.shields.io/github/forks/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
 [ack-stars-shield]: https://img.shields.io/github/stars/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
@@ -63,7 +70,7 @@
 [ref-doc-database]: docs/database.md
 [ref-doc-environment]: docs/environment.md
 [ref-doc-feature-flag]: docs/feature-flag.md
-[ref-doc-how-to-handling-error]: docs/how-to-handling-error.md
+[ref-doc-handling-error]: docs/handling-error.md
 [ref-doc-installation]: docs/installation.md
 [ref-doc-internationalization]: docs/internationalization.md
 [ref-doc-logger]: docs/logger.md

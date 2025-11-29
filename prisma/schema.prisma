@@ -421,6 +421,7 @@ enum ENUM_ACTIVITY_LOG_ACTION {
   userRevokeSessionByAdmin
   userAcceptTermPolicy
   userForgotPassword
+  userReachMaxPasswordAttempt
 
   adminSessionRevoke
   adminApiKeyCreate
