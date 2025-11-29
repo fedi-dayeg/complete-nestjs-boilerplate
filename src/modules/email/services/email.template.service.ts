@@ -47,7 +47,7 @@ export class EmailTemplateService implements IEmailTemplateService {
      */
     async getChangePassword(): Promise<GetTemplateCommandOutput | null> {
         try {
-            return this.awsSESService.getTemplate({
+            return await this.awsSESService.getTemplate({
                 name: ENUM_SEND_EMAIL_PROCESS.CHANGE_PASSWORD,
             });
         } catch (err: unknown) {
@@ -106,7 +106,7 @@ export class EmailTemplateService implements IEmailTemplateService {
      */
     async getWelcome(): Promise<GetTemplateCommandOutput | null> {
         try {
-            return this.awsSESService.getTemplate({
+            return await this.awsSESService.getTemplate({
                 name: ENUM_SEND_EMAIL_PROCESS.WELCOME,
             });
         } catch (err: unknown) {
@@ -165,7 +165,7 @@ export class EmailTemplateService implements IEmailTemplateService {
      */
     async getCreateByAdmin(): Promise<GetTemplateCommandOutput | null> {
         try {
-            return this.awsSESService.getTemplate({
+            return await this.awsSESService.getTemplate({
                 name: ENUM_SEND_EMAIL_PROCESS.CREATE_BY_ADMIN,
             });
         } catch (err: unknown) {
@@ -224,7 +224,7 @@ export class EmailTemplateService implements IEmailTemplateService {
      */
     async getTempPassword(): Promise<GetTemplateCommandOutput | null> {
         try {
-            return this.awsSESService.getTemplate({
+            return await this.awsSESService.getTemplate({
                 name: ENUM_SEND_EMAIL_PROCESS.TEMPORARY_PASSWORD,
             });
         } catch (err: unknown) {
@@ -283,7 +283,7 @@ export class EmailTemplateService implements IEmailTemplateService {
      */
     async getForgotPassword(): Promise<GetTemplateCommandOutput | null> {
         try {
-            return this.awsSESService.getTemplate({
+            return await this.awsSESService.getTemplate({
                 name: ENUM_SEND_EMAIL_PROCESS.FORGOT_PASSWORD,
             });
         } catch (err: unknown) {
@@ -342,7 +342,7 @@ export class EmailTemplateService implements IEmailTemplateService {
      */
     async getVerification(): Promise<GetTemplateCommandOutput | null> {
         try {
-            return this.awsSESService.getTemplate({
+            return await this.awsSESService.getTemplate({
                 name: ENUM_SEND_EMAIL_PROCESS.VERIFICATION,
             });
         } catch (err: unknown) {
@@ -401,7 +401,7 @@ export class EmailTemplateService implements IEmailTemplateService {
      */
     async getEmailVerified(): Promise<GetTemplateCommandOutput | null> {
         try {
-            return this.awsSESService.getTemplate({
+            return await this.awsSESService.getTemplate({
                 name: ENUM_SEND_EMAIL_PROCESS.EMAIL_VERIFIED,
             });
         } catch (err: unknown) {
@@ -460,7 +460,7 @@ export class EmailTemplateService implements IEmailTemplateService {
      */
     async getMobileNumberVerified(): Promise<GetTemplateCommandOutput | null> {
         try {
-            return this.awsSESService.getTemplate({
+            return await this.awsSESService.getTemplate({
                 name: ENUM_SEND_EMAIL_PROCESS.MOBILE_NUMBER_VERIFIED,
             });
         } catch (err: unknown) {

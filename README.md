@@ -56,8 +56,18 @@ _You can [request feature][ref-ack-issues] or [report bug][ref-ack-issues] with 
 
 ## TODO
 
-- [ ] Unit test (medium priority)
-- [ ] Add Github SSO (low priority)
+- [ ] 2FA with TOTP Authentication (eg: Google Authenticator)
+- [ ] Recovery Codes Method
+- [ ] Login with biometrics (fingerprint or face detection)
+- [ ] Login with passkey
+- [ ] Login with Github SSO
+- [ ] Device awareness
+- [ ] Simple Notification System or Enchant Activity Log to be able act as notification
+- [ ] Versioning System (Force frontend to update, especially mobile)
+- [ ] Unit test
+- [ ] Integration Test
+- [ ] E2E Test
+- [ ] Stress Test and Load Test
 
 ## Prerequisites
 
@@ -168,7 +178,7 @@ If your branch is behind the `origin/main` branch, please rebase and resolve any
 
 ## Contact
 
-**Andre Christikan**  
+**Fedi Dayeg**  
 📧 [contact@fedidayeg.fr][ref-author-email]
 
 [![Github][github-shield]][ref-author-github]
@@ -181,7 +191,7 @@ If you find this project helpful and would like to support its development, you 
 **Buy me a coffee** ☕
 
 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-  <a href='https://ko-fi.com/andrechristikan' target='_blank'>
+  <a href='https://ko-fi.com/fedidayeg' target='_blank'>
     <img src='https://cdn.ko-fi.com/cdn/kofi3.png?v=3' alt='Buy Me a Coffee at ko-fi.com' width='200'/>
   </a>
 </div>
@@ -189,7 +199,7 @@ If you find this project helpful and would like to support its development, you 
 **Or support via PayPal** 💳
 
 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-  <a href='https://www.paypal.me/andrechristikan' target='_blank'>
+  <a href='https://paypal.me/Fedidayeg25' target='_blank'>
     <img src='https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg' alt='Donate with PayPal' />
   </a>
 </div>
@@ -249,15 +259,28 @@ If you find this project helpful and would like to support its development, you 
 [ref-jwt]: https://jwt.io
 [ref-jest]: https://jestjs.io/docs/getting-started
 [ref-git]: https://git-scm.com
+[ref-google-console]: https://console.cloud.google.com/
+[ref-google-client-secret]: https://developers.google.com/identity/protocols/oauth2
 
 <!-- DOCUMENTS -->
 
 [ref-doc-root]: readme.md
-[ref-doc-authorization]: docs/authorization.md
+[ref-doc-audit-activity-log]: docs/audit-activity-log.md
 [ref-doc-authentication]: docs/authentication.md
+[ref-doc-authorization]: docs/authorization.md
+[ref-doc-cache]: docs/cache.md
+[ref-doc-configuration]: docs/configuration.md
 [ref-doc-database]: docs/database.md
 [ref-doc-environment]: docs/environment.md
-[ref-doc-configuration]: docs/configuration.md
+[ref-doc-feature-flag]: docs/feature-flag.md
+[ref-doc-how-to-handling-error]: docs/how-to-handling-error.md
 [ref-doc-installation]: docs/installation.md
+[ref-doc-internationalization]: docs/internationalization.md
+[ref-doc-logger]: docs/logger.md
+[ref-doc-project-structure]: docs/project-structure.md
 [ref-doc-queue]: docs/queue.md
-[ref-doc-cache]: docs/cache.md
+[ref-doc-request-validation]: docs/request-validation.md
+[ref-doc-response-structure]: docs/response-structure.md
+[ref-doc-security-and-middleware]: docs/security-and-middleware.md
+[ref-doc-service-side-pagination]: docs/service-side-pagination.md
+[ref-doc-third-party-integration]: docs/third-party-integration.md
