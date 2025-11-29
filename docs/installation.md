@@ -1,47 +1,41 @@
-
 # Installation
 
 ## Overview
 
 This document provides step-by-step instructions for setting up the Complete NestJS Boilerplate on your development environment.
 
-## Installation Methods
-
-You can install this project using one of two methods:
-
-1. 🔧 Standard Installation
-2. 🐳 Docker Installation
-
 # Table of Contents
 
 - [Installation](#installation)
 - [Overview](#overview)
-- [Installation Methods](#installation-methods)
+- [Prerequisites](#prerequisites)
+    - [Required Tools](#required-tools)
+- [Clone Repository](#clone-repository)
 - [🔧 Standard Installation](#-standard-installation)
-    - [Prerequisites](#prerequisites)
-    - [Clone Repository](#clone-repository)
-    - [Install Dependencies](#install-dependencies)
+    - [Install Packages](#install-packages)
     - [Create Environment](#create-environment)
     - [Generate Keys](#generate-keys)
-    - [Run Project](#run-project)
 - [🐳 Installation with Docker](#-installation-with-docker)
     - [What's Included](#whats-included)
     - [Prerequisites](#prerequisites-1)
     - [Create Environment](#create-environment-1)
     - [Generate Keys](#generate-keys-1)
     - [Run Containers](#run-containers)
+    - [Troubleshooting](#troubleshooting)
+- [Generate Database Client](#generate-database-client)
+- [Database Migration & Seeding](#database-migration--seeding)
+- [Run Project](#run-project)
+- [Development Tools](#development-tools)
 - [Accessing the Application](#accessing-the-application)
-- [Next Steps](#next-steps)
 
-## 🔧 Standard Installation
 
-### Prerequisites
+## Prerequisites
 
 > **Note**: This project uses Yarn for package management. All documentation examples will use Yarn commands.
 
 Before starting, install the following tools and packages. We recommend using the LTS (Long Term Support) versions for stability and compatibility.
 
-#### Required Tools
+### Required Tools
 
 | Tool | Version |
 |------|---------|
@@ -53,22 +47,26 @@ Before starting, install the following tools and packages. We recommend using th
 
 > **Important**: MongoDB must be configured to run as a **replica set** for database transactions to work properly. You can either use [Docker installation](#installation-with-docker) for automatic setup or create a database on [MongoDB Atlas][ref-mongodb] which supports replica sets by default.
 
-### Clone Repository
+## Clone Repository
 
 Clone the project repository from GitHub:
 
 ```bash
 # Clone the repository
-git clone https://github.com/andrechristikan/ack-nestjs-boilerplate.git
+git clone https://github.com/fedi-dayeg/complete-nestjs-boilerplate.git
 
 # Navigate to the project directory
-cd ack-nestjs-boilerplate
+cd complete-nestjs-boilerplate
 
 # Check the current branch (should be 'main')
 git branch
 ```
 
-### Install Dependencies
+## 🔧 Standard Installation
+
+Standard installation assumes all dependencies are installed correctly and available in your environment.
+
+### Install Packages
 
 This step will install all the required Node.js packages and dependencies for the project.
 
@@ -78,23 +76,6 @@ yarn install
 ```
 
 **Expected output**: You should see Yarn downloading and installing packages. This may take a few minutes depending on your internet connection.
-
-#### Package Management Commands
-
-Here are useful commands for managing your dependencies:
-
-```bash
-# Check for outdated packages
-yarn package:check
-
-# Upgrade all packages to their latest versions
-yarn package:upgrade
-
-# Clean install (removes node_modules and reinstalls everything)
-yarn clean && yarn install
-```
-
-> **Note**: The `yarn clean` command is a custom script that removes `node_modules` directory, `dist` build folder, and yarn cache before reinstalling. This is useful when you encounter dependency conflicts, build issues, or want a fresh installation.
 
 ### Create Environment
 
@@ -115,10 +96,10 @@ Open the `.env` file in your preferred text editor and configure these critical 
 ```bash
 # MongoDB connection string
 # For local MongoDB replica set:
-DATABASE_URL="mongodb://localhost:27017,localhost:27018,localhost:27019/ack-nestjs-boilerplate?replicaSet=rs0"
+DATABASE_URL=mongodb://localhost:27017,localhost:27018,localhost:27019/completeNestJsBoilerplate?replicaSet=rs0
 
 # For MongoDB Atlas:
-# DATABASE_URL="mongodb+srv://username:password@cluster.mongodb.net/ack-nestjs-boilerplate"
+# DATABASE_URL=mongodb+srv://username:password@cluster.mongodb.net/completeNestJsBoilerplate
 ```
 
 > **For detailed database setup and configuration**, see the [Database Documentation][ref-doc-database].
@@ -149,7 +130,6 @@ AUTH_JWT_REFRESH_TOKEN_JWKS_URI="https://your-domain.com/.well-known/refresh-jwk
 ```
 
 > **For comprehensive authentication and authorization setup**, see the [Authorization Documentation][ref-doc-authorization].
-
 
 ### Generate Keys
 
@@ -195,59 +175,12 @@ AUTH_JWT_ACCESS_TOKEN_JWKS_URI="https://your-domain.com/.well-known/access-jwks.
 AUTH_JWT_REFRESH_TOKEN_JWKS_URI="https://your-domain.com/.well-known/refresh-jwks.json"
 ```
 
-### Run Project
-
-Congratulations! You're now ready to start the project. Make sure all your services (MongoDB, Redis) are running before starting the application.
-
-#### Start Development Server
-
-```bash
-# Start in development mode with hot reload
-yarn start:dev
-```
-
-**Expected output**: You should see the application starting with logs showing:
-- Database connection established
-- Redis connection successful
-- Server running on http://localhost:3000
-
-#### Production Commands
-
-```bash
-# Build the project for production
-yarn build
-
-# Start in production mode
-yarn start:prod
-```
-
-#### Development Tools
-
-These commands help maintain code quality during development:
-
-```bash
-# Format code with Prettier
-yarn format
-
-# Lint code with ESLint
-yarn lint
-
-# Fix linting issues automatically
-yarn lint:fix
-
-# Run tests
-yarn test
-
-# Check for dead/unused code
-yarn deadcode
-
-# Spell check
-yarn spell
-```
 
 ## 🐳 Installation with Docker
 
-Docker provides the fastest and most reliable way to set up the ACK NestJS Boilerplate. This method automatically configures the entire development environment with all dependencies and services pre-configured.
+> **Note:** You can skip this section if all dependencies are already installed and you do not want to use Docker for your setup.
+
+Docker provides the fastest and most reliable way to set up the Complete NestJS Boilerplate. This method automatically configures the entire development environment with all dependencies and services pre-configured.
 
 ### What's Included
 
@@ -286,7 +219,7 @@ For Docker installation, ensure these specific values in your `.env` file:
 **Database Configuration:**
 ```bash
 # MongoDB (Docker containers)
-DATABASE_URL="mongodb://localhost:27017,localhost:27018,localhost:27019/ack-nestjs-boilerplate?replicaSet=rs0"
+DATABASE_URL="mongodb://localhost:27017,localhost:27018,localhost:27019/complete-nestjs-boilerplate?replicaSet=rs0"
 ```
 
 **Redis Configuration:**
@@ -339,8 +272,6 @@ The Docker setup includes a JWKS server that automatically hosts the generated k
 
 Now you're ready to start the complete Docker environment with all services.
 
-#### Start All Services
-
 ```bash
 # Start all services in detached mode (runs in background)
 docker-compose --profile full up -d
@@ -353,33 +284,20 @@ docker-compose --profile full up -d
 - Runs BullMQ dashboard for queue monitoring (port 3010)
 - Sets up all necessary networks and volumes
 
-#### Monitor Startup Progress
-
 You can monitor the services as they start up:
 
 ```bash
-# Watch logs from all services
-docker-compose logs -f
-
 # Check status of all containers
 docker-compose ps
 
-# View logs from specific service
-docker-compose logs -f mongodb-primary
+# Watch logs from all services
+docker-compose logs -f
 ```
 
 The Docker setup includes comprehensive health checks for all services, ensuring they're fully operational before marking as available.
 
-#### Start Your Application
 
-Once all Docker services are running, start your NestJS application:
-
-```bash
-# Start in development mode with hot reload
-yarn start:dev
-```
-
-#### Troubleshooting
+### Troubleshooting
 
 **Common Issues:**
 
@@ -387,6 +305,103 @@ yarn start:dev
 - **Host resolution issues**: Add `127.0.0.1 host.docker.internal` to your `/etc/hosts` file if needed
 - **MongoDB replica set initialization**: Wait 1-2 minutes for complete setup
 - **Permission issues**: Ensure Docker has proper permissions to create volumes and networks
+
+
+## Generate Database Client
+
+Prisma uses a generated client to provide type-safe database access and query building. You must generate the Prisma Client every time you change your Prisma schema (in `prisma/schema.prisma`).
+
+**Generate database client from Prisma Schema:**
+```bash
+yarn db:generate
+```
+
+## Database Migration & Seeding
+
+**Migrate schema to MongoDB:**
+```bash
+yarn db:migrate
+```
+
+**Seed all initial data:**
+```bash
+yarn migration:seed
+```
+
+**Seed email:**
+
+Use this to seed email data for testing email sending features.
+
+```bash
+yarn migration email --type seed
+```
+
+For a complete guide and module details, see [Database Documentation][ref-doc-database].
+
+
+## Run Project
+
+Congratulations! You're now ready to start the project. Make sure all your services (MongoDB, Redis) are running before starting the application.
+
+```bash
+# Start in development mode with hot reload
+yarn start:dev
+```
+
+**Expected output**: You should see the application starting with logs showing:
+- Database connection established
+- Redis connection successful
+- Server running on http://localhost:3000
+
+Production Commands
+
+```bash
+# Build the project for production
+yarn build
+
+# Start in production mode
+yarn start:prod
+```
+
+## Development Tools
+
+These commands help maintain code quality during development:
+
+```bash
+# Format code with Prettier
+yarn format
+
+# Lint code with ESLint
+yarn lint
+
+# Fix linting issues automatically
+yarn lint:fix
+
+# Run tests
+yarn test
+
+# Check for dead/unused code
+yarn deadcode
+
+# Spell check
+yarn spell
+```
+
+Here are useful commands for managing your dependencies:
+
+```bash
+# Check for outdated packages
+yarn package:check
+
+# Upgrade all packages to their latest versions
+yarn package:upgrade
+
+# Clean install (removes node_modules and reinstalls everything)
+yarn clean && yarn install
+```
+
+> **Note**: The `yarn clean` command is a custom script that removes `node_modules` directory, `dist` build folder, and yarn cache before reinstalling. This is useful when you encounter dependency conflicts, build issues, or want a fresh installation.
+
 
 ## Accessing the Application
 
@@ -413,14 +428,6 @@ To verify everything is working correctly:
 4. **Redis Connection**: Verify Redis connection in the application logs
 
 
-## Next Steps
-
-Now that your ACK NestJS Boilerplate is up and running, the next step is to set up your database with initial data and configurations.
-
-For complete instructions on database setup, migration, and seeding, see the [Database Documentation][ref-doc-database].
-
-
-
 <!-- REFERENCES -->
 
 <!-- BADGE LINKS -->
@@ -443,19 +450,19 @@ For complete instructions on database setup, migration, and seeding, see the [Da
 
 <!-- CONTACTS -->
 
-[ref-author-linkedin]: https://linkedin.com/in/andrechristikan
-[ref-author-email]: mailto:andrechristikan@gmail.com
-[ref-author-github]: https://github.com/andrechristikan
-[ref-author-paypal]: https://www.paypal.me/andrechristikan
-[ref-author-kofi]: https://ko-fi.com/andrechristikan
+[ref-author-linkedin]: https://www.linkedin.com/in/fedi-dayeg-192288369/
+[ref-author-email]: mailto:contact@fedidayeg.fr
+[ref-author-github]: https://github.com/fedi-dayeg
+[ref-author-paypal]: https://paypal.me/Fedidayeg25
+[ref-author-kofi]: https://ko-fi.com/fedidayeg
 
 <!-- Repo LINKS -->
 
-[ref-ack]: https://github.com/andrechristikan/ack-nestjs-boilerplate
-[ref-ack-issues]: https://github.com/andrechristikan/ack-nestjs-boilerplate/issues
-[ref-ack-stars]: https://github.com/andrechristikan/ack-nestjs-boilerplate/stargazers
-[ref-ack-forks]: https://github.com/andrechristikan/ack-nestjs-boilerplate/network/members
-[ref-ack-contributors]: https://github.com/andrechristikan/ack-nestjs-boilerplate/graphs/contributors
+[ref-ack]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate
+[ref-ack-issues]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/issues
+[ref-ack-stars]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/stargazers
+[ref-ack-forks]:https://github.com/fedi-dayeg/complete-nestjs-boilerplate/network/members
+[ref-ack-contributors]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/graphs/contributors
 [ref-ack-license]: LICENSE.md
 
 <!-- THIRD PARTY -->
@@ -484,6 +491,7 @@ For complete instructions on database setup, migration, and seeding, see the [Da
 [ref-doc-authentication]: docs/authentication.md
 [ref-doc-database]: docs/database.md
 [ref-doc-environment]: docs/environment.md
+[ref-doc-configuration]: docs/configuration.md
 [ref-doc-installation]: docs/installation.md
 [ref-doc-queue]: docs/queue.md
 [ref-doc-cache]: docs/cache.md

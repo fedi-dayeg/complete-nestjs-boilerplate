@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a comprehensive guide to configuring the Complete NestJS Boilerplate using environment variables. The project uses a `.env` file to store all configuration settings including database connections, authentication, AWS services, and other application settings.
+This document provides a comprehensive guide to configuring the Compelete NestJS Boilerplate using environment variables. The project uses a `.env` file to store all configuration settings including database connections, authentication, AWS services, and other application settings.
 
 All environment variables are validated using the `AppEnvDto` class to ensure required variables are present and properly formatted before the application starts.
 
@@ -10,7 +10,6 @@ All environment variables are validated using the `AppEnvDto` class to ensure re
 
 - [Environment Configuration](#environment-configuration)
 - [Overview](#overview)
-- [Getting Started](#getting-started)
 - [Environment Validation](#environment-validation)
 - [Example Configuration](#example-configuration)
 - [Environment Variables](#environment-variables)
@@ -26,25 +25,6 @@ All environment variables are validated using the `AppEnvDto` class to ensure re
     - [AWS Settings](#aws-settings)
     - [Redis Settings](#redis-settings)
     - [Debug Settings](#debug-settings)
-
-
-## Getting Started
-
-To set up your environment configuration:
-
-1. **Copy the example file:**
-   ```bash
-   cp .env.example .env
-   ```
-
-2. **Update the values** in your `.env` file according to your environment
-
-3. **Generate JWT keys** (required for authentication):
-   ```bash
-   yarn generate:keys --direct-insert
-   ```
-
-> **Note**: The application validates all environment variables on startup using `AppEnvDto`. If any required variables are missing or invalid, the application will not start and will show validation errors.
 
 ## Environment Validation
 
@@ -166,7 +146,7 @@ All environment variables are validated using the `AppEnvDto` class to ensure re
 **`APP_NAME`** *(required)*  
 The name of your application. Used throughout the system for identification.
 ```bash
-APP_NAME=ACKNestJs
+APP_NAME=CompleteNestJsBoilerplate
 ```
 
 **`APP_ENV`** *(required)*  
@@ -184,7 +164,7 @@ APP_LANGUAGE=en
 **`APP_TIMEZONE`** *(required)*  
 Default timezone for date operations. Example: `Asia/Jakarta`, `UTC`
 ```bash
-APP_TIMEZONE=Asia/Jakarta
+APP_TIMEZONE=Europe/Paris
 ```
 
 ### Home/Organization Settings
@@ -192,7 +172,7 @@ APP_TIMEZONE=Asia/Jakarta
 **`HOME_NAME`** *(required)*  
 Display name for your organization/home page.
 ```bash
-HOME_NAME=ACKNestJs
+HOME_NAME=CompleteNestJsBoilerplate
 ```
 
 **`HOME_URL`** *(required)*  
@@ -289,10 +269,10 @@ URL_VERSION=1
 MongoDB connection string. Must include replica set for transactions.
 ```bash
 # Local MongoDB with replica set
-DATABASE_URL=mongodb://localhost:27017/ACKNestJs?retryWrites=true&w=majority&replicaSet=rs0
+DATABASE_URL=mongodb://localhost:27017/CompleteNestJsBoilerplate?retryWrites=true&w=majority&replicaSet=rs0
 
 # MongoDB Atlas example
-# DATABASE_URL=mongodb+srv://username:password@cluster.mongodb.net/ACKNestJs
+# DATABASE_URL=mongodb+srv://username:password@cluster.mongodb.net/CompleteNestJsBoilerplate
 ```
 
 **`DATABASE_DEBUG`** *(required)*  
@@ -326,7 +306,7 @@ AUTH_JWT_ACCESS_TOKEN_JWKS_URI=http://localhost:3011/.well-known/access-jwks.jso
 **`AUTH_JWT_ACCESS_TOKEN_KID`** *(required)*  
 Key ID for access token. Generated automatically by `yarn generate:keys`.
 ```bash
-AUTH_JWT_ACCESS_TOKEN_KID=ack-access-2024-001
+AUTH_JWT_ACCESS_TOKEN_KID=complete-access-2024-001
 ```
 
 **`AUTH_JWT_ACCESS_TOKEN_PRIVATE_KEY`** *(required)*  
@@ -358,7 +338,7 @@ AUTH_JWT_REFRESH_TOKEN_JWKS_URI=http://localhost:3011/.well-known/refresh-jwks.j
 **`AUTH_JWT_REFRESH_TOKEN_KID`** *(required)*  
 Key ID for refresh token. Generated automatically by `yarn generate:keys`.
 ```bash
-AUTH_JWT_REFRESH_TOKEN_KID=ack-refresh-2024-001
+AUTH_JWT_REFRESH_TOKEN_KID=compelete-refresh-2024-001
 ```
 
 **`AUTH_JWT_REFRESH_TOKEN_PRIVATE_KEY`** *(required)*  
