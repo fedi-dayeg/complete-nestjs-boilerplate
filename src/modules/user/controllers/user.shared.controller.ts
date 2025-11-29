@@ -19,7 +19,6 @@ import {
     AuthJwtToken,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { AuthTokenResponseDto } from '@modules/auth/dtos/response/auth.token.response.dto';
-import { FeatureFlag } from '@modules/feature-flag/decorators/feature-flag.decorator';
 import { TermPolicyAcceptanceProtected } from '@modules/term-policy/decorators/term-policy.decorator';
 import {
     UserCurrent,
@@ -67,6 +66,7 @@ import {
 } from '../dtos/request/user.mobile-number.request.dto';
 import { UserMobileNumberResponseDto } from '../dtos/user.mobile-number.dto';
 import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
+import { FeatureFlagProtected } from '@modules/feature-flag/decorators/feature-flag.decorator';
 
 @ApiTags('modules.shared.user')
 @Controller({
@@ -202,7 +202,7 @@ export class UserSharedController {
     @TermPolicyAcceptanceProtected()
     @UserProtected()
     @AuthJwtAccessProtected()
-    @FeatureFlag('changePassword')
+    @FeatureFlagProtected('changePassword')
     @ApiKeyProtected()
     @Patch('/change-password')
     async changePassword(
