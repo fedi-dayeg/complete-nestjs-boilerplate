@@ -86,9 +86,7 @@ import {
 } from '@prisma/client';
 import { Duration } from 'luxon';
 import { AuthService } from '@modules/auth/services/auth.service.ts‎';
-import {
-    UserSendEmailVerificationRequestDto
-} from '@modules/user/dtos/request/user.send-email-verification.request.dto.ts‎';
+import { UserSendEmailVerificationRequestDto } from '@modules/user/dtos/request/user.send-email-verification.request.dto.ts‎';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 
 @Injectable()
@@ -1128,7 +1126,7 @@ export class UserService implements IUserService {
         if (session.fingerprint !== oldFingerprint) {
             throw new UnauthorizedException({
                 statusCode:
-                ENUM_AUTH_STATUS_CODE_ERROR.JWT_REFRESH_TOKEN_INVALID,
+                    ENUM_AUTH_STATUS_CODE_ERROR.JWT_REFRESH_TOKEN_INVALID,
                 message: 'auth.error.refreshTokenInvalid',
             });
         }
@@ -1222,7 +1220,7 @@ export class UserService implements IUserService {
             );
 
             // @note: send email after all creation
-            await Promise.all([
+            const res = await Promise.all([
                 this.emailService.sendWelcome(created.id, {
                     email: created.email,
                     username: created.username,
