@@ -13,6 +13,11 @@ This document provides a comprehensive overview of authentication and session ma
 
 Configuration for tokens, sessions, password, social providers, and API keys is managed di `src/configs/auth.config.ts`.
 
+## Prerequisite
+
+Before reading this documentation, it is recommended to read the [Cache Documentation][ref-doc-cache] first to understand how `Cache` works.
+
+
 ## Table of Contents
 
 - [Overview](#overview)
@@ -1662,7 +1667,7 @@ sequenceDiagram
 
 [ref-doc-installation]: docs/installation.md
 
-[ref-doc-internationalization]: docs/internationalization.md
+[ref-doc-message]: docs/message.md
 
 [ref-doc-logger]: docs/logger.md
 

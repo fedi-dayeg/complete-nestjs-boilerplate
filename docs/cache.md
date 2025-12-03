@@ -10,9 +10,17 @@ This application uses **Redis** as the cache storage backend to improve performa
 - [Stack](#stack)
 - [Why Keyv?](#why-keyv)
 - [Principles & Patterns](#principles--patterns)
-- [Architecture](#architecture)
+- [Architecture](#architecture) 
+    - [Module Dependency Flow](#module-dependency-flow)
+    - [RedisCacheModule](#rediscachemodule)
+    - [CacheMainModule](#cachemainmodule)
+    - [SessionModule](#sessionmodule)
 - [Configuration](#configuration)
+    - [Redis Configuration](#redis-configuration)
+    - [Module Import Order](#module-import-order)
 - [Usage](#usage)
+    - [Injecting Cache Providers](#injecting-cache-providers)
+    - [Cache Operations](#cache-operations)
 - [Use Cases](#use-cases)
 
 ## Stack
@@ -287,7 +295,7 @@ For cache operations (set, get, delete, etc.), see:
 [ref-doc-feature-flag]: docs/feature-flag.md
 [ref-doc-how-to-handling-error]: docs/how-to-handling-error.md
 [ref-doc-installation]: docs/installation.md
-[ref-doc-internationalization]: docs/internationalization.md
+[ref-doc-message]: docs/message.md
 [ref-doc-logger]: docs/logger.md
 [ref-doc-project-structure]: docs/project-structure.md
 [ref-doc-queue]: docs/queue.md

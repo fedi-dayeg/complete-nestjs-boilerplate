@@ -68,7 +68,7 @@
 [ref-doc-environment]: docs/environment.md
 [ref-doc-configuration]: docs/configuration.md
 [ref-doc-installation]: docs/installation.md
-[ref-doc-internationalization]: docs/internationalization.md
+[ref-doc-message]: docs/message.md
 [ref-doc-logger]: docs/logger.md
 [ref-doc-project-structure]: docs/project-structure.md
 [ref-doc-queue]: docs/queue.md
