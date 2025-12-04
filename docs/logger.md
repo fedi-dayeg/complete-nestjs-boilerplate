@@ -2,8 +2,13 @@
 
 Comprehensive logging system using Pino with file rotation, sensitive data redaction, and custom serializers for request/response logging.
 
-## Table of Contents
+## Overview
 
+Comprehensive logging system using Pino with file rotation, sensitive data redaction, and custom serializers for request/response logging.
+
+
+## Table of Contents
+- [Overview](#overview)
 - [Features](#features)
 - [Configuration](#configuration)
 - [Usage](#usage)
