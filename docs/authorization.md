@@ -1,4 +1,4 @@
-# Authorization
+# Authorization Documentation
 
 ## Overview
 
@@ -6,12 +6,17 @@ This authorization system provides a comprehensive, layered security approach fo
 
 The system is built using NestJS guards and decorators, making it easy to apply different authorization levels to your route handlers with simple, declarative syntax.
 
-## Prerequisite
+## Related Documents
 
-Before reading this documentation, it is recommended to read the [Authentication Documentation][ref-doc-authentication] first to understand how `@AuthJwtAccessProtected()` works, as it is required by all authorization guards.
+- [Authentication][ref-doc-authentication] - Required reading for understanding `@AuthJwtAccessProtected()` decorator
+- [Activity Log][ref-doc-activity-log] - For tracking authorization-related user activities
+
 
 ## Table of Contents
 
+
+- [Overview](#overview)
+- [Related Documents](#related-documents)
 - [User Protected](#user-protected)
 - [Role Protected](#role-protected)
 - [Policy Ability Protected](#policy-ability-protected)
@@ -619,7 +624,7 @@ All specified term policies must be accepted. If even one required policy is not
 
 [ref-doc-root]: readme.md
 
-[ref-doc-audit-activity-log]: docs/audit-activity-log.md
+[ref-doc-activity-log]: docs/activity-log.md
 
 [ref-doc-authentication]: docs/authentication.md
 
@@ -635,13 +640,16 @@ All specified term policies must be accepted. If even one required policy is not
 
 [ref-doc-feature-flag]: docs/feature-flag.md
 
+[ref-doc-file-upload]: docs/file-upload.md
+
 [ref-doc-how-to-handling-error]: docs/how-to-handling-error.md
 
 [ref-doc-installation]: docs/installation.md
 
-[ref-doc-message]: docs/message.md
-
 [ref-doc-logger]: docs/logger.md
+
+[ref-doc-message]: docs/message.md
+[ref-doc-pagination]: docs/pagination.md
 
 [ref-doc-project-structure]: docs/project-structure.md
 
@@ -653,6 +661,6 @@ All specified term policies must be accepted. If even one required policy is not
 
 [ref-doc-security-and-middleware]: docs/security-and-middleware.md
 
-[ref-doc-service-side-pagination]: docs/service-side-pagination.md
+[ref-doc-doc]: docs/doc.md
 
 [ref-doc-third-party-integration]: docs/third-party-integration.md

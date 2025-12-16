@@ -2,25 +2,36 @@
 
 ## Overview
 
-This document provides a comprehensive overview of authentication and session management in the Complete NestJS Boilerplate. It covers:
+This document provides a comprehensive overview of authentication and session management in the Complete NestJS
+Boilerplate. It covers:
 
-- **Password Security**: Passwords are securely hashed (bcrypt), have configurable expiration and rotation, login attempt limits, history tracking, and support for reset/change/temporary password with session invalidation.
-- **JWT Authentication**: Stateless authentication using access and refresh tokens, with configurable expiration and security mechanisms such as fingerprint validation.
-- **Session Management**: Dual storage strategy using Redis for high-performance validation and automatic expiration, and a database for session listing, management, and audit trail. Sessions are validated on every API request and can be revoked instantly.
-- **Social Authentication**: Integration with Google OAuth 2.0 and Apple Sign In, allowing users to authenticate using third-party providers. The backend validates OAuth tokens and manages sessions similarly to credential-based authentication.
-- **API Key Authentication**: Stateless authentication for machine-to-machine and system integrations, supporting both default and system API keys with caching for performance.
-- **Session Lifecycle and Validation**: Detailed flows for login, token refresh, session revocation, and validation, ensuring secure and manageable user sessions across devices and integrations.
+- **Password Security**: Passwords are securely hashed (bcrypt), have configurable expiration and rotation, login
+  attempt limits, history tracking, and support for reset/change/temporary password with session invalidation.
+- **JWT Authentication**: Stateless authentication using access and refresh tokens, with configurable expiration and
+  security mechanisms such as fingerprint validation.
+- **Session Management**: Dual storage strategy using Redis for high-performance validation and automatic expiration,
+  and a database for session listing, management, and audit trail. Sessions are validated on every API request and can
+  be revoked instantly.
+- **Social Authentication**: Integration with Google OAuth 2.0 and Apple Sign In, allowing users to authenticate using
+  third-party providers. The backend validates OAuth tokens and manages sessions similarly to credential-based
+  authentication.
+- **API Key Authentication**: Stateless authentication for machine-to-machine and system integrations, supporting both
+  default and system API keys with caching for performance.
+- **Session Lifecycle and Validation**: Detailed flows for login, token refresh, session revocation, and validation,
+  ensuring secure and manageable user sessions across devices and integrations.
 
 Configuration for tokens, sessions, password, social providers, and API keys is managed di `src/configs/auth.config.ts`.
 
-## Prerequisite
+## Related Documents
 
-Before reading this documentation, it is recommended to read the [Cache Documentation][ref-doc-cache] first to understand how `Cache` works.
-
+- [Cache][ref-doc-cache] - For understanding session storage and caching mechanisms
+- [Configuration][ref-doc-configuration] - For auth configuration details
+- [Environment][ref-doc-environment] - For JWT and OAuth environment variables
 
 ## Table of Contents
 
 - [Overview](#overview)
+- [Related Documents](#related-documents)
 - [Password](#password)
     - [Configuration](#configuration)
     - [Password Features](#password-features)
@@ -94,9 +105,11 @@ Before reading this documentation, it is recommended to read the [Cache Document
 
 ## Password
 
-Secures passwords with bcrypt hashing, enforces expiration and rotation, tracks history, limits login attempts, and supports reset, change, and temporary password creation with session invalidation.
+Secures passwords with bcrypt hashing, enforces expiration and rotation, tracks history, limits login attempts, and
+supports reset, change, and temporary password creation with session invalidation.
 
 ### Configuration
+
 - **Password Hashing:** Uses bcrypt with salt length of 8.
 - **Password Expiration:** Default expiration is 182 days.
 - **Password Rotation Period:** A password cannot be reused for 90 days.
@@ -108,19 +121,23 @@ Secures passwords with bcrypt hashing, enforces expiration and rotation, tracks 
 ### Password Features
 
 #### Password Expiration
+
 - Passwords expire after 182 days by default.
 - Expiration is configurable.
 
 #### Password Period (Rotation)
+
 - Users cannot reuse the same password within 90 days.
 - Enforced via password history table.
 
 #### Attempt Limiting
+
 - Users are allowed up to 5 failed login attempts.
 - Exceeding this limit sets the user to inactive.
 - Configurable via `src/configs/auth.config.ts`.
 
 ### Password Lifecycle
+
 ```mermaid
 graph TD
     A[User Registration/Password Set] --> B[Password Hashed with Bcrypt]
@@ -145,36 +162,43 @@ graph TD
 ```
 
 ### Implementation
+
 - Passwords are hashed and stored in LevelDB.
 - Password history is maintained in a dedicated table for audit and rotation enforcement.
 - All password-related configurations are dynamic and can be adjusted in `src/configs/auth.config.ts`.
 - On password change, forgot password, or temporary password set, all user sessions are invalidated.
 
 ### Password Endpoints
+
 #### Forgot Password
+
 - **Endpoint:** `POST /public/user/password/forgot`
 - **Behavior:** Sends a reset link to the user's email. Token expires in 5 minutes. Resend allowed every 2 minutes.
 
 #### Reset Password
+
 - **Endpoint:** `PUT /public/user/password/reset`
 - **Behavior:** If token is valid and not expired, password is updated. All sessions invalidated.
 
 #### Change Password
+
 - **Endpoint:** `PATCH /shared/user/change-password`
 - **Behavior:** If old password matches, password is updated. All sessions invalidated.
 
 #### Admin Temporary Password
+
 - **Endpoint:** `PUT /admin/user/update/:userId/password`
 - **Behavior:** Admin sets a temporary password (valid for 3 days). All sessions invalidated.
 
 ## JWT (JSON Web Token) Authentication
 
-JWT (JSON Web Token) is an open standard ([RFC 7519][ref-jwt]) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object. This information can be verified and trusted because it is digitally signed.
+JWT (JSON Web Token) is an open standard ([RFC 7519][ref-jwt]) that defines a compact and self-contained way for
+securely transmitting information between parties as a JSON object. This information can be verified and trusted because
+it is digitally signed.
 
 JWTs can be signed using a secret (with the HMAC algorithm) or a public/private key pair using RSA or ECDSA.
 
 For more detailed information about JWT, please visit the official [JWT website][ref-jwt].
-
 
 ### Configuration
 
@@ -220,6 +244,7 @@ export default registerAs(
 ### Tokens
 
 #### Access Token
+
 A short-lived token used to authenticate API requests.
 
 - **Algorithm**: ES256 (ECDSA using P-256 and SHA-256)
@@ -228,6 +253,7 @@ A short-lived token used to authenticate API requests.
 - **Purpose**: Authenticate API requests
 
 #### Refresh Token
+
 A long-lived token used to obtain new access tokens without requiring the user to log in again.
 
 - **Algorithm**: ES512 (ECDSA using P-521 and SHA-512)
@@ -253,14 +279,14 @@ Interface `IAuthJwtAccessTokenPayload`
     sessionId: string;
     roleId: string;
     fingerprint: string;
-    
+
     // Standard JWT claims
-    iat?: number;  // Issued at
-    nbf?: number;  // Not before
-    exp?: number;  // Expiration time
-    aud?: string;  // Audience
-    iss?: string;  // Issuer
-    sub?: string;  // Subject
+    iat ? : number;  // Issued at
+    nbf ? : number;  // Not before
+    exp ? : number;  // Expiration time
+    aud ? : string;  // Audience
+    iss ? : string;  // Issuer
+    sub ? : string;  // Subject
 }
 ```
 
@@ -276,14 +302,14 @@ Interface `IAuthJwtRefreshTokenPayload`
     userId: string;
     sessionId: string;
     fingerprint: string;
-    
+
     // Standard JWT claims
-    iat?: number;
-    nbf?: number;
-    exp?: number;
-    aud?: string;
-    iss?: string;
-    sub?: string;
+    iat ? : number;
+    nbf ? : number;
+    exp ? : number;
+    aud ? : string;
+    iss ? : string;
+    sub ? : string;
 }
 ```
 
@@ -292,19 +318,22 @@ Interface `IAuthJwtRefreshTokenPayload`
 #### Login
 
 ##### Endpoint
+
 ```
 POST /public/user/login/credential
 ```
 
 ##### Request Body
+
 ```json
 {
-    "email": "user@example.com",
-    "password": "password123"
+  "email": "user@example.com",
+  "password": "password123"
 }
 ```
 
 ##### Response Structure
+
 ```typescript
 {
     tokenType: "Bearer";
@@ -318,113 +347,118 @@ POST /public/user/login/credential
 #### Refresh Token
 
 ##### Endpoint
+
 ```
 POST /shared/user/refresh
 ```
 
 ##### Request Header
+
 ```
 Authorization: Bearer <refresh_token>
 ```
 
 ##### Response Structure
-Same as login response structure with new tokens generated.
 
+Same as login response structure with new tokens generated.
 
 #### Profile
 
 ##### Endpoint
+
 ```
 GET /shared/user/profile
 ```
 
 ##### Request Header
+
 ```
 Authorization: Bearer <access_token>
 ```
 
 ##### Response Structure
+
 ```typescript
 const userProfile: UserProfileResponseDto = {
-  id: "65f1c2e4b7a1a2b3c4d5e6f7",
-  createdAt: "2025-11-29T12:00:00.000Z",
-  updatedAt: "2025-11-29T12:00:00.000Z",
-  name: "John Doe",
-  username: "johndoe",
-  isVerified: true,
-  verifiedAt: "2025-11-28T10:00:00.000Z",
-  email: "johndoe@example.com",
-  roleId: "65f1c2e4b7a1a2b3c4d5e6f8",
-  role: {
-    id: "65f1c2e4b7a1a2b3c4d5e6f8",
+    id: "65f1c2e4b7a1a2b3c4d5e6f7",
     createdAt: "2025-11-29T12:00:00.000Z",
     updatedAt: "2025-11-29T12:00:00.000Z",
-    name: "Admin",
-    description: "Administrator role",
-    type: "admin",
-    abilities: [
-      { subject: "user", action: ["manage", "read", "update"] },
-      { subject: "role", action: ["read"] }
-    ]
-  },
-  passwordExpired: "2025-12-29T12:00:00.000Z",
-  passwordCreated: "2025-11-01T12:00:00.000Z",
-  passwordAttempt: 0,
-  signUpDate: "2025-11-01T12:00:00.000Z",
-  signUpFrom: "admin",
-  signUpWith: "credential",
-  status: "active",
-  countryId: "65f1c2e4b7a1a2b3c4d5e6f9",
-  gender: "male",
-  lastLoginAt: "2025-11-29T11:00:00.000Z",
-  lastIPAddress: "192.168.1.1",
-  lastLoginFrom: "website",
-  lastLoginWith: "credential",
-  termPolicy: {
-    termsOfService: true,
-    privacy: true,
-    cookie: true,
-    marketing: false
-  },
-  photo: {
-    bucket: "USER-PHOTOS",
-    key: "profile/johndoe.jpg",
-    cdnUrl: "https://cdn.example.com/profile/johndoe.jpg",
-    completedUrl: "https://s3.amazonaws.com/user-photos/profile/johndoe.jpg",
-    mime: "image/jpeg",
-    extension: "jpg",
-    access: "public",
-    size: 204800
-  },
-  country: {
-    id: "65f1c2e4b7a1a2b3c4d5e6f9",
-    createdAt: "2025-11-29T12:00:00.000Z",
-    updatedAt: "2025-11-29T12:00:00.000Z",
-    name: "Indonesia",
-    alpha2Code: "ID",
-    alpha3Code: "IDN",
-    phoneCode: ["62"],
-    continent: "Asia",
-    timezone: "Asia/Jakarta"
-  },
-  mobileNumber: {
-    id: "mobile1",
-    createdAt: "2025-11-29T12:00:00.000Z",
-    updatedAt: "2025-11-29T12:00:00.000Z",
-    number: "81234567890",
-    phoneCode: "62",
+    name: "John Doe",
+    username: "johndoe",
+    isVerified: true,
+    verifiedAt: "2025-11-28T10:00:00.000Z",
+    email: "johndoe@example.com",
+    roleId: "65f1c2e4b7a1a2b3c4d5e6f8",
+    role: {
+        id: "65f1c2e4b7a1a2b3c4d5e6f8",
+        createdAt: "2025-11-29T12:00:00.000Z",
+        updatedAt: "2025-11-29T12:00:00.000Z",
+        name: "Admin",
+        description: "Administrator role",
+        type: "admin",
+        abilities: [
+            { subject: "user", action: ["manage", "read", "update"] },
+            { subject: "role", action: ["read"] }
+        ]
+    },
+    passwordExpired: "2025-12-29T12:00:00.000Z",
+    passwordCreated: "2025-11-01T12:00:00.000Z",
+    passwordAttempt: 0,
+    signUpDate: "2025-11-01T12:00:00.000Z",
+    signUpFrom: "admin",
+    signUpWith: "credential",
+    status: "active",
+    countryId: "65f1c2e4b7a1a2b3c4d5e6f9",
+    gender: "male",
+    lastLoginAt: "2025-11-29T11:00:00.000Z",
+    lastIPAddress: "192.168.1.1",
+    lastLoginFrom: "website",
+    lastLoginWith: "credential",
+    termPolicy: {
+        termsOfService: true,
+        privacy: true,
+        cookie: true,
+        marketing: false
+    },
+    photo: {
+        bucket: "USER-PHOTOS",
+        key: "profile/johndoe.jpg",
+        cdnUrl: "https://cdn.example.com/profile/johndoe.jpg",
+        completedUrl: "https://s3.amazonaws.com/user-photos/profile/johndoe.jpg",
+        mime: "image/jpeg",
+        extension: "jpg",
+        access: "public",
+        size: 204800
+    },
     country: {
-      id: "65f1c2e4b7a1a2b3c4d5e6f9",
-      createdAt: "2025-11-29T12:00:00.000Z",
-      updatedAt: "2025-11-29T12:00:00.000Z",
-      name: "Indonesia",
-      alpha2Code: "ID",
-      alpha3Code: "IDN",
-      phoneCode: ["62"],
-      continent: "Asia",
-      timezone: "Asia/Jakarta"
+        id: "65f1c2e4b7a1a2b3c4d5e6f9",
+        createdAt: "2025-11-29T12:00:00.000Z",
+        updatedAt: "2025-11-29T12:00:00.000Z",
+        name: "Indonesia",
+        alpha2Code: "ID",
+        alpha3Code: "IDN",
+        phoneCode: ["62"],
+        continent: "Asia",
+        timezone: "Asia/Jakarta"
+    },
+    mobileNumber: {
+        id: "mobile1",
+        createdAt: "2025-11-29T12:00:00.000Z",
+        updatedAt: "2025-11-29T12:00:00.000Z",
+        number: "81234567890",
+        phoneCode: "62",
+        country: {
+            id: "65f1c2e4b7a1a2b3c4d5e6f9",
+            createdAt: "2025-11-29T12:00:00.000Z",
+            updatedAt: "2025-11-29T12:00:00.000Z",
+            name: "Indonesia",
+            alpha2Code: "ID",
+            alpha3Code: "IDN",
+            phoneCode: ["62"],
+            continent: "Asia",
+            timezone: "Asia/Jakarta"
+        }
     }
-  }
 };
 ```
 
@@ -437,7 +471,9 @@ To protect an endpoint with JWT access token validation, use the `@AuthJwtAccess
 ```typescript
 @AuthJwtAccessProtected()
 @Get('/profile')
-async getProfile() {
+async
+getProfile()
+{
     // This endpoint requires a valid access token
     // Token signature (ES256) is verified
     // Session existence is validated in Redis
@@ -450,7 +486,9 @@ For refresh token endpoints (typically only used in the refresh endpoint itself)
 ```typescript
 @AuthJwtRefreshProtected()
 @Post('/refresh')
-async refresh() {
+async
+refresh()
+{
     // This endpoint requires a valid refresh token
     // Token signature (ES512) is verified
     return { message: 'Token refreshed' };
@@ -464,9 +502,12 @@ To access the JWT payload in your controller, use the `@AuthJwtPayload()` decora
 ```typescript
 @AuthJwtAccessProtected()
 @Get('/me')
-async getCurrentUser(
-    @AuthJwtPayload() payload: IAuthJwtAccessTokenPayload
-) {
+async
+getCurrentUser(
+    @AuthJwtPayload()
+payload: IAuthJwtAccessTokenPayload
+)
+{
     // Access user information from token
     return {
         userId: payload.userId,
@@ -483,14 +524,18 @@ You can also extract specific fields:
 ```typescript
 @AuthJwtAccessProtected()
 @Get('/user-id')
-async getUserId(
-    @AuthJwtPayload('userId') userId: string
-) {
+async
+getUserId(
+    @AuthJwtPayload('userId')
+userId: string
+)
+{
     return { userId };
 }
 ```
 
 **Decorator Implementation:**
+
 ```typescript
 export const AuthJwtPayload = createParamDecorator(
     <T = IAuthJwtAccessTokenPayload>(
@@ -512,15 +557,19 @@ To access the raw JWT token string, use the `@AuthJwtToken()` decorator:
 ```typescript
 @AuthJwtAccessProtected()
 @Get('/verify')
-async verifyToken(
-    @AuthJwtToken() token: string
-) {
+async
+verifyToken(
+    @AuthJwtToken()
+token: string
+)
+{
     // Access raw token for additional processing
     return { token };
 }
 ```
 
 **Decorator Implementation:**
+
 ```typescript
 export const AuthJwtToken = createParamDecorator(
     (_: unknown, ctx: ExecutionContext): string | undefined => {
@@ -586,10 +635,10 @@ sequenceDiagram
     end
 ```
 
-
 ### Refresh Token Flow
 
-When the access token expires, the refresh token is used to obtain a new access token. The fingerprint validation ensures additional security:
+When the access token expires, the refresh token is used to obtain a new access token. The fingerprint validation
+ensures additional security:
 
 ```mermaid
 sequenceDiagram
@@ -680,17 +729,22 @@ A unique identifier generated during login and stored in both the token payload 
     - Old fingerprint is invalidated
     - New fingerprint is stored in Redis
     - New tokens contain the new fingerprint
-    - **Important**: Session TTL remains unchanged (stays at initial value from login based on `AUTH_JWT_REFRESH_TOKEN_EXPIRED` config)
+    - **Important**: Session TTL remains unchanged (stays at initial value from login based on
+      `AUTH_JWT_REFRESH_TOKEN_EXPIRED` config)
 
 ## Social Authentication
 
-Social authentication allows users to sign in using their Google or Apple accounts. The backend validates the OAuth tokens provided by the client and extracts user information to create a session, similar to credential-based authentication.
+Social authentication allows users to sign in using their Google or Apple accounts. The backend validates the OAuth
+tokens provided by the client and extracts user information to create a session, similar to credential-based
+authentication.
 
 **Supported Providers:**
+
 - Google OAuth 2.0
 - Apple Sign In
 
 **Authentication Flow:**
+
 1. Client obtains OAuth token from Google/Apple
 2. Client sends token to backend via Authorization header
 3. Backend validates token using `AuthUtil` service
@@ -707,16 +761,22 @@ Google authentication is configured in `auth.config.ts`:
 ```typescript
 google: {
     header: 'Authorization',
-    prefix: 'Bearer',
-    clientId: process.env.AUTH_SOCIAL_GOOGLE_CLIENT_ID,
-    clientSecret: process.env.AUTH_SOCIAL_GOOGLE_CLIENT_SECRET,
+        prefix
+:
+    'Bearer',
+        clientId
+:
+    process.env.AUTH_SOCIAL_GOOGLE_CLIENT_ID,
+        clientSecret
+:
+    process.env.AUTH_SOCIAL_GOOGLE_CLIENT_SECRET,
 }
 ```
 
 **Environment Variables:**
+
 - `AUTH_SOCIAL_GOOGLE_CLIENT_ID`: Google OAuth 2.0 client ID
 - `AUTH_SOCIAL_GOOGLE_CLIENT_SECRET`: Google OAuth 2.0 client secret
-
 
 #### Setup Google OAuth 2.0
 
@@ -764,9 +824,13 @@ Same as credential login response:
 ```typescript
 @AuthSocialGoogleProtected()
 @Post('/login/social/google')
-async loginGoogle(@AuthJwtPayload() payload: IAuthSocialPayload) {
+async
+loginGoogle(@AuthJwtPayload()
+payload: IAuthSocialPayload
+)
+{
     const { email, emailVerified } = payload;
-    
+
     // Find or create user
     // Generate session
     // Return JWT tokens
@@ -779,14 +843,21 @@ async loginGoogle(@AuthJwtPayload() payload: IAuthSocialPayload) {
 /**
  * Verifies a Google OAuth ID token and extracts the payload.
  */
-async verifyGoogle(token: string): Promise<TokenPayload> {
-    const login: LoginTicket = await this.googleClient.verifyIdToken({
-        idToken: token,
-    });
+async
+verifyGoogle(token
+:
+string
+):
+Promise < TokenPayload > {
+    const login
+:
+LoginTicket = await this.googleClient.verifyIdToken({
+    idToken: token,
+});
 
-    const payload: TokenPayload = login.getPayload();
+const payload: TokenPayload = login.getPayload();
 
-    return payload;
+return payload;
 }
 ```
 
@@ -799,13 +870,20 @@ Apple authentication is configured in `auth.config.ts`:
 ```typescript
 apple: {
     header: 'Authorization',
-    prefix: 'Bearer',
-    clientId: process.env.AUTH_SOCIAL_APPLE_CLIENT_ID,
-    signInClientId: process.env.AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID,
+        prefix
+:
+    'Bearer',
+        clientId
+:
+    process.env.AUTH_SOCIAL_APPLE_CLIENT_ID,
+        signInClientId
+:
+    process.env.AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID,
 }
 ```
 
 **Environment Variables:**
+
 - `AUTH_SOCIAL_APPLE_CLIENT_ID`: Apple service ID
 - `AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID`: Apple sign-in client ID
 
@@ -820,7 +898,8 @@ To obtain Apple credentials:
 5. Download and configure private key
 6. Copy Service ID (Client ID) to your `.env` file
 
-**For detailed setup instructions**, visit [Apple Sign In Documentation](https://developer.apple.com/sign-in-with-apple/get-started/)
+**For detailed setup instructions**,
+visit [Apple Sign In Documentation](https://developer.apple.com/sign-in-with-apple/get-started/)
 
 #### Endpoint
 
@@ -848,7 +927,6 @@ Same as credential login response:
 }
 ```
 
-
 #### Implementation
 
 **Protecting the Endpoint:**
@@ -856,9 +934,13 @@ Same as credential login response:
 ```typescript
 @AuthSocialAppleProtected()
 @Post('/login/social/apple')
-async loginApple(@AuthJwtPayload() payload: IAuthSocialPayload) {
+async
+loginApple(@AuthJwtPayload()
+payload: IAuthSocialPayload
+)
+{
     const { email, emailVerified } = payload;
-    
+
     // Find or create user
     // Generate session
     // Return JWT tokens
@@ -871,7 +953,12 @@ async loginApple(@AuthJwtPayload() payload: IAuthSocialPayload) {
 /**
  * Verifies an Apple Sign-In ID token and extracts the payload.
  */
-async verifyApple(token: string): Promise<VerifyAppleIdTokenResponse> {
+async
+verifyApple(token
+:
+string
+):
+Promise < VerifyAppleIdTokenResponse > {
     return verifyAppleToken({
         idToken: token,
         clientId: [this.appleClientId, this.appleSignInClientId],
@@ -950,9 +1037,12 @@ sequenceDiagram
 
 ## API Key Authentication
 
-API Key authentication provides a simple, stateless authentication mechanism for machine-to-machine communication and system integrations. Unlike JWT tokens, API keys don't require session management and are validated directly against the database/cache.
+API Key authentication provides a simple, stateless authentication mechanism for machine-to-machine communication and
+system integrations. Unlike JWT tokens, API keys don't require session management and are validated directly against the
+database/cache.
 
 **Key Features:**
+
 - Stateless authentication
 - No session management required
 - Two types: Default and System
@@ -960,6 +1050,7 @@ API Key authentication provides a simple, stateless authentication mechanism for
 - Simple `key:secret` format
 
 **Use Cases:**
+
 - External system integrations
 - Webhook endpoints
 - System-to-system communication
@@ -983,9 +1074,9 @@ export default registerAs(
 ```
 
 **Configuration Options:**
+
 - `header`: Header name for API key (`x-api-key`)
 - `cachePrefixKey`: Redis cache prefix for API key caching
-
 
 ### API Key Types
 
@@ -994,6 +1085,7 @@ export default registerAs(
 Default API keys are used for standard external integrations and third-party access.
 
 **Characteristics:**
+
 - Type: `ENUM_API_KEY_TYPE.default`
 - Purpose: General-purpose API access
 - Use Case: External clients, third-party integrations
@@ -1001,15 +1093,21 @@ Default API keys are used for standard external integrations and third-party acc
 - Cache: Cached in Redis for performance
 
 **Guard Decorator:**
+
 ```typescript
 @ApiKeyProtected()
 ```
 
 **Example Usage:**
+
 ```typescript
 @ApiKeyProtected()
 @Get('/api/external/data')
-async getExternalData(@ApiKeyPayload() apiKey: ApiKey) {
+async
+getExternalData(@ApiKeyPayload()
+apiKey: ApiKey
+)
+{
     return { data: 'accessible with default API key' };
 }
 ```
@@ -1019,6 +1117,7 @@ async getExternalData(@ApiKeyPayload() apiKey: ApiKey) {
 System API keys are used for internal system operations that bypass standard authentication.
 
 **Characteristics:**
+
 - Type: `ENUM_API_KEY_TYPE.system`
 - Purpose: System-level operations
 - Use Case: Internal services, background jobs, system maintenance
@@ -1026,15 +1125,21 @@ System API keys are used for internal system operations that bypass standard aut
 - Cache: Cached in Redis for performance
 
 **Guard Decorator:**
+
 ```typescript
 @ApiKeySystemProtected()
 ```
 
 **Example Usage:**
+
 ```typescript
 @ApiKeySystemProtected()
 @Post('/api/system/maintenance')
-async runMaintenance(@ApiKeyPayload() apiKey: ApiKey) {
+async
+runMaintenance(@ApiKeyPayload()
+apiKey: ApiKey
+)
+{
     // System-level endpoint
     // No user authentication required
     return { status: 'maintenance completed' };
@@ -1046,11 +1151,13 @@ async runMaintenance(@ApiKeyPayload() apiKey: ApiKey) {
 API keys are sent via the `x-api-key` header with the format `${key}:${secret}`:
 
 **Header Format:**
+
 ```
 x-api-key: ${key}:${secret}
 ```
 
 **Format Rules:**
+
 - Pattern: `key:secret`
 - Separator: Colon (`:`)
 - Both key and secret are required
@@ -1066,7 +1173,11 @@ x-api-key: ${key}:${secret}
 ```typescript
 @ApiKeyProtected()
 @Get('/external/data')
-async getExternalData(@ApiKeyPayload() apiKey: ApiKey) {
+async
+getExternalData(@ApiKeyPayload()
+apiKey: ApiKey
+)
+{
     // Endpoint requires default API key
     // apiKey contains full API key schema from database
     return {
@@ -1082,7 +1193,11 @@ async getExternalData(@ApiKeyPayload() apiKey: ApiKey) {
 ```typescript
 @ApiKeySystemProtected()
 @Post('/system/maintenance')
-async runMaintenance(@ApiKeyPayload() apiKey: ApiKey) {
+async
+runMaintenance(@ApiKeyPayload()
+apiKey: ApiKey
+)
+{
     // Endpoint requires system API key
     // Bypasses user authentication
     // Used for system-level operations
@@ -1098,10 +1213,15 @@ async runMaintenance(@ApiKeyPayload() apiKey: ApiKey) {
 Access the full API key data using `@ApiKeyPayload()` decorator:
 
 **Full Payload:**
+
 ```typescript
 @ApiKeyProtected()
 @Get('/resource')
-async getResource(@ApiKeyPayload() apiKey: ApiKey) {
+async
+getResource(@ApiKeyPayload()
+apiKey: ApiKey
+)
+{
     // Access full API key object
     return {
         keyId: apiKey.id,
@@ -1113,13 +1233,18 @@ async getResource(@ApiKeyPayload() apiKey: ApiKey) {
 ```
 
 **Specific Fields:**
+
 ```typescript
 @ApiKeyProtected()
 @Get('/resource')
-async getResource(
-    @ApiKeyPayload('name') apiKeyName: string,
-    @ApiKeyPayload('type') apiKeyType: ENUM_API_KEY_TYPE
-) {
+async
+getResource(
+    @ApiKeyPayload('name')
+apiKeyName: string,
+@ApiKeyPayload('type')
+apiKeyType: ENUM_API_KEY_TYPE
+)
+{
     // Extract specific fields only
     return {
         accessedBy: apiKeyName,
@@ -1217,26 +1342,32 @@ sequenceDiagram
 
 ## Session Management
 
-Session management handles user authentication sessions across multiple devices and locations. It provides visibility and control over active sessions, allowing users and administrators to monitor and revoke access as needed.
+Session management handles user authentication sessions across multiple devices and locations. It provides visibility
+and control over active sessions, allowing users and administrators to monitor and revoke access as needed.
 
 This implementation uses a **dual storage strategy**:
+
 - **Redis**: High-performance session validation and automatic expiration
 - **Database**: Session listing, management, and audit trail
 
 ### Session Storage
 
 #### Redis (Primary - Validation)
+
 Used for high-speed session validation for **both access and refresh tokens**.
 
 **Purpose:**
+
 - **Validate access tokens** on every API request
 - Fast token validation during refresh
 - Store session data with fingerprint
 - Automatic expiration with TTL
 
-**Critical Behavior**: Every API call with an access token will check Redis. If the session is not found in Redis, the request is rejected immediately, even if the token signature is valid.
+**Critical Behavior**: Every API call with an access token will check Redis. If the session is not found in Redis, the
+request is rejected immediately, even if the token signature is valid.
 
 **Data Stored:**
+
 ```typescript
 {
     sessionId: string;
@@ -1249,22 +1380,26 @@ Used for high-speed session validation for **both access and refresh tokens**.
 ```
 
 **Redis Key Pattern:**
+
 ```
 session:{sessionId}
 ```
 
 **TTL Behavior:**
+
 - Initial TTL: Follows refresh token expiration from `auth.config.ts` (default: 30 days)
 - TTL Source: `AUTH_JWT_REFRESH_TOKEN_EXPIRED` environment variable
 - TTL Behavior: **NOT extended** on token refresh - remains at initial value from login
 - Auto Cleanup: Expired sessions are automatically removed by Redis when TTL expires
 
 **Example:**
+
 - If `AUTH_JWT_REFRESH_TOKEN_EXPIRED=30d`, Redis TTL = 30 days
 - If `AUTH_JWT_REFRESH_TOKEN_EXPIRED=7d`, Redis TTL = 7 days
 - Token refresh does NOT reset the TTL
 
 **Key Benefits:**
+
 - **High Performance**: In-memory operations for fast validation
 - **Instant Validation**: Every API call validates against Redis
 - **Fingerprint Check**: Every access token validates fingerprint match
@@ -1274,20 +1409,24 @@ session:{sessionId}
 - **Instant Revocation**: Deleting from Redis immediately invalidates all tokens
 
 #### Database (Secondary - Management)
+
 Used for session listing and management purposes.
 
 **Purpose:**
+
 - Display active sessions to users
 - Session management (view all devices/locations)
 - Session revocation tracking
 - Audit trail and history
 
 **When Updated:**
+
 - Created during login
 - Updated when session is revoked
 - Can be queried to show user's active sessions across devices
 
 **Not Used For:**
+
 - Token validation (Redis handles this)
 - Frequent operations during token refresh
 
@@ -1331,6 +1470,7 @@ graph TB
 ##### Get Current User Sessions
 
 **Endpoint:**
+
 ```
 GET /shared/user/session/list
 ```
@@ -1338,97 +1478,98 @@ GET /shared/user/session/list
 **Purpose**: User can view their own active sessions
 
 **Response:**
+
 ```typescript
 {
     sessions: [
-      {
-        id: "65f1c2e4b7a1a2b3c4d5e6fa",
-        createdAt: "2025-11-29T12:00:00.000Z",
-        updatedAt: "2025-11-29T12:00:00.000Z",
-        userId: "65f1c2e4b7a1a2b3c4d5e6f7",
-        user: {
-          id: "65f1c2e4b7a1a2b3c4d5e6f7",
-          createdAt: "2025-11-29T12:00:00.000Z",
-          updatedAt: "2025-11-29T12:00:00.000Z",
-          name: "John Doe",
-          username: "johndoe",
-          isVerified: true,
-          verifiedAt: "2025-11-28T10:00:00.000Z",
-          email: "johndoe@example.com",
-          roleId: "65f1c2e4b7a1a2b3c4d5e6f8",
-          role: {
-            id: "65f1c2e4b7a1a2b3c4d5e6f8",
+        {
+            id: "65f1c2e4b7a1a2b3c4d5e6fa",
             createdAt: "2025-11-29T12:00:00.000Z",
             updatedAt: "2025-11-29T12:00:00.000Z",
-            name: "Admin",
-            description: "Administrator role",
-            type: "admin",
-            abilities: [
-              { subject: "user", action: ["manage", "read", "update"] },
-              { subject: "role", action: ["read"] }
-            ]
-          },
-          status: "active",
-          countryId: "65f1c2e4b7a1a2b3c4d5e6f9",
-          termPolicy: {
-            termsOfService: true,
-            privacy: true,
-            cookie: true,
-            marketing: false
-          },
-          photo: {
-            bucket: "USER-PHOTOS",
-            key: "profile/johndoe.jpg",
-            cdnUrl: "https://cdn.example.com/profile/johndoe.jpg",
-            completedUrl: "https://s3.amazonaws.com/user-photos/profile/johndoe.jpg",
-            mime: "image/jpeg",
-            extension: "jpg",
-            access: "public",
-            size: 204800
-          },
-          country: {
-            id: "65f1c2e4b7a1a2b3c4d5e6f9",
-            createdAt: "2025-11-29T12:00:00.000Z",
-            updatedAt: "2025-11-29T12:00:00.000Z",
-            name: "Indonesia",
-            alpha2Code: "ID",
-            alpha3Code: "IDN",
-            phoneCode: ["62"],
-            continent: "Asia",
-            timezone: "Asia/Jakarta"
-          }
-          // ...other field
-        },
-        ipAddress: "192.168.1.1",
-        userAgent: {
-          ua: "Mozilla/5.0 (iPhone; CPU iPhone OS 16_3_1 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.49 Mobile Safari/537.36",
-          browser: {
-            name: "Chrome",
-            version: "112.0.5615.49",
-            major: "112",
-            type: "mobile"
-          },
-          cpu: {
-            architecture: "amd64"
-          },
-          device: {
-            type: "mobile",
-            vendor: "Apple",
-            model: "iPhone"
-          },
-          engine: {
-            name: "WebKit",
-            version: "537.36"
-          },
-          os: {
-            name: "iOS",
-            version: "16.3.1"
-          }
-        },
-        expiredAt: "2025-12-29T12:00:00.000Z",
-        revokedAt: null,
-        isRevoked: false
-      }
+            userId: "65f1c2e4b7a1a2b3c4d5e6f7",
+            user: {
+                id: "65f1c2e4b7a1a2b3c4d5e6f7",
+                createdAt: "2025-11-29T12:00:00.000Z",
+                updatedAt: "2025-11-29T12:00:00.000Z",
+                name: "John Doe",
+                username: "johndoe",
+                isVerified: true,
+                verifiedAt: "2025-11-28T10:00:00.000Z",
+                email: "johndoe@example.com",
+                roleId: "65f1c2e4b7a1a2b3c4d5e6f8",
+                role: {
+                    id: "65f1c2e4b7a1a2b3c4d5e6f8",
+                    createdAt: "2025-11-29T12:00:00.000Z",
+                    updatedAt: "2025-11-29T12:00:00.000Z",
+                    name: "Admin",
+                    description: "Administrator role",
+                    type: "admin",
+                    abilities: [
+                        { subject: "user", action: ["manage", "read", "update"] },
+                        { subject: "role", action: ["read"] }
+                    ]
+                },
+                status: "active",
+                countryId: "65f1c2e4b7a1a2b3c4d5e6f9",
+                termPolicy: {
+                    termsOfService: true,
+                    privacy: true,
+                    cookie: true,
+                    marketing: false
+                },
+                photo: {
+                    bucket: "USER-PHOTOS",
+                    key: "profile/johndoe.jpg",
+                    cdnUrl: "https://cdn.example.com/profile/johndoe.jpg",
+                    completedUrl: "https://s3.amazonaws.com/user-photos/profile/johndoe.jpg",
+                    mime: "image/jpeg",
+                    extension: "jpg",
+                    access: "public",
+                    size: 204800
+                },
+                country: {
+                    id: "65f1c2e4b7a1a2b3c4d5e6f9",
+                    createdAt: "2025-11-29T12:00:00.000Z",
+                    updatedAt: "2025-11-29T12:00:00.000Z",
+                    name: "Indonesia",
+                    alpha2Code: "ID",
+                    alpha3Code: "IDN",
+                    phoneCode: ["62"],
+                    continent: "Asia",
+                    timezone: "Asia/Jakarta"
+                }
+                // ...other field
+            },
+            ipAddress: "192.168.1.1",
+            userAgent: {
+                ua: "Mozilla/5.0 (iPhone; CPU iPhone OS 16_3_1 like Mac OS X) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.49 Mobile Safari/537.36",
+                browser: {
+                    name: "Chrome",
+                    version: "112.0.5615.49",
+                    major: "112",
+                    type: "mobile"
+                },
+                cpu: {
+                    architecture: "amd64"
+                },
+                device: {
+                    type: "mobile",
+                    vendor: "Apple",
+                    model: "iPhone"
+                },
+                engine: {
+                    name: "WebKit",
+                    version: "537.36"
+                },
+                os: {
+                    name: "iOS",
+                    version: "16.3.1"
+                }
+            },
+            expiredAt: "2025-12-29T12:00:00.000Z",
+            revokedAt: null,
+            isRevoked: false
+        }
     ]
 }
 ```
@@ -1436,6 +1577,7 @@ GET /shared/user/session/list
 ##### Get Any User Sessions (Admin)
 
 **Endpoint:**
+
 ```
 GET /admin/user/:userId/session/list
 ```
@@ -1447,6 +1589,7 @@ GET /admin/user/:userId/session/list
 ##### Revoke by User
 
 **Endpoint:**
+
 ```
 DELETE /shared/session/revoke/:sessionId
 ```
@@ -1458,6 +1601,7 @@ DELETE /shared/session/revoke/:sessionId
 ##### Revoke by Admin
 
 **Endpoint:**
+
 ```
 DELETE /admin/session/revoke/:sessionId
 ```
@@ -1647,7 +1791,7 @@ sequenceDiagram
 
 [ref-doc-root]: readme.md
 
-[ref-doc-audit-activity-log]: docs/audit-activity-log.md
+[ref-doc-activity-log]: docs/activity-log.md
 
 [ref-doc-authentication]: docs/authentication.md
 
@@ -1667,9 +1811,10 @@ sequenceDiagram
 
 [ref-doc-installation]: docs/installation.md
 
-[ref-doc-message]: docs/message.md
-
 [ref-doc-logger]: docs/logger.md
+
+[ref-doc-message]: docs/message.md
+[ref-doc-pagination]: docs/pagination.m
 
 [ref-doc-project-structure]: docs/project-structure.md
 
@@ -1681,6 +1826,6 @@ sequenceDiagram
 
 [ref-doc-security-and-middleware]: docs/security-and-middleware.md
 
-[ref-doc-service-side-pagination]: docs/service-side-pagination.md
+[ref-doc-doc]: docs/doc.md
 
 [ref-doc-third-party-integration]: docs/third-party-integration.md

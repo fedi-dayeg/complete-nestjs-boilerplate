@@ -1,4 +1,4 @@
-# Logger
+# Logger Documentation
 
 Comprehensive logging system using Pino with file rotation, sensitive data redaction, and custom serializers for request/response logging.
 
@@ -6,10 +6,16 @@ Comprehensive logging system using Pino with file rotation, sensitive data redac
 
 Comprehensive logging system using Pino with file rotation, sensitive data redaction, and custom serializers for request/response logging.
 
+## Related Documents
+
+- [Configuration][ref-doc-configuration] - For logger configuration settings
+- [Environment][ref-doc-environment] - For logger environment variables
+- [Handling Error][ref-doc-handling-error] - For error logging integration
+
 
 ## Table of Contents
 - [Overview](#overview)
-- [Features](#features)
+- [Related Documents](#related-documents)
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Sensitive Data Redaction](#sensitive-data-redaction)
@@ -17,8 +23,8 @@ Comprehensive logging system using Pino with file rotation, sensitive data redac
 - [Auto Logging](#auto-logging)
 - [Console Output](#console-output)
 
-## Features
 
+Features:
 - HTTP request/response logging with [Pino][ref-pino]
 - Automatic sensitive data redaction
 - File rotation with compression
@@ -367,8 +373,7 @@ export const LOGGER_REQUEST_ID_HEADERS = [
 
 [ref-doc-root]: readme.md
 
-[ref-doc-audit-activity-log]: docs/audit-activity-log.md
-
+[ref-doc-activity-log]: docs/activity-log.md
 [ref-doc-authentication]: docs/authentication.md
 
 [ref-doc-authorization]: docs/authorization.md
@@ -382,14 +387,15 @@ export const LOGGER_REQUEST_ID_HEADERS = [
 [ref-doc-environment]: docs/environment.md
 
 [ref-doc-feature-flag]: docs/feature-flag.md
+[ref-doc-file-upload]: docs/file-upload.md
 
 [ref-doc-how-to-handling-error]: docs/how-to-handling-error.md
 
 [ref-doc-installation]: docs/installation.md
 
-[ref-doc-message]: docs/message.md
-
 [ref-doc-logger]: docs/logger.md
+[ref-doc-message]: docs/message.md
+[ref-doc-pagination]: docs/pagination.md
 
 [ref-doc-project-structure]: docs/project-structure.md
 
@@ -401,6 +407,6 @@ export const LOGGER_REQUEST_ID_HEADERS = [
 
 [ref-doc-security-and-middleware]: docs/security-and-middleware.md
 
-[ref-doc-service-side-pagination]: docs/service-side-pagination.md
+[ref-doc-doc]: docs/doc.md
 
 [ref-doc-third-party-integration]: docs/third-party-integration.md

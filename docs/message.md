@@ -1,32 +1,34 @@
-# Message
-
-## Prerequisite
-
-Before using Message Service, it's recommended to understand:
-
-- [Response Documentation][ref-doc-response] - For response integration
-- [Error Handling Documentation][ref-doc-handling-error] - For exception filter integration
-- [Request Validation Documentation][ref-doc-request-validation] - For validation pipe integration
+# Message Documentation
 
 ## Overview
 
-Message Service provides internationalization (i18n) support using [nestjs-i18n][ref-nestjs-i18n] to manage multi-language messages. All message files are stored in `src/languages/{language}` directory in JSON format. Currently, only English (`en`) is available.
+Message Service provides internationalization (i18n) support using [nestjs-i18n][ref-nestjs-i18n] to manage
+multi-language messages. All message files are stored in `src/languages/{language}` directory in JSON format. Currently,
+only English (`en`) is available.
 
-The `MessageModule` is imported globally via `CommonModule` in `src/common/common.module.ts`, making `MessageService` available throughout the application without additional imports.
+The `MessageModule` is imported globally via `CommonModule` in `src/common/common.module.ts`, making `MessageService`
+available throughout the application without additional imports.
+
+## Related Documents
+
+- [Response][ref-doc-response] - For response integration with message service
+- [Handling Error][ref-doc-handling-error] - For exception filter integration
+- [Request Validation][ref-doc-request-validation] - For validation message translation
 
 ## Table of Contents
 
 - [Overview](#overview)
+- [Related Documents](#related-documents)
 - [Configuration](#configuration)
 - [Message Files](#message-files)
 - [Usage](#usage)
-  - [Basic Translation](#basic-translation)
-  - [Translation with Variables](#translation-with-variables)
-  - [Custom Language](#custom-language)
+    - [Basic Translation](#basic-translation)
+    - [Translation with Variables](#translation-with-variables)
+    - [Custom Language](#custom-language)
 - [Integration](#integration)
-  - [Exception Filters](#exception-filters)
-  - [Response Decorator](#response-decorator)
-  - [Validation Pipe](#validation-pipe)
+    - [Exception Filters](#exception-filters)
+    - [Response Decorator](#response-decorator)
+    - [Validation Pipe](#validation-pipe)
 - [Adding New Language](#adding-new-language)
 
 ## Configuration
@@ -67,13 +69,13 @@ Example structure:
 ```json
 // src/languages/en/auth.json
 {
-    "login": {
-        "success": "Login successful",
-        "error": {
-            "notFound": "Email not found",
-            "passwordNotMatch": "Password does not match"
-        }
+  "login": {
+    "success": "Login successful",
+    "error": {
+      "notFound": "Email not found",
+      "passwordNotMatch": "Password does not match"
     }
+  }
 }
 ```
 
@@ -99,7 +101,8 @@ import { MessageService } from '@common/message/services/message.service';
 
 @Injectable()
 export class UserService {
-    constructor(private readonly messageService: MessageService) {}
+    constructor(private readonly messageService: MessageService) {
+    }
 
     getWelcomeMessage(): string {
         return this.messageService.setMessage('user.welcome');
@@ -114,8 +117,8 @@ Pass variables through the `properties` option:
 ```json
 // src/languages/en/user.json
 {
-    "greeting": "Hello, {name}!",
-    "itemCount": "You have {count} items"
+  "greeting": "Hello, {name}!",
+  "itemCount": "You have {count} items"
 }
 ```
 
@@ -155,7 +158,8 @@ await axios.get('http://localhost:3000/api/users', {
 
 ### Exception Filters
 
-Exception filters automatically translate message paths. See [Error Handling Documentation][ref-doc-handling-error] for details.
+Exception filters automatically translate message paths. See [Error Handling Documentation][ref-doc-handling-error] for
+details.
 
 ```typescript
 throw new BadRequestException({
@@ -185,7 +189,11 @@ The `@Response` decorator translates success message paths. See [Response Docume
 ```typescript
 @Response('user.create')
 @Post('/')
-async create(@Body() dto: CreateUserDto): Promise<IResponse> {
+async
+create(@Body()
+dto: CreateUserDto
+):
+Promise < IResponse > {
     const user = await this.userService.create(dto);
     return { data: user };
 }
@@ -196,10 +204,14 @@ With variables:
 ```typescript
 @Response('user.update')
 @Patch('/:id')
-async update(
-    @Param('id') id: string,
-    @Body() dto: UpdateUserDto
-): Promise<IResponse> {
+async
+update(
+    @Param('id')
+id: string,
+@Body()
+dto: UpdateUserDto
+):
+Promise < IResponse > {
     const user = await this.userService.update(id, dto);
     return {
         data: user,
@@ -214,16 +226,17 @@ async update(
 
 ### Validation Pipe
 
-Validation errors are automatically translated by `MessageService`. See [Request Validation Documentation][ref-doc-request-validation] for details.
+Validation errors are automatically translated by `MessageService`.
+See [Request Validation Documentation][ref-doc-request-validation] for details.
 
 ```json
 // src/languages/en/request.json
 {
-    "error": {
-        "isNotEmpty": "{property} should not be empty",
-        "isEmail": "{property} must be a valid email",
-        "minLength": "{property} must be at least {min} characters"
-    }
+  "error": {
+    "isNotEmpty": "{property} should not be empty",
+    "isEmail": "{property} must be a valid email",
+    "minLength": "{property} must be at least {min} characters"
+  }
 }
 ```
 
@@ -232,9 +245,15 @@ The validation pipe transforms class-validator errors into localized messages:
 ```typescript
 // Automatic transformation
 {
-    "statusCode": 400,
-    "message": "Validation error",
-    "errors": [
+    "statusCode"
+:
+    400,
+        "message"
+:
+    "Validation error",
+        "errors"
+:
+    [
         {
             "key": "isNotEmpty",
             "property": "email",
@@ -337,7 +356,9 @@ export enum ENUM_MESSAGE_LANGUAGE {
 <!-- THIRD PARTY -->
 
 [ref-nestjs]: http://nestjs.com
+
 [ref-nestjs-i18n]: https://nestjs-i18n.com
+
 [ref-prisma]: https://www.prisma.io
 
 [ref-mongodb]: https://docs.mongodb.com/
@@ -378,7 +399,7 @@ export enum ENUM_MESSAGE_LANGUAGE {
 
 [ref-doc-root]: readme.md
 
-[ref-doc-audit-activity-log]: docs/audit-activity-log.md
+[ref-doc-activity-log]: docs/activity-log.md
 
 [ref-doc-authentication]: docs/authentication.md
 
@@ -394,15 +415,19 @@ export enum ENUM_MESSAGE_LANGUAGE {
 
 [ref-doc-feature-flag]: docs/feature-flag.md
 
+[ref-doc-file-upload]: docs/file-upload.md
+
 [ref-doc-handling-error]: docs/handling-error.md
 
 [ref-doc-how-to-handling-error]: docs/how-to-handling-error.md
 
 [ref-doc-installation]: docs/installation.md
 
+[ref-doc-logger]: docs/logger.md
+
 [ref-doc-message]: docs/message.md
 
-[ref-doc-logger]: docs/logger.md
+[ref-doc-pagination]: docs/pagination.md
 
 [ref-doc-project-structure]: docs/project-structure.md
 
@@ -414,6 +439,6 @@ export enum ENUM_MESSAGE_LANGUAGE {
 
 [ref-doc-security-and-middleware]: docs/security-and-middleware.md
 
-[ref-doc-service-side-pagination]: docs/service-side-pagination.md
+[ref-doc-doc]: docs/doc.md
 
 [ref-doc-third-party-integration]: docs/third-party-integration.md
