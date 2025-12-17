@@ -1,5 +1,7 @@
 # Request Validation Documentation
 
+> This documentation explains the features and usage of **Request Module**: Located at `src/common/request`
+
 ## Overview
 
 Request validation uses NestJS's built-in [ValidationPipe][ref-nestjs-validation-pipe]
@@ -7,10 +9,10 @@ with [class-validator][ref-class-validator] decorators to validate request body,
 
 ## Related Documents
 
-- [Message System][ref-doc-message] - For internationalization and error message translation
-- [Handling Error][ref-doc-handling-error] - For exception handling and response formatting
-- [Swagger Documentation][ref-doc-swagger] - For API documentation integration with DTOs
-- [File Upload][ref-doc-file-upload] - For file validation pipes
+- [Message Documentation][ref-doc-message] - For internationalization and error message translation
+- [Handling Error Documentation][ref-doc-handling-error] - For exception handling and response formatting
+- [Doc Documentation][ref-doc-doc] - For API documentation integration with DTOs
+- [File Upload Documentation][ref-doc-file-upload] - For file validation pipes
 
 ## Table of Contents
 
@@ -21,12 +23,12 @@ with [class-validator][ref-class-validator] decorators to validate request body,
     - [Request Body Validation](#request-body-validation)
     - [Query Parameters Validation](#query-parameters-validation)
     - [Path Parameters Validation](#path-parameters-validation)
-- [DTO with Swagger](#dto-with-swagger)
+- [DTO with Doc](#dto-with-doc)
 - [Extending DTOs](#extending-dtos)
-    - [Direct Extension](#direct-extension)
-    - [PartialType](#partialtype)
-    - [OmitType](#omittype)
-    - [IntersectionType](#intersectiontype)
+  - [Direct](#direct-extension)
+  - [PartialType](#partialtype)
+  - [OmitType](#omittype)
+  - [IntersectionType](#intersectiontype)
 - [Custom Validators](#custom-validators)
     - [Available Custom Validators](#available-custom-validators)
     - [Creating Custom Validator](#creating-custom-validator)
@@ -48,13 +50,22 @@ new ValidationPipe({
     whitelist: true,
     forbidNonWhitelisted: true,
     errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    exceptionFactory: async (errors: ValidationError[]) =>
-        new RequestValidationException(errors),
+    transformOptions: {
+      excludeExtraneousValues: false,
+    },
+    validationError: {
+      target: false,
+      value: true,
+    },
+    errorHttpStatusCode:
+    HttpStatus.UNPROCESSABLE_ENTITY,
+    exceptionFactory: async (
+            errors: ValidationError[]
+    ) => new RequestValidationException(errors),
 })
 ```
 
 **Processing flow**:
-
 ```
 Request received
     ↓
@@ -177,7 +188,7 @@ export class UserParamDto {
 }
 ```
 
-## DTO with Swagger
+## DTO with Doc
 
 Combine [class-validator][ref-class-validator] decorators with `@ApiProperty`from [@nestjs/swagger][ref-nestjs-swagger]:
 
@@ -220,14 +231,15 @@ export class CreateUserDto {
 }
 ```
 
-See [Swagger Documentation][ref-doc-swagger] for complete guide.
+See [Doc Documentation][ref-doc-doc] for complete guide with API documentation.
+
 
 ## Extending DTOs
 
 Use type helpers from [@nestjs/swagger][ref-nestjs-swagger] to maintain `@ApiProperty` validity when extending DTOs.
 See [@nestjs/swagger documentation][ref-nestjs-swagger-mapped-types] for details.
 
-### Direct Extension
+### Direct
 
 ```typescript
 export class UpdateUserDto extends CreateUserDto {
@@ -760,7 +772,7 @@ See [Handling Error][ref-doc-handling-error] for complete error handling flow.
 
 [ref-doc-root]: readme.md
 
-[ref-doc-audit-activity-log]: docs/audit-activity-log.md
+[ref-doc-activity-log]: docs/activity-log.md
 
 [ref-doc-authentication]: docs/authentication.md
 

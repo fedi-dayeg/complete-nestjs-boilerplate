@@ -1,6 +1,6 @@
 # Logger Documentation
 
-Comprehensive logging system using Pino with file rotation, sensitive data redaction, and custom serializers for request/response logging.
+> This documentation explains the features and usage of **Logger Module**: Located at `src/common/logger`
 
 ## Overview
 
@@ -8,10 +8,9 @@ Comprehensive logging system using Pino with file rotation, sensitive data redac
 
 ## Related Documents
 
-- [Configuration][ref-doc-configuration] - For logger configuration settings
-- [Environment][ref-doc-environment] - For logger environment variables
-- [Handling Error][ref-doc-handling-error] - For error logging integration
-
+- [Configuration Documentation][ref-doc-configuration] - For logger configuration settings
+- [Environment Documentation][ref-doc-environment] - For logger environment variables
+- [Handling Error Documentation][ref-doc-handling-error] - For error logging integration
 
 ## Table of Contents
 - [Overview](#overview)
@@ -22,6 +21,7 @@ Comprehensive logging system using Pino with file rotation, sensitive data redac
 - [File Logging](#file-logging)
 - [Auto Logging](#auto-logging)
 - [Console Output](#console-output)
+- [Request ID Tracking](#request-id-tracking)
 
 
 Features:

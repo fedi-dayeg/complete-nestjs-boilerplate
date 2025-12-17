@@ -29,17 +29,17 @@ Below is an overview of the main project structure:
 
 ```
 src
-  |-- app
-  |-- common
-  |-- configs
-  |-- languages
-  |-- migration
-  |-- modules
-  |-- router
-  |-- queues
-  |-- templates
-  |-- main.ts
-  |-- swagger.ts
+  ├── app
+  ├── common
+  ├── configs
+  ├── languages
+  ├── migration
+  ├── modules
+  ├── router
+  ├── queues
+  ├── templates
+  ├── main.ts
+  └── swagger.ts
 ```
 
 Each folder serves a specific purpose, supporting modularity and maintainability.
@@ -136,28 +136,28 @@ concerns and scalability.
 
 ```
 module
-  |-- bases
-  |-- constants
-  |-- controllers
-  |-- decorators
-  |-- docs
-  |-- dtos
-  |-- entities
-  |-- enums
-  |-- exceptions
-  |-- factories
-  |-- filters
-  |-- guards
-  |-- interceptors
-  |-- interfaces
-  |-- middlewares
-  |-- pipes
-  |-- processors
-  |-- repositories
-  |-- services
-  |-- templates
-  |-- utils
-  |-- validations
+  ├── bases
+  ├── constants
+  ├── controllers
+  ├── decorators
+  ├── docs
+  ├── dtos
+  ├── entities
+  ├── enums
+  ├── exceptions
+  ├── factories
+  ├── filters
+  ├── guards
+  ├── interceptors
+  ├── interfaces
+  ├── middlewares
+  ├── pipes
+  ├── processors
+  ├── repositories
+  ├── services
+  ├── templates
+  ├── utils
+  └── validations
 ```
 
 This structure ensures each feature is isolated, testable, and easy to maintain.
