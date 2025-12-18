@@ -35,8 +35,7 @@ The error handling system provides comprehensive exception management using Nest
 
 ## How It Works
 
-The boilerplate uses 4 specialized exception filters registered globally in hierarchical order:
-
+Compelete NestJS Boilerplate uses 4 specialized exception filters registered globally in hierarchical order:
 1. **AppValidationImportFilter** - Handles `FileImportException`
 2. **AppValidationFilter** - Handles `RequestValidationException`
 3. **AppHttpFilter** - Handles `HttpException`
