@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import { DatabaseUtil } from '@common/database/utils/database.util';
 import { ArgumentMetadata } from '@nestjs/common/interfaces';
 import { isMongoId } from 'class-validator';
 import { ENUM_REQUEST_STATUS_CODE_ERROR } from '@common/request/enums/request.status-code.enum';
