@@ -1,7 +1,8 @@
 
 # Configuration Documentation
 
-> This documentation explains the features and usage of **Config Module**: Located at `src/configs`
+This documentation explains the features and usage of **Config Module**: Located at `src/configs`
+
 
 ## Overview
 
@@ -49,7 +50,6 @@ All configuration files are located in the `src/configs` directory. Each configu
 The configuration modules are imported and registered in `src/configs/index.ts` as an array and this configuration array is then loaded in `src/common/common.module.ts`:
 
 ```typescript
-import configs from '@config';
 
 @Module({
     imports: [

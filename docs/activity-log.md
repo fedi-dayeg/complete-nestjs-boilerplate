@@ -1,6 +1,6 @@
 # Activity Log Documentation
 
-> This documentation explains the features and usage of **Activity Log Module**: Located at `src/modules/activity-log`
+This documentation explains the features and usage of **Activity Log Module**: Located at `src/modules/activity-log`
 
 
 ## Overview
@@ -12,7 +12,6 @@ Activity Log is a system to record successful user activities in the application
 
 **Notes:**
 - Activity logs are **only recorded for successful requests**. Failed requests are not logged.
-- **Current Implementation:** Only admin endpoints use `@ActivityLog` decorator. All user endpoints handle logging manually in service/repository layer.
 
 ## Related Documents
 
@@ -23,32 +22,10 @@ Activity Log is a system to record successful user activities in the application
 
 - [Overview](#overview)
 - [Related Documents](#related-documents)
-- [Types](#types)
 - [Flow](#flow)
-- [Recorded Contains](#recorded-contains)
-- [Implementation](#implementation)
-    - [Admin Endpoints: Use Decorator](#admin-endpoints-use-decorator)
-- [Usage Examples](#usage-examples)
-- [Metadata](#metadata)
-
-## Types
-
-
-```mermaid
-graph TD
-    A[Activity Log <br/>Types]
-    A --> C[Self Logging]
-    
-    C --> G[Admin creates<br/>API key]
-    G --> H[ @ActivityLog<br/>decorator]
-    
-    style A fill:#f9f,stroke:#333,stroke-width:4px
-    style C fill:#bfb,stroke:#333,stroke-width:2px
-```
-
-Decorator Handles Everything
-- Records only the actor's activity
-- Example: Admin creates API key, Only admin's log is created
+- [Data](#data)
+  - [Metadata](#metadata)
+- [Usage](#usage)
 
 ## Flow
 
@@ -76,7 +53,7 @@ sequenceDiagram
     end
 ```
 
-## Recorded Contains
+## Data
 
 Each activity log contains:
 - **userId** - User who performed or was affected
@@ -86,96 +63,7 @@ Each activity log contains:
 - **metadata** - Additional context (optional, JSON)
 - **createdAt** - Timestamp
 
-## Implementation
-
-### Admin Endpoints: Use Decorator
-
-Use `@ActivityLog` decorator for clean, automatic logging.
-
-```typescript
-@ActivityLog(ENUM_ACTIVITY_LOG_ACTION.adminApiKeyCreate)
-@Post('/create')
-async create(@Body() body: ApiKeyCreateRequestDto) {
-    return this.apiKeyService.create(body);
-}
-```
-
-**What the decorator does:**
-- Automatically creates activity log for the admin (self-recording only)
-- Captures IP address and user agent
-- Only executes on successful response
-
-**What the decorator does NOT do:**
-- Does NOT create logs for affected users (bidirectional)
-- For bidirectional logging, you must manually create the second log in service
-
-
-## Usage Examples
-
-Admin Blocks User
-
-```mermaid
-sequenceDiagram
-    participant Admin
-    participant Controller
-    participant Service
-    participant DB
-    
-    Admin->>Controller: PUT /admin/user/123/block
-    Note over Controller: @ActivityLog decorator
-    Controller->>Service: blockUser(userId)
-    Service->>DB: Update user status ✓
-    Note over Controller: Decorator creates self log
-    Controller->>DB: Log for Admin Only ✓
-    DB-->>Admin: Success (1 log created)
-```
-
-**Implementation:**
-
-```typescript
-// Controller - decorator handles admin's log
-@ActivityLog(ENUM_ACTIVITY_LOG_ACTION.adminUserUpdateStatus)
-@Put('/user/:id/block')
-async blockUser(@Param('id') userId: string) {
-  return this.userService.blockUser(userId);
-}
-
-// Service - returns metadataActivityLog
-async blockUser(userId: string): Promise<IResponseReturn> {
-  const user = await this.userRepository.findOneById(userId);
-  const updated = await this.userRepository.updateStatus(userId, 'blocked');
-
-  return {
-    data: this.userUtil.mapOne(updated),
-    metadataActivityLog: {
-      userId: user.id,
-      userName: user.name,
-      oldStatus: user.status,
-      newStatus: 'blocked'
-    }
-  };
-}
-```
-
-**Logs Created:**
-
-```json
-{
-  "userId": "admin-id",
-  "action": "adminUserUpdateStatus",
-  "ipAddress": "192.168.1.1",
-  "userAgent": { ... },
-  "metadata": {
-    "userId": "user-123",
-    "userName": "John Doe",
-    "oldStatus": "active",
-    "newStatus": "blocked"
-  }
-}
-```
-
-## Metadata
-
+### Metadata
 Metadata allows you to record additional context about the activity. The decorator automatically captures metadata by reading `metadataActivityLog` from the service response.
 
 **How it works:**
@@ -191,26 +79,27 @@ Metadata allows you to record additional context about the activity. The decorat
 @ActivityLog(ENUM_ACTIVITY_LOG_ACTION.adminUserUpdateStatus)
 @Put('/user/:id/block')
 async blockUser(@Param('id') userId: string) {
-    return this.userService.blockUser(userId); // Returns IResponseReturn
+  return this.userService.blockUser(userId); // Returns IResponseReturn
 }
 
 // Service returns IResponseReturn with metadataActivityLog
 async blockUser(userId: string): Promise<IResponseReturn> {
-    const user = await this.userRepository.findOneById(userId);
-    const oldStatus = user.status; // Store old value
-    
-    const updated = await this.userRepository.updateStatus(userId, 'blocked');
-    
-    // Return with metadataActivityLog
-    return {
-        data: this.userUtil.mapOne(updated),
-        metadataActivityLog: {
-            userId: user.id,
-            userName: user.name,
-            oldStatus: oldStatus,    // Before change
-            newStatus: 'blocked'     // After change
-        }
-    };
+  const user = await this.userRepository.findOneById(userId);
+  
+  const oldStatus = user.status; // Store old value
+  
+  const updated = await this.userRepository.updateStatus(userId, 'blocked');
+
+  // Return with metadataActivityLog
+  return {
+    data: this.userUtil.mapOne(updated),
+    metadataActivityLog: {
+      userId: user.id,
+      userName: user.name,
+      oldStatus: oldStatus,    // Before change
+      newStatus: 'blocked'     // After change
+    }
+  };
 }
 ```
 
@@ -234,9 +123,72 @@ async blockUser(userId: string): Promise<IResponseReturn> {
 Never include sensitive data:
 ```typescript
 metadataActivityLog: {
-  password: "secret123",        // Never!
-  accessToken: "jwt_token",     // Never!
-  entireUserObject: { ... }     // Too large
+    password: "secret123",        // Never!
+    accessToken: "jwt_token",     // Never!
+    entireUserObject: { ... }     // Too large
+}
+```
+## Usage
+
+Admin Blocks User
+
+```mermaid
+sequenceDiagram
+    participant Admin
+    participant Controller
+    participant Service
+    participant DB
+    
+    Admin->>Controller: PUT /admin/user/123/block
+    Note over Controller: @ActivityLog decorator
+    Controller->>Service: blockUser(userId)
+    Service->>DB: Update user status ✓
+    Note over Controller: Decorator creates self log
+    Controller->>DB: Log for Admin Only ✓
+    DB-->>Admin: Success (1 log created)
+```
+
+**Implementation:**
+```typescript
+// Controller - decorator handles admin's log
+@ActivityLog(ENUM_ACTIVITY_LOG_ACTION.adminUserUpdateStatus)
+@Put('/user/:id/block')
+async blockUser(@Param('id') userId: string) {
+  return this.userService.blockUser(userId);
+}
+
+// Service - returns metadataActivityLog
+async blockUser(userId: string): Promise<IResponseReturn> {
+    const user = await this.userRepository.findOneById(userId);
+    
+    const updated = await this.userRepository.updateStatus(userId, 'blocked');
+    
+    return {
+        data: this.userUtil.mapOne(updated),
+        metadataActivityLog: {
+            userId: user.id,
+            userName: user.name,
+            oldStatus: user.status,
+            newStatus: 'blocked'
+        }
+    };
+}
+```
+
+**Logs Created:**
+
+```json
+{
+  "userId": "admin-id",
+  "action": "adminUserUpdateStatus",
+  "ipAddress": "192.168.1.1",
+  "userAgent": { ... },
+  "metadata": {
+    "userId": "user-123",
+    "userName": "John Doe",
+    "oldStatus": "active",
+    "newStatus": "blocked"
+  }
 }
 ```
 

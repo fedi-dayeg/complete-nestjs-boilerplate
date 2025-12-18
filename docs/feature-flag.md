@@ -1,6 +1,7 @@
 # Feature Flag Documentation
 
-> This documentation explains the features and usage of **Feature Flag Module**: Located at `src/modules/feature-flag`
+This documentation explains the features and usage of **Feature Flag Module**: Located at `src/modules/feature-flag`
+
 
 ## Overview
 
