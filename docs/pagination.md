@@ -18,30 +18,25 @@ The Pagination module provides a comprehensive solution for handling paginated d
 
 - [Overview](#overview)
 - [Related Documents](#related-documents)
-- [Table of Contents](#table-of-contents)
-    - [Module](#module)
-        - [Services](#services)
-        - [Decorators](#decorators)
-            - [Base Pagination Decorators](#base-pagination-decorators)
-            - [Filter Decorators](#filter-decorators)
-        - [Constants](#constants)
-    - [Pagination Strategies](#pagination-strategies)
-        - [Offset Pagination](#offset-pagination)
-        - [Cursor Pagination](#cursor-pagination)
-    - [Usage](#usage)
-        - [Basic Offset Pagination](#basic-offset-pagination)
-        - [Basic Cursor Pagination](#basic-cursor-pagination)
-        - [With Filters](#with-filters)
-        - [Complete Example](#complete-example)
-    - [Integration with Doc Module](#integration-with-doc-module)
+- [Module](#module)
+    - [PaginationService](#paginationservice)
+    - [Decorators](#decorators)
+- [Strategies](#strategies)
+    - [Offset](#offset)
+    - [Cursor](#cursor)
+- [Usage](#usage)
+    - [Offset](#offset-1)
+    - [Cursor](#cursor-1)
+    - [Filters](#filters)
+    - [Complex](#complex)
+    - [API Request](#api-request)
+- [Integration with Doc Module](#integration-with-doc-module)
 
 ## Module
 
 The Pagination module is a global module that provides services and decorators for handling pagination across the application.
 
-### Services
-
-**PaginationService**
+### PaginationService
 
 Core service that processes pagination operations:
 
@@ -57,11 +52,9 @@ Core service that processes pagination operations:
 
 ### Decorators
 
-#### Base Pagination Decorators
+#### PaginationOffsetQuery
 
-**@PaginationOffsetQuery(options?)**
-
-Main decorator for offset-based pagination with search, paging, and ordering.
+Decorator for offset-based pagination with search, paging, and ordering.
 
 Options:
 - `defaultPerPage`: Default items per page (default: 20)
@@ -77,9 +70,9 @@ Usage:
 pagination: IPaginationQueryOffsetParams
 ```
 
-**@PaginationCursorQuery(options?)**
+#### PaginationCursorQuery
 
-Main decorator for cursor-based pagination with search, paging, and ordering.
+Decorator for cursor-based pagination with search, paging, and ordering.
 
 Options:
 - `defaultPerPage`: Default items per page (default: 20)
@@ -96,9 +89,7 @@ Usage:
 pagination: IPaginationQueryCursorParams
 ```
 
-#### Filter Decorators
-
-**@PaginationQueryFilterInEnum(field, defaultEnum, options?)**
+#### PaginationQueryFilterInEnum
 
 Filter by enum values using 'in' operator.
 
@@ -116,7 +107,7 @@ Usage:
 status?: Record<string, IPaginationIn>
 ```
 
-**@PaginationQueryFilterNinEnum(field, defaultEnum, options?)**
+#### PaginationQueryFilterNinEnum
 
 Filter by enum values using 'not in' operator.
 
@@ -134,7 +125,7 @@ Usage:
 status?: Record<string, IPaginationNin>
 ```
 
-**@PaginationQueryFilterEqualBoolean(field, options?)**
+#### PaginationQueryFilterEqualBoolean
 
 Filter by boolean equality.
 
@@ -148,7 +139,7 @@ Usage:
 isActive?: Record<string, IPaginationEqual>
 ```
 
-**@PaginationQueryFilterEqualNumber(field, options?)**
+#### PaginationQueryFilterEqualNumber
 
 Filter by number equality.
 
@@ -162,7 +153,7 @@ Usage:
 age?: Record<string, IPaginationEqual>
 ```
 
-**@PaginationQueryFilterEqualString(field, options?)**
+#### PaginationQueryFilterEqualString
 
 Filter by string equality.
 
@@ -176,7 +167,7 @@ Usage:
 role?: Record<string, IPaginationEqual>
 ```
 
-**@PaginationQueryFilterNotEqual(field, options?)**
+#### PaginationQueryFilterNotEqual
 
 Filter by inequality.
 
@@ -190,7 +181,7 @@ Usage:
 status?: Record<string, IPaginationNotEqual>
 ```
 
-**@PaginationQueryFilterDate(field, options?)**
+#### PaginationQueryFilterDate
 
 Filter by date range.
 
@@ -213,24 +204,9 @@ startDate?: Record<string, IPaginationDate>
 endDate?: Record<string, IPaginationDate>
 ```
 
-### Constants
+## Strategies
 
-Default values for pagination:
-
-- `PAGINATION_DEFAULT_PER_PAGE`: 20
-- `PAGINATION_DEFAULT_MAX_PER_PAGE`: 100
-- `PAGINATION_DEFAULT_MAX_PAGE`: 50
-- `PAGINATION_DEFAULT_CURSOR_FIELD`: 'id'
-
-Enums:
-
-- `ENUM_PAGINATION_FILTER_DATE_BETWEEN_TYPE`: `START`, `END`
-- `ENUM_PAGINATION_ORDER_DIRECTION_TYPE`: `ASC`, `DESC`
-- `ENUM_PAGINATION_TYPE`: `OFFSET`, `CURSOR`
-
-## Pagination Strategies
-
-### Offset Pagination
+### Offset
 
 Offset pagination uses page numbers and items per page. Best for:
 - Known total count requirements
@@ -260,7 +236,7 @@ Response includes:
 }
 ```
 
-### Cursor Pagination
+### Cursor
 
 Cursor pagination uses encoded cursors for navigation. Best for:
 - Real-time data
@@ -296,14 +272,9 @@ Response includes:
 
 ## Usage
 
-### Basic Offset Pagination
+### Offset
 
 ```typescript
-import { Get } from '@nestjs/common';
-import { PaginationOffsetQuery } from '@common/pagination/decorators/pagination.decorator';
-import { IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
-import { ResponsePaging } from '@common/response/decorators/response.decorator';
-
 @Get('/list')
 @ResponsePaging('user.list')
 async list(
@@ -355,14 +326,9 @@ async findWithPaginationOffset(
 }
 ```
 
-### Basic Cursor Pagination
+### Cursor
 
 ```typescript
-import { Get } from '@nestjs/common';
-import { PaginationCursorQuery } from '@common/pagination/decorators/pagination.decorator';
-import { IPaginationQueryCursorParams } from '@common/pagination/interfaces/pagination.interface';
-import { ResponsePaging } from '@common/response/decorators/response.decorator';
-
 @Get('/list')
 @ResponsePaging('user.list')
 async list(
@@ -414,22 +380,9 @@ async findWithPaginationCursor(
 }
 ```
 
-### With Filters
+### Filters
 
 ```typescript
-import { Get } from '@nestjs/common';
-import {
-    PaginationOffsetQuery,
-    PaginationQueryFilterInEnum,
-    PaginationQueryFilterEqualString,
-} from '@common/pagination/decorators/pagination.decorator';
-import {
-    IPaginationQueryOffsetParams,
-    IPaginationIn,
-    IPaginationEqual,
-} from '@common/pagination/interfaces/pagination.interface';
-import { ENUM_USER_STATUS } from '@modules/user/enums/user.enum';
-
 @Get('/list')
 @ResponsePaging('user.list')
 async list(
@@ -509,31 +462,9 @@ async findWithPaginationOffset(
 }
 ```
 
-### Complete Example
+### Complex
 
 ```typescript
-import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import {
-    PaginationOffsetQuery,
-    PaginationQueryFilterInEnum,
-    PaginationQueryFilterEqualString,
-    PaginationQueryFilterDate,
-} from '@common/pagination/decorators/pagination.decorator';
-import {
-    IPaginationQueryOffsetParams,
-    IPaginationIn,
-    IPaginationEqual,
-    IPaginationDate,
-} from '@common/pagination/interfaces/pagination.interface';
-import { ResponsePaging } from '@common/response/decorators/response.decorator';
-import { 
-    ENUM_USER_STATUS,
-    USER_DEFAULT_AVAILABLE_SEARCH,
-    USER_DEFAULT_STATUS 
-} from '@modules/user/constants/user.constant';
-import { ENUM_PAGINATION_FILTER_DATE_BETWEEN_TYPE } from '@common/pagination/enums/pagination.enum';
-
 @ApiTags('modules.admin.user')
 @Controller({
     version: '1',
@@ -580,7 +511,7 @@ export class UserAdminController {
 }
 ```
 
-API Request example:
+### API Request
 ```
 GET /user/list?page=1&perPage=20&search=john&status=active,inactive&role=admin&orderBy=createdAt&orderDirection=desc&createdAt=2024-01-01
 ```
@@ -592,8 +523,6 @@ The Pagination module integrates with the [Doc module][ref-doc-doc] through the 
 **Usage with Pagination:**
 
 ```typescript
-import { DocResponsePaging } from '@common/doc/decorators/doc.decorator';
-
 @DocResponsePaging<UserListResponseDto>('user.list', {
     dto: UserListResponseDto,
     availableSearch: ['name', 'email'],

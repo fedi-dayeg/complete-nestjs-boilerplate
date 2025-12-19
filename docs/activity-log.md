@@ -12,6 +12,8 @@ Activity Log is a system to record successful user activities in the application
 
 **Notes:**
 - Activity logs are **only recorded for successful requests**. Failed requests are not logged.
+- `@ActivityLog` decorator is **only implemented for admin endpoints**.
+- `@ActivityLog` decorator **requires** `@AuthJwtAccessProtected` decorator to be present.
 
 ## Related Documents
 
@@ -37,6 +39,7 @@ sequenceDiagram
     participant Database
     
     Client->>Controller: HTTP Request
+    Note over Controller: @AuthJwtAccessProtected (Required)
     Note over Controller: @ActivityLog Decorator
     Controller->>Service: Execute business logic
     Service->>Database: Perform operation
@@ -77,6 +80,7 @@ Metadata allows you to record additional context about the activity. The decorat
 ```typescript
 // Controller with decorator
 @ActivityLog(ENUM_ACTIVITY_LOG_ACTION.adminUserUpdateStatus)
+@AuthJwtAccessProtected() // Required for ActivityLog
 @Put('/user/:id/block')
 async blockUser(@Param('id') userId: string) {
   return this.userService.blockUser(userId); // Returns IResponseReturn
@@ -140,6 +144,7 @@ sequenceDiagram
     participant DB
     
     Admin->>Controller: PUT /admin/user/123/block
+    Note over Controller: @AuthJwtAccessProtected (Required)
     Note over Controller: @ActivityLog decorator
     Controller->>Service: blockUser(userId)
     Service->>DB: Update user status ✓
@@ -152,6 +157,7 @@ sequenceDiagram
 ```typescript
 // Controller - decorator handles admin's log
 @ActivityLog(ENUM_ACTIVITY_LOG_ACTION.adminUserUpdateStatus)
+@AuthJwtAccessProtected() // Required for ActivityLog decorator
 @Put('/user/:id/block')
 async blockUser(@Param('id') userId: string) {
   return this.userService.blockUser(userId);

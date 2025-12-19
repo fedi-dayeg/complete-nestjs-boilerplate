@@ -55,7 +55,7 @@ _You can [request feature][ref-ack-issues] or [report bug][ref-ack-issues] with 
 - Since version `2.0.0`, the project uses prisma for handle database.
 
 ## TODO
-
+- [ ] Migrate to PNPM and update document installation before release v8
 - [ ] 2FA with TOTP Authentication (eg: Google Authenticator)
 - [ ] Recovery Codes Method
 - [ ] Login with biometrics (fingerprint or face detection)
@@ -186,8 +186,7 @@ If your branch is behind the `origin/main` branch, please rebase and resolve any
 
 ### Support This Project
 
-If you find this project helpful and would like to support its development, you can:
-
+If you find this project helpful and would like to support its development, please consider giving it a ⭐ **star** on GitHub or buying me a ☕ **coffee**!
 **Buy me a coffee** ☕
 
 <div style="display: flex; gap: 10px; flex-wrap: wrap;">

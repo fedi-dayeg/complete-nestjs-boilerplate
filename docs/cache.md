@@ -188,9 +188,6 @@ export class CommonModule {}
 
 **Global cache:**
 ```typescript
-import { Inject } from '@nestjs/common';
-import { Cache } from '@nestjs/cache-manager';
-import { CacheMainProvider } from '@common/cache/constants/cache.constant';
 
 @Injectable()
 export class UserService {
@@ -202,10 +199,6 @@ export class UserService {
 
 **Session cache:**
 ```typescript
-import { Inject } from '@nestjs/common';
-import { Cache } from '@nestjs/cache-manager';
-import { SessionCacheProvider } from '@modules/session/constants/session.constant';
-
 @Injectable()
 export class SessionService {
     constructor(

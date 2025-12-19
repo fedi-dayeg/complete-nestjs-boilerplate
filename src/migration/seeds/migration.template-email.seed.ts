@@ -6,15 +6,15 @@ import { Command } from 'nest-commander';
 
 // TODO: Change this to template and add term policy seed file
 @Command({
-    name: 'email',
+    name: 'template-email',
     description: 'Seed/Remove Emails',
     allowUnknownOptions: false,
 })
-export class MigrationEmailSeed
+export class MigrationTemplateEmailSeed
     extends MigrationSeedBase
     implements IMigrationSeed
 {
-    private readonly logger = new Logger(MigrationEmailSeed.name);
+    private readonly logger = new Logger(MigrationTemplateEmailSeed.name);
 
     constructor(private readonly emailTemplateService: EmailTemplateService) {
         super();

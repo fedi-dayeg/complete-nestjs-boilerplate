@@ -16,6 +16,7 @@ available throughout the application without additional imports.
 - [Response Documentation][ref-doc-response] - For response integration with message service
 - [Handling Error Documentation][ref-doc-handling-error] - For exception filter integration
 - [Request Validation Documentation][ref-doc-request-validation] - For validation message translation
+- [Security and Middleware Documentation][ref-doc-security-and-middleware] - For custom language header middleware and internationalization
 
 ## Table of Contents
 
@@ -98,9 +99,6 @@ Access pattern:
 Inject `MessageService` and use `setMessage` method:
 
 ```typescript
-import { Injectable } from '@nestjs/common';
-import { MessageService } from '@common/message/services/message.service';
-
 @Injectable()
 export class UserService {
     constructor(private readonly messageService: MessageService) {
@@ -160,8 +158,7 @@ await axios.get('http://localhost:3000/api/users', {
 
 ### Exception Filters
 
-Exception filters automatically translate message paths. See [Error Handling Documentation][ref-doc-handling-error] for
-details.
+Exception filters automatically translate message paths.
 
 ```typescript
 throw new BadRequestException({
