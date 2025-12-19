@@ -61,6 +61,9 @@ Options:
 - `availableSearch`: Array of searchable fields
 - `availableOrderBy`: Array of fields available for ordering
 
+**Default Behavior:**
+- If no `orderBy` parameter is provided, results will be sorted by `createdAt: DESC`
+
 Usage:
 ```typescript
 @PaginationOffsetQuery({
@@ -79,6 +82,9 @@ Options:
 - `cursorField`: Field to use as cursor (default: 'id')
 - `availableSearch`: Array of searchable fields
 - `availableOrderBy`: Array of fields available for ordering
+
+**Default Behavior:**
+- If no `orderBy` parameter is provided, results will be sorted by `createdAt: DESC`
 
 Usage:
 ```typescript
@@ -318,7 +324,7 @@ async findWithPaginationOffset(
                 ...params.where,
                 deletedAt: null,
             },
-            includes: {
+            include: {
                 role: true,
             },
         }
@@ -372,7 +378,7 @@ async findWithPaginationCursor(
                 ...params.where,
                 deletedAt: null,
             },
-            includes: {
+            include: {
                 role: true,
             },
         }
@@ -454,7 +460,7 @@ async findWithPaginationOffset(
                 ...role,
                 deletedAt: null,
             },
-            includes: {
+            include: {
                 role: true,
             },
         }

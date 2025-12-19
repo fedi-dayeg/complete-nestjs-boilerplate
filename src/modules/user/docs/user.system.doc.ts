@@ -17,6 +17,7 @@ import {
 } from '@modules/user/dtos/response/user.check.response.dto';
 import { UserListResponseDto } from '@modules/user/dtos/response/user.list.response.dto';
 import { applyDecorators } from '@nestjs/common';
+import { ENUM_PAGINATION_TYPE } from '@common/pagination/enums/pagination.enum';
 
 export function UserSystemListDoc(): MethodDecorator {
     return applyDecorators(
@@ -31,6 +32,7 @@ export function UserSystemListDoc(): MethodDecorator {
         }),
         DocResponsePaging<UserListResponseDto>('user.list', {
             dto: UserListResponseDto,
+            type: ENUM_PAGINATION_TYPE.CURSOR,
         })
     );
 }
