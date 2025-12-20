@@ -169,7 +169,7 @@ export class UserRepository {
                 },
             },
             orderBy: {
-                createdAt: ENUM_PAGINATION_ORDER_DIRECTION_TYPE.DESC,
+                createdAt: ENUM_PAGINATION_ORDER_DIRECTION_TYPE.desc,
             },
         });
     }
@@ -243,7 +243,7 @@ export class UserRepository {
                 },
             },
             orderBy: {
-                createdAt: ENUM_PAGINATION_ORDER_DIRECTION_TYPE.DESC,
+                createdAt: ENUM_PAGINATION_ORDER_DIRECTION_TYPE.desc,
             },
         });
     }
@@ -348,7 +348,7 @@ export class UserRepository {
                     isVerified: roleType === ENUM_ROLE_TYPE.user ? false : true,
                     status: ENUM_USER_STATUS.active,
                     termPolicy: {
-                        [ENUM_TERM_POLICY_TYPE.cookie]: false,
+                        [ENUM_TERM_POLICY_TYPE.cookies]: false,
                         [ENUM_TERM_POLICY_TYPE.marketing]: false,
                         [ENUM_TERM_POLICY_TYPE.privacy]: true,
                         [ENUM_TERM_POLICY_TYPE.termsOfService]: true,
@@ -872,7 +872,7 @@ export class UserRepository {
             countryId,
             name,
             from,
-            cookie,
+            cookies,
             marketing,
         }: UserCreateSocialRequestDto,
         { ipAddress, userAgent }: IRequestLog
@@ -889,7 +889,7 @@ export class UserRepository {
                     in: [
                         ENUM_TERM_POLICY_TYPE.termsOfService,
                         ENUM_TERM_POLICY_TYPE.privacy,
-                        cookie ? ENUM_TERM_POLICY_TYPE.cookie : null,
+                        cookies ? ENUM_TERM_POLICY_TYPE.cookies : null,
                         marketing ? ENUM_TERM_POLICY_TYPE.marketing : null,
                     ].filter(Boolean) as ENUM_TERM_POLICY_TYPE[],
                 },
@@ -914,7 +914,7 @@ export class UserRepository {
                     isVerified: true,
                     status: ENUM_USER_STATUS.active,
                     termPolicy: {
-                        [ENUM_TERM_POLICY_TYPE.cookie]: cookie,
+                        [ENUM_TERM_POLICY_TYPE.cookies]: cookies,
                         [ENUM_TERM_POLICY_TYPE.marketing]: marketing,
                         [ENUM_TERM_POLICY_TYPE.privacy]: true,
                         [ENUM_TERM_POLICY_TYPE.termsOfService]: true,
@@ -979,7 +979,7 @@ export class UserRepository {
             marketing,
             name,
             from,
-            cookie,
+            cookies,
         }: UserSignUpRequestDto,
         {
             passwordCreated,
@@ -997,7 +997,7 @@ export class UserRepository {
                     in: [
                         ENUM_TERM_POLICY_TYPE.termsOfService,
                         ENUM_TERM_POLICY_TYPE.privacy,
-                        cookie ? ENUM_TERM_POLICY_TYPE.cookie : null,
+                        cookies ? ENUM_TERM_POLICY_TYPE.cookies : null,
                         marketing ? ENUM_TERM_POLICY_TYPE.marketing : null,
                     ].filter(Boolean) as ENUM_TERM_POLICY_TYPE[],
                 },
@@ -1038,7 +1038,7 @@ export class UserRepository {
                         },
                     },
                     termPolicy: {
-                        [ENUM_TERM_POLICY_TYPE.cookie]: cookie,
+                        [ENUM_TERM_POLICY_TYPE.cookies]: cookies,
                         [ENUM_TERM_POLICY_TYPE.marketing]: marketing,
                         [ENUM_TERM_POLICY_TYPE.privacy]: true,
                         [ENUM_TERM_POLICY_TYPE.termsOfService]: true,

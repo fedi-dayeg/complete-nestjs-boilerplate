@@ -33,9 +33,9 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
                 this.termPolicyUtil.createRandomFilenameContentWithPath(
                     ENUM_TERM_POLICY_TYPE.termsOfService,
                     1,
-                    ENUM_MESSAGE_LANGUAGE.EN,
+                    ENUM_MESSAGE_LANGUAGE.en,
                     {
-                        extension: ENUM_FILE_EXTENSION_DOCUMENT.PDF,
+                        extension: ENUM_FILE_EXTENSION_DOCUMENT.pdf,
                     }
                 );
 
@@ -72,9 +72,9 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
                 this.termPolicyUtil.createRandomFilenameContentWithPath(
                     ENUM_TERM_POLICY_TYPE.privacy,
                     1,
-                    ENUM_MESSAGE_LANGUAGE.EN,
+                    ENUM_MESSAGE_LANGUAGE.en,
                     {
-                        extension: ENUM_FILE_EXTENSION_DOCUMENT.PDF,
+                        extension: ENUM_FILE_EXTENSION_DOCUMENT.pdf,
                     }
                 );
 
@@ -109,11 +109,11 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
             const templateContent = readFileSync(templatePath);
             const randomKey =
                 this.termPolicyUtil.createRandomFilenameContentWithPath(
-                    ENUM_TERM_POLICY_TYPE.cookie,
+                    ENUM_TERM_POLICY_TYPE.cookies,
                     1,
-                    ENUM_MESSAGE_LANGUAGE.EN,
+                    ENUM_MESSAGE_LANGUAGE.en,
                     {
-                        extension: ENUM_FILE_EXTENSION_DOCUMENT.PDF,
+                        extension: ENUM_FILE_EXTENSION_DOCUMENT.pdf,
                     }
                 );
 
@@ -150,9 +150,9 @@ export class TermPolicyTemplateService implements ITermPolicyTemplateService {
                 this.termPolicyUtil.createRandomFilenameContentWithPath(
                     ENUM_TERM_POLICY_TYPE.marketing,
                     1,
-                    ENUM_MESSAGE_LANGUAGE.EN,
+                    ENUM_MESSAGE_LANGUAGE.en,
                     {
-                        extension: ENUM_FILE_EXTENSION_DOCUMENT.PDF,
+                        extension: ENUM_FILE_EXTENSION_DOCUMENT.pdf,
                     }
                 );
 

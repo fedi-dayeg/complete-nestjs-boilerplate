@@ -24,7 +24,7 @@ export class PolicyService implements IPolicyService {
         if (!__user || !user) {
             throw new ForbiddenException({
                 statusCode:
-                    ENUM_AUTH_STATUS_CODE_ERROR.JWT_ACCESS_TOKEN_INVALID,
+                    ENUM_AUTH_STATUS_CODE_ERROR.jwtAccessTokenInvalid,
                 message: 'auth.error.accessTokenUnauthorized',
             });
         }
@@ -35,7 +35,7 @@ export class PolicyService implements IPolicyService {
             return true;
         } else if (requiredAbilities.length === 0) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_POLICY_STATUS_CODE_ERROR.PREDEFINED_NOT_FOUND,
+                statusCode: ENUM_POLICY_STATUS_CODE_ERROR.predefinedNotFound,
                 message: 'policy.error.predefinedNotFound',
             });
         }
@@ -48,7 +48,7 @@ export class PolicyService implements IPolicyService {
         );
         if (!policyHandler) {
             throw new ForbiddenException({
-                statusCode: ENUM_POLICY_STATUS_CODE_ERROR.FORBIDDEN,
+                statusCode: ENUM_POLICY_STATUS_CODE_ERROR.forbidden,
                 message: 'policy.error.forbidden',
             });
         }

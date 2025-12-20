@@ -97,7 +97,7 @@ Run the command:
 - `country`: Inserts country data (name, codes, phone code, continent, timezone).
 - `featureFlag`: Inserts feature flags to enable/disable features (e.g., login methods, sign up, change password).
 - `role`: Inserts user roles (superadmin, admin, user) with abilities and permissions.
-- `termPolicy`: Inserts term policy documents (cookie, marketing, privacy, terms of service) with version and content.
+- `termPolicy`: Inserts term policy documents (cookies, marketing, privacy, terms of service) with version and content.
 - `user`: Inserts initial user accounts (Super Admin, Admin, User) with country, role, and credentials.
 
 
@@ -202,11 +202,11 @@ All features are enabled by default with 100% rollout for development convenienc
 
 Four term policy documents are created:
 
-| Type | Version | Language | Description |
-|------|---------|----------|-------------|
-| `cookie` | 1 | EN | Cookie policy document |
-| `marketing` | 1 | EN | Marketing terms document |
-| `privacy` | 1 | EN | Privacy policy document |
+| Type             | Version | Language | Description |
+|------------------|---------|----------|-------------|
+| `cookies`        | 1 | EN | Cookie policy document |
+| `marketing`      | 1 | EN | Marketing terms document |
+| `privacy`        | 1 | EN | Privacy policy document |
 | `termsOfService` | 1 | EN | Terms of Service document |
 
 The actual content for these policies is stored as file references in `src/migration/data/term-policy/*`. The files are not automatically linked to the database records. You must run the term policy migration script to link the files and update the content keys in the database.

@@ -114,18 +114,18 @@ export class AwsS3Service implements IAwsS3Service {
             region: this.configService.get<string>('aws.s3.region'),
         });
 
-        this.config.set(ENUM_AWS_S3_ACCESSIBILITY.PUBLIC, {
+        this.config.set(ENUM_AWS_S3_ACCESSIBILITY.public, {
             ...this.configService.get<IAwsS3ConfigBucket>(
                 'aws.s3.config.public'
             ),
-            access: ENUM_AWS_S3_ACCESSIBILITY.PUBLIC,
+            access: ENUM_AWS_S3_ACCESSIBILITY.public,
         });
 
-        this.config.set(ENUM_AWS_S3_ACCESSIBILITY.PRIVATE, {
+        this.config.set(ENUM_AWS_S3_ACCESSIBILITY.private, {
             ...this.configService.get<IAwsS3ConfigBucket>(
                 'aws.s3.config.private'
             ),
-            access: ENUM_AWS_S3_ACCESSIBILITY.PRIVATE,
+            access: ENUM_AWS_S3_ACCESSIBILITY.private,
         });
     }
 
@@ -163,7 +163,7 @@ export class AwsS3Service implements IAwsS3Service {
      */
     async checkBucket(options?: IAwsS3Options): Promise<boolean> {
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
 
         const command: HeadBucketCommand = new HeadBucketCommand({
@@ -188,7 +188,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
 
         const headCommand = new HeadObjectCommand({
@@ -213,7 +213,7 @@ export class AwsS3Service implements IAwsS3Service {
             extension,
             size: item.ContentLength,
             mime,
-            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC,
+            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public,
         };
     }
 
@@ -232,7 +232,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
 
         const command: ListObjectsV2Command = new ListObjectsV2Command({
@@ -261,7 +261,7 @@ export class AwsS3Service implements IAwsS3Service {
                 extension,
                 size: item.Size,
                 mime,
-                access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC,
+                access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public,
             };
         });
 
@@ -297,7 +297,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
         const command: GetObjectCommand = new GetObjectCommand({
             Bucket: config.bucket,
@@ -322,7 +322,7 @@ export class AwsS3Service implements IAwsS3Service {
             data: item.Body,
             size: item.ContentLength,
             mime,
-            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC,
+            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public,
         };
     }
 
@@ -343,7 +343,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
 
         if (!options?.forceUpdate) {
@@ -391,7 +391,7 @@ export class AwsS3Service implements IAwsS3Service {
             extension,
             size: file?.size,
             mime,
-            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC,
+            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public,
         };
     }
 
@@ -412,7 +412,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
 
         if (!options?.forceUpdate) {
@@ -461,7 +461,7 @@ export class AwsS3Service implements IAwsS3Service {
             extension,
             size: file?.size,
             mime,
-            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC,
+            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public,
         };
     }
 
@@ -477,7 +477,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
         const command: DeleteObjectCommand = new DeleteObjectCommand({
             Bucket: config.bucket,
@@ -502,7 +502,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
         const obj: ObjectIdentifier[] = keys.map((val: string) => ({
             Key: val,
@@ -533,7 +533,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
         let continuationToken: string | undefined = undefined;
 
@@ -592,7 +592,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
 
         if (!options?.forceUpdate) {
@@ -647,7 +647,7 @@ export class AwsS3Service implements IAwsS3Service {
             maxPartNumber: maxPartNumber,
             parts: [],
             mime,
-            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC,
+            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public,
         };
     }
 
@@ -672,7 +672,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
         const { pathWithFilename, extension, mime } = this.getFileInfoFromKey(
             file.key
@@ -707,7 +707,7 @@ export class AwsS3Service implements IAwsS3Service {
             maxPartNumber: maxPartNumber,
             parts: [],
             mime,
-            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC,
+            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public,
         };
     }
 
@@ -726,7 +726,7 @@ export class AwsS3Service implements IAwsS3Service {
         options?: IAwsS3Options
     ): Promise<AwsS3MultipartDto> {
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
 
         const uploadPartCommand: UploadPartCommand = new UploadPartCommand({
@@ -769,7 +769,7 @@ export class AwsS3Service implements IAwsS3Service {
         options?: IAwsS3Options
     ): Promise<void> {
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
 
         const completeMultipartCommand: CompleteMultipartUploadCommand =
@@ -806,7 +806,7 @@ export class AwsS3Service implements IAwsS3Service {
         options?: IAwsS3Options
     ): Promise<void> {
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
 
         const abortMultipartCommand: AbortMultipartUploadCommand =
@@ -839,7 +839,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
 
         if (!options?.forceUpdate) {
@@ -901,7 +901,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
 
         if (!options?.forceUpdate) {
@@ -963,7 +963,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
         const { pathWithFilename, extension, mime } =
             this.getFileInfoFromKey(key);
@@ -979,7 +979,7 @@ export class AwsS3Service implements IAwsS3Service {
             extension,
             size,
             mime,
-            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC,
+            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public,
         };
     }
 
@@ -1004,7 +1004,7 @@ export class AwsS3Service implements IAwsS3Service {
         }
 
         const config = this.config.get(
-            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC
+            options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public
         );
 
         const destinationKey = `${destination}/${source.key.split('/').pop()}`;
@@ -1035,7 +1035,7 @@ export class AwsS3Service implements IAwsS3Service {
             extension,
             size: source.size,
             mime,
-            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.PUBLIC,
+            access: options?.access ?? ENUM_AWS_S3_ACCESSIBILITY.public,
         };
     }
 

@@ -253,8 +253,8 @@ export function Doc(options?: IDocOptions): MethodDecorator {
                 description: 'Custom language header',
                 required: false,
                 schema: {
-                    default: ENUM_MESSAGE_LANGUAGE.EN,
-                    example: ENUM_MESSAGE_LANGUAGE.EN,
+                    default: ENUM_MESSAGE_LANGUAGE.en,
+                    example: ENUM_MESSAGE_LANGUAGE.en,
                     type: 'string',
                 },
             },
@@ -348,14 +348,14 @@ export function DocGuard(options?: IDocGuardOptions): MethodDecorator {
 
     if (options?.role) {
         oneOfForbidden.push({
-            statusCode: ENUM_ROLE_STATUS_CODE_ERROR.FORBIDDEN,
+            statusCode: ENUM_ROLE_STATUS_CODE_ERROR.forbidden,
             messagePath: 'role.error.forbidden',
         });
     }
 
     if (options?.policy) {
         oneOfForbidden.push({
-            statusCode: ENUM_POLICY_STATUS_CODE_ERROR.FORBIDDEN,
+            statusCode: ENUM_POLICY_STATUS_CODE_ERROR.forbidden,
             messagePath: 'policy.error.forbidden',
         });
     }
@@ -376,14 +376,14 @@ export function DocAuth(options?: IDocAuthOptions): MethodDecorator {
         docs.push(ApiBearerAuth('refreshToken'));
         oneOfUnauthorized.push({
             messagePath: 'auth.error.refreshTokenUnauthorized',
-            statusCode: ENUM_AUTH_STATUS_CODE_ERROR.JWT_REFRESH_TOKEN_INVALID,
+            statusCode: ENUM_AUTH_STATUS_CODE_ERROR.jwtRefreshTokenInvalid,
         });
     }
     if (options?.jwtAccessToken) {
         docs.push(ApiBearerAuth('accessToken'));
         oneOfUnauthorized.push({
             messagePath: 'auth.error.accessTokenUnauthorized',
-            statusCode: ENUM_AUTH_STATUS_CODE_ERROR.JWT_ACCESS_TOKEN_INVALID,
+            statusCode: ENUM_AUTH_STATUS_CODE_ERROR.jwtAccessTokenInvalid,
         });
     }
 
@@ -392,11 +392,11 @@ export function DocAuth(options?: IDocAuthOptions): MethodDecorator {
         oneOfUnauthorized.push(
             {
                 messagePath: 'auth.error.socialGoogleInvalid',
-                statusCode: ENUM_AUTH_STATUS_CODE_ERROR.SOCIAL_GOOGLE_INVALID,
+                statusCode: ENUM_AUTH_STATUS_CODE_ERROR.socialGoogleInvalid,
             },
             {
                 messagePath: 'auth.error.socialGoogleRequired',
-                statusCode: ENUM_AUTH_STATUS_CODE_ERROR.SOCIAL_GOOGLE_REQUIRED,
+                statusCode: ENUM_AUTH_STATUS_CODE_ERROR.socialGoogleRequired,
             }
         );
     }
@@ -406,11 +406,11 @@ export function DocAuth(options?: IDocAuthOptions): MethodDecorator {
         oneOfUnauthorized.push(
             {
                 messagePath: 'auth.error.socialAppleInvalid',
-                statusCode: ENUM_AUTH_STATUS_CODE_ERROR.SOCIAL_APPLE_INVALID,
+                statusCode: ENUM_AUTH_STATUS_CODE_ERROR.socialAppleInvalid,
             },
             {
                 messagePath: 'auth.error.socialAppleRequired',
-                statusCode: ENUM_AUTH_STATUS_CODE_ERROR.SOCIAL_APPLE_REQUIRED,
+                statusCode: ENUM_AUTH_STATUS_CODE_ERROR.socialAppleRequired,
             }
         );
     }
@@ -419,19 +419,19 @@ export function DocAuth(options?: IDocAuthOptions): MethodDecorator {
         docs.push(ApiSecurity('xApiKey'));
         oneOfUnauthorized.push(
             {
-                statusCode: ENUM_API_KEY_STATUS_CODE_ERROR.X_API_KEY_REQUIRED,
+                statusCode: ENUM_API_KEY_STATUS_CODE_ERROR.xApiKeyRequired,
                 messagePath: 'apiKey.error.xApiKey.required',
             },
             {
-                statusCode: ENUM_API_KEY_STATUS_CODE_ERROR.X_API_KEY_NOT_FOUND,
+                statusCode: ENUM_API_KEY_STATUS_CODE_ERROR.xApiKeyNotFound,
                 messagePath: 'apiKey.error.xApiKey.notFound',
             },
             {
-                statusCode: ENUM_API_KEY_STATUS_CODE_ERROR.X_API_KEY_INVALID,
+                statusCode: ENUM_API_KEY_STATUS_CODE_ERROR.xApiKeyInvalid,
                 messagePath: 'apiKey.error.xApiKey.invalid',
             },
             {
-                statusCode: ENUM_API_KEY_STATUS_CODE_ERROR.X_API_KEY_FORBIDDEN,
+                statusCode: ENUM_API_KEY_STATUS_CODE_ERROR.xApiKeyForbidden,
                 messagePath: 'apiKey.error.xApiKey.forbidden',
             }
         );
@@ -522,7 +522,7 @@ export function DocResponsePaging<T>(
         DOC_PAGINATION_ERROR_RESPONSES.FILTER_INVALID_VALUE,
     ];
 
-    if (options.type === ENUM_PAGINATION_TYPE.CURSOR) {
+    if (options.type === ENUM_PAGINATION_TYPE.cursor) {
         docs.push(
             ...DOC_PAGINATION_CURSOR_QUERIES.map(query => ApiQuery(query))
         );
@@ -559,7 +559,7 @@ export function DocResponsePaging<T>(
                 name: 'orderDirection',
                 required: false,
                 allowEmptyValue: true,
-                example: ENUM_PAGINATION_ORDER_DIRECTION_TYPE.ASC,
+                example: ENUM_PAGINATION_ORDER_DIRECTION_TYPE.asc,
                 enum: ENUM_PAGINATION_ORDER_DIRECTION_TYPE,
                 type: 'string',
                 description: `Order direction, available values: ${Object.values(ENUM_PAGINATION_ORDER_DIRECTION_TYPE).join(', ')}.`,
@@ -582,7 +582,7 @@ export function DocResponseFile(
     const httpStatus: HttpStatus = options?.httpStatus ?? HttpStatus.OK;
 
     return applyDecorators(
-        ApiProduces(options?.extension ?? ENUM_FILE_EXTENSION.CSV),
+        ApiProduces(options?.extension ?? ENUM_FILE_EXTENSION.csv),
         ApiResponse({
             description: httpStatus.toString(),
             status: httpStatus,

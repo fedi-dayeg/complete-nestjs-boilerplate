@@ -116,7 +116,7 @@ export class UserService implements IUserService {
         if (!request.user) {
             throw new UnauthorizedException({
                 statusCode:
-                    ENUM_AUTH_STATUS_CODE_ERROR.JWT_ACCESS_TOKEN_INVALID,
+                    ENUM_AUTH_STATUS_CODE_ERROR.jwtAccessTokenInvalid,
                 message: 'auth.error.accessTokenUnauthorized',
             });
         }
@@ -125,12 +125,12 @@ export class UserService implements IUserService {
         const user = await this.userRepository.findOneWithRoleById(userId);
         if (!user) {
             throw new ForbiddenException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.notFound,
                 message: 'user.error.notFound',
             });
         } else if (user.status !== ENUM_USER_STATUS.active) {
             throw new ForbiddenException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.INACTIVE_FORBIDDEN,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.inactiveForbidden,
                 message: 'user.error.inactive',
             });
         }
@@ -139,12 +139,12 @@ export class UserService implements IUserService {
             this.authUtil.checkPasswordExpired(user.passwordExpired);
         if (checkPasswordExpired) {
             throw new ForbiddenException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.PASSWORD_EXPIRED,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.passwordExpired,
                 message: 'auth.error.passwordExpired',
             });
         } else if (requiredVerified === true && user.isVerified !== true) {
             throw new ForbiddenException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.EMAIL_NOT_VERIFIED,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.emailNotVerified,
                 message: 'user.error.emailNotVerified',
             });
         }
@@ -198,7 +198,7 @@ export class UserService implements IUserService {
         const user = await this.userRepository.findOneProfileById(id);
         if (!user) {
             throw new NotFoundException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.notFound,
                 message: 'user.error.notFound',
             });
         }
@@ -219,17 +219,17 @@ export class UserService implements IUserService {
 
         if (!checkRole) {
             throw new NotFoundException({
-                statusCode: ENUM_ROLE_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_ROLE_STATUS_CODE_ERROR.notFound,
                 message: 'role.error.notFound',
             });
         } else if (!checkCountry) {
             throw new NotFoundException({
-                statusCode: ENUM_COUNTRY_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_COUNTRY_STATUS_CODE_ERROR.notFound,
                 message: 'country.error.notFound',
             });
         } else if (emailExist) {
             throw new ConflictException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.EMAIL_EXIST,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.emailExist,
                 message: 'user.error.emailExist',
             });
         }
@@ -301,7 +301,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -317,12 +317,12 @@ export class UserService implements IUserService {
         const user = await this.userRepository.findOneById(userId);
         if (!user) {
             throw new NotFoundException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.notFound,
                 message: 'user.error.notFound',
             });
         } else if (user.status === ENUM_USER_STATUS.blocked) {
             throw new BadRequestException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.STATUS_INVALID,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.statusInvalid,
                 message: 'user.error.statusInvalid',
                 _metadata: {
                     customProperty: {
@@ -348,7 +348,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -414,7 +414,7 @@ export class UserService implements IUserService {
         const checkCountry = await this.countryRepository.existById(countryId);
         if (!checkCountry) {
             throw new NotFoundException({
-                statusCode: ENUM_COUNTRY_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_COUNTRY_STATUS_CODE_ERROR.notFound,
                 message: 'country.error.notFound',
             });
         }
@@ -432,7 +432,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -481,7 +481,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -502,7 +502,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -518,7 +518,7 @@ export class UserService implements IUserService {
             await this.countryRepository.findOneById(countryId);
         if (!checkCountry) {
             throw new NotFoundException({
-                statusCode: ENUM_COUNTRY_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_COUNTRY_STATUS_CODE_ERROR.notFound,
                 message: 'country.error.notFound',
             });
         }
@@ -533,12 +533,12 @@ export class UserService implements IUserService {
         ]);
         if (!checkValidMobileNumber) {
             throw new BadRequestException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.MOBILE_NUMBER_INVALID,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.mobileNumberInvalid,
                 message: 'user.error.mobileNumberInvalid',
             });
         } else if (checkExist) {
             throw new ConflictException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.MOBILE_NUMBER_EXIST,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.mobileNumberExist,
                 message: 'user.error.mobileNumberExist',
             });
         }
@@ -560,7 +560,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -579,12 +579,12 @@ export class UserService implements IUserService {
         ]);
         if (!checkMobileNumberExist) {
             throw new NotFoundException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.MOBILE_NUMBER_NOT_FOUND,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.mobileNumberNotFound,
                 message: 'user.error.mobileNumberNotFound',
             });
         } else if (!checkCountry) {
             throw new NotFoundException({
-                statusCode: ENUM_COUNTRY_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_COUNTRY_STATUS_CODE_ERROR.notFound,
                 message: 'country.error.notFound',
             });
         }
@@ -596,7 +596,7 @@ export class UserService implements IUserService {
         );
         if (checkExist) {
             throw new ConflictException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.MOBILE_NUMBER_EXIST,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.mobileNumberExist,
                 message: 'user.error.mobileNumberExist',
             });
         }
@@ -607,7 +607,7 @@ export class UserService implements IUserService {
         );
         if (!checkValidMobileNumber) {
             throw new BadRequestException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.MOBILE_NUMBER_INVALID,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.mobileNumberInvalid,
                 message: 'user.error.mobileNumberInvalid',
             });
         }
@@ -631,7 +631,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -649,7 +649,7 @@ export class UserService implements IUserService {
         );
         if (!checkExist) {
             throw new NotFoundException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.MOBILE_NUMBER_NOT_FOUND,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.mobileNumberNotFound,
                 message: 'user.error.mobileNumberNotFound',
             });
         }
@@ -668,7 +668,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -687,18 +687,18 @@ export class UserService implements IUserService {
         ]);
         if (checkUsername) {
             throw new BadRequestException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.USERNAME_NOT_ALLOWED,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.usernameNotAllowed,
                 message: 'user.error.usernameNotAllowed',
             });
         } else if (checkBadWord) {
             throw new BadRequestException({
                 statusCode:
-                    ENUM_USER_STATUS_CODE_ERROR.USERNAME_CONTAIN_BAD_WORD,
+                    ENUM_USER_STATUS_CODE_ERROR.usernameContainBadWord,
                 message: 'user.error.usernameContainBadWord',
             });
         } else if (exist) {
             throw new ConflictException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.USERNAME_EXIST,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.usernameExist,
                 message: 'user.error.usernameExist',
             });
         }
@@ -713,7 +713,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -750,7 +750,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -765,12 +765,12 @@ export class UserService implements IUserService {
         const user = await this.userRepository.findOneById(userId);
         if (!user) {
             throw new NotFoundException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.notFound,
                 message: 'user.error.notFound',
             });
         } else if (user.status === ENUM_USER_STATUS.blocked) {
             throw new BadRequestException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.STATUS_INVALID,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.statusInvalid,
                 message: 'user.error.statusInvalid',
                 _metadata: {
                     customProperty: {
@@ -818,7 +818,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -839,7 +839,7 @@ export class UserService implements IUserService {
             );
 
             throw new ForbiddenException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.PASSWORD_ATTEMPT_MAX,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.passwordAttemptMax,
                 message: 'auth.error.passwordAttemptMax',
             });
         } else if (
@@ -848,7 +848,7 @@ export class UserService implements IUserService {
             await this.userRepository.increasePasswordAttempt(userId);
 
             throw new BadRequestException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.PASSWORD_NOT_MATCH,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.passwordNotMatch,
                 message: 'auth.error.passwordNotMatch',
             });
         }
@@ -863,7 +863,7 @@ export class UserService implements IUserService {
         );
         if (passwordCheck) {
             throw new BadRequestException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.PASSWORD_MUST_NEW,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.passwordMustNew,
                 message: 'auth.error.passwordMustNew',
                 _metadata: {
                     customProperty: {
@@ -899,7 +899,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -913,31 +913,31 @@ export class UserService implements IUserService {
         const user = await this.userRepository.findOneWithRoleByEmail(email);
         if (!user) {
             throw new NotFoundException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.notFound,
                 message: 'user.error.notFound',
             });
         } else if (user.status !== ENUM_USER_STATUS.active) {
             throw new ForbiddenException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.INACTIVE_FORBIDDEN,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.inactiveForbidden,
                 message: 'user.error.inactive',
             });
         } else if (!user.password) {
             throw new BadRequestException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.PASSWORD_NOT_SET,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.passwordNotSet,
                 message: 'auth.error.passwordNotSet',
             });
         }
 
         if (this.authUtil.checkPasswordAttempt(user)) {
             throw new ForbiddenException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.PASSWORD_ATTEMPT_MAX,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.passwordAttemptMax,
                 message: 'auth.error.passwordAttemptMax',
             });
         } else if (!this.authUtil.validatePassword(password, user.password)) {
             await this.userRepository.increasePasswordAttempt(user.id);
 
             throw new BadRequestException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.PASSWORD_NOT_MATCH,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.passwordNotMatch,
                 message: 'auth.error.passwordNotMatch',
             });
         }
@@ -948,12 +948,12 @@ export class UserService implements IUserService {
             this.authUtil.checkPasswordExpired(user.passwordExpired);
         if (checkPasswordExpired) {
             throw new ForbiddenException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.PASSWORD_EXPIRED,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.passwordExpired,
                 message: 'auth.error.passwordExpired',
             });
         } else if (!user.isVerified) {
             throw new ForbiddenException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.EMAIL_NOT_VERIFIED,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.emailNotVerified,
                 message: 'user.error.emailNotVerified',
             });
         }
@@ -998,7 +998,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1027,7 +1027,7 @@ export class UserService implements IUserService {
             );
             if (!role) {
                 throw new NotFoundException({
-                    statusCode: ENUM_ROLE_STATUS_CODE_ERROR.NOT_FOUND,
+                    statusCode: ENUM_ROLE_STATUS_CODE_ERROR.notFound,
                     message: 'role.error.notFound',
                 });
             }
@@ -1051,7 +1051,7 @@ export class UserService implements IUserService {
 
         if (user.status !== ENUM_USER_STATUS.active) {
             throw new ForbiddenException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.INACTIVE_FORBIDDEN,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.inactiveForbidden,
                 message: 'user.error.inactive',
             });
         }
@@ -1098,7 +1098,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1124,7 +1124,7 @@ export class UserService implements IUserService {
         if (session.fingerprint !== oldFingerprint) {
             throw new UnauthorizedException({
                 statusCode:
-                    ENUM_AUTH_STATUS_CODE_ERROR.JWT_REFRESH_TOKEN_INVALID,
+                    ENUM_AUTH_STATUS_CODE_ERROR.jwtRefreshTokenInvalid,
                 message: 'auth.error.refreshTokenInvalid',
             });
         }
@@ -1157,7 +1157,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1180,17 +1180,17 @@ export class UserService implements IUserService {
         ]);
         if (!role) {
             throw new NotFoundException({
-                statusCode: ENUM_ROLE_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_ROLE_STATUS_CODE_ERROR.notFound,
                 message: 'role.error.notFound',
             });
         } else if (!checkCountry) {
             throw new NotFoundException({
-                statusCode: ENUM_COUNTRY_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_COUNTRY_STATUS_CODE_ERROR.notFound,
                 message: 'country.error.notFound',
             });
         } else if (emailExist) {
             throw new ConflictException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.EMAIL_EXIST,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.emailExist,
                 message: 'user.error.emailExist',
             });
         }
@@ -1241,7 +1241,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1258,7 +1258,7 @@ export class UserService implements IUserService {
             );
         if (!verification) {
             throw new BadRequestException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.TOKEN_INVALID,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.tokenInvalid,
                 message: 'user.error.verificationTokenInvalid',
             });
         }
@@ -1285,7 +1285,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1299,12 +1299,12 @@ export class UserService implements IUserService {
         const user = await this.userRepository.findOneActiveByEmail(email);
         if (!user) {
             throw new NotFoundException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.notFound,
                 message: 'user.error.notFound',
             });
         } else if (user.isVerified) {
             throw new BadRequestException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.EMAIL_ALREADY_VERIFIED,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.emailAlreadyVerified,
                 message: 'user.error.emailAlreadyVerified',
             });
         }
@@ -1322,7 +1322,7 @@ export class UserService implements IUserService {
             if (today < canResendAt) {
                 throw new BadRequestException({
                     statusCode:
-                        ENUM_USER_STATUS_CODE_ERROR.VERIFICATION_EMAIL_RESEND_LIMIT_EXCEEDED,
+                        ENUM_USER_STATUS_CODE_ERROR.verificationEmailResendLimitExceeded,
                     message: 'user.error.verificationEmailResendLimitExceeded',
                     _metadata: {
                         customProperty: {
@@ -1368,7 +1368,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1382,7 +1382,7 @@ export class UserService implements IUserService {
         const user = await this.userRepository.findOneActiveByEmail(email);
         if (!user) {
             throw new NotFoundException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.notFound,
                 message: 'user.error.notFound',
             });
         }
@@ -1400,7 +1400,7 @@ export class UserService implements IUserService {
             if (today < canResendAt) {
                 throw new BadRequestException({
                     statusCode:
-                        ENUM_USER_STATUS_CODE_ERROR.FORGOT_PASSWORD_REQUEST_LIMIT_EXCEEDED,
+                        ENUM_USER_STATUS_CODE_ERROR.forgotPasswordRequestLimitExceeded,
                     message: 'user.error.forgotPasswordRequestLimitExceeded',
                     _metadata: {
                         customProperty: {
@@ -1445,7 +1445,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1460,7 +1460,7 @@ export class UserService implements IUserService {
             await this.userRepository.findOneActiveByForgotPasswordToken(token);
         if (!resetPassword) {
             throw new NotFoundException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.NOT_FOUND,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.notFound,
                 message: 'user.error.notFound',
             });
         }
@@ -1475,7 +1475,7 @@ export class UserService implements IUserService {
         );
         if (passwordCheck) {
             throw new BadRequestException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.PASSWORD_MUST_NEW,
+                statusCode: ENUM_USER_STATUS_CODE_ERROR.passwordMustNew,
                 message: 'auth.error.passwordMustNew',
                 _metadata: {
                     customProperty: {
@@ -1516,7 +1516,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.UNKNOWN,
+                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });

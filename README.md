@@ -45,7 +45,8 @@ _You can [request feature][ref-ack-issues] or [report bug][ref-ack-issues] with 
     @PolicyAbilityProtected({...})
     @RoleProtected(...)
     @TermPolicyAcceptanceProtected(...)
-    @UserProtected()     
+    @UserProtected()
+    @ActivityLog(...) 
     @AuthJwtAccessProtected()
     @FeatureFlagProtected(...)
     @ApiKeyProtected()
@@ -55,6 +56,17 @@ _You can [request feature][ref-ack-issues] or [report bug][ref-ack-issues] with 
 - Since version `2.0.0`, the project uses prisma for handle database.
 
 ## TODO
+
+- [ ] Test Migration Email and Send Email
+- [ ] Test Term Policy Flow at Admin Side
+- [ ] Rename all enum to CapitalCase
+- [ ] Migrate to PNPM and update document installation before release v8
+- [ ] Update doc related with yarn to pnpm
+- [ ] Update term and policy doc
+
+### Next Features
+- [ ] Activity Log support bidirectional logging
+- [ ] Add import and export endpoint (includes: direct upload and presign upload)
 - [ ] Migrate to PNPM and update document installation before release v8
 - [ ] 2FA with TOTP Authentication (eg: Google Authenticator)
 - [ ] Recovery Codes Method
@@ -62,8 +74,11 @@ _You can [request feature][ref-ack-issues] or [report bug][ref-ack-issues] with 
 - [ ] Login with passkey
 - [ ] Login with Github SSO
 - [ ] Device awareness
+- [ ] Verification Mobile Number
 - [ ] Simple Notification System or Enchant Activity Log to be able act as notification
 - [ ] Versioning System (Force frontend to update, especially mobile)
+
+### Test
 - [ ] Unit test
 - [ ] Integration Test
 - [ ] E2E Test

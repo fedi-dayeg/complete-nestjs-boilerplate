@@ -647,12 +647,12 @@ export class HelperService implements IHelperService {
 
         if (
             options?.dayOf &&
-            options?.dayOf === ENUM_HELPER_DATE_DAY_OF.START
+            options?.dayOf === ENUM_HELPER_DATE_DAY_OF.start
         ) {
             mDate = mDate.startOf('day');
         } else if (
             options?.dayOf &&
-            options?.dayOf === ENUM_HELPER_DATE_DAY_OF.END
+            options?.dayOf === ENUM_HELPER_DATE_DAY_OF.end
         ) {
             mDate = mDate.endOf('day');
         }
@@ -680,12 +680,12 @@ export class HelperService implements IHelperService {
 
         if (
             options?.dayOf &&
-            options?.dayOf === ENUM_HELPER_DATE_DAY_OF.START
+            options?.dayOf === ENUM_HELPER_DATE_DAY_OF.start
         ) {
             date.startOf('day');
         } else if (
             options?.dayOf &&
-            options?.dayOf === ENUM_HELPER_DATE_DAY_OF.END
+            options?.dayOf === ENUM_HELPER_DATE_DAY_OF.end
         ) {
             date.endOf('day');
         }
@@ -709,12 +709,12 @@ export class HelperService implements IHelperService {
 
         if (
             options?.dayOf &&
-            options?.dayOf === ENUM_HELPER_DATE_DAY_OF.START
+            options?.dayOf === ENUM_HELPER_DATE_DAY_OF.start
         ) {
             date.startOf('day');
         } else if (
             options?.dayOf &&
-            options?.dayOf === ENUM_HELPER_DATE_DAY_OF.END
+            options?.dayOf === ENUM_HELPER_DATE_DAY_OF.end
         ) {
             date.endOf('day');
         }

@@ -125,7 +125,7 @@ export function FileExtensionPipe(
                 } else {
                     throw new UnsupportedMediaTypeException({
                         statusCode:
-                            ENUM_FILE_STATUS_CODE_ERROR.EXTENSION_INVALID,
+                            ENUM_FILE_STATUS_CODE_ERROR.extensionInvalid,
                         message: 'file.error.extensionInvalid',
                     });
                 }
@@ -147,7 +147,7 @@ export function FileExtensionPipe(
                 this.validateExtension(file.originalname);
             } else {
                 throw new UnsupportedMediaTypeException({
-                    statusCode: ENUM_FILE_STATUS_CODE_ERROR.EXTENSION_INVALID,
+                    statusCode: ENUM_FILE_STATUS_CODE_ERROR.extensionInvalid,
                     message: 'file.error.extensionInvalid',
                 });
             }
@@ -171,7 +171,7 @@ export function FileExtensionPipe(
 
             if (!this.extensions.has(extension)) {
                 throw new UnsupportedMediaTypeException({
-                    statusCode: ENUM_FILE_STATUS_CODE_ERROR.EXTENSION_INVALID,
+                    statusCode: ENUM_FILE_STATUS_CODE_ERROR.extensionInvalid,
                     message: 'file.error.extensionInvalid',
                 });
             }
