@@ -1,8 +1,5 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import {
-    RedisClientCachedProvider,
-    RedisClientQueueProvider,
-} from '@common/redis/constants/redis.constant';
+import { RedisClientCachedProvider } from '@common/redis/constants/redis.constant';
 import { ConfigService } from '@nestjs/config';
 import { createKeyv } from '@keyv/redis';
 
@@ -20,7 +17,7 @@ export class RedisCacheModule {
      * @returns {DynamicModule} Configured dynamic module with Redis cache provider
      */
     static forRoot(): DynamicModule {
-        const redisProvider = {
+        const redisCacheProvider = {
             provide: RedisClientCachedProvider,
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => {
@@ -42,47 +39,8 @@ export class RedisCacheModule {
         return {
             module: RedisCacheModule,
             imports: [],
-            providers: [redisProvider],
-            exports: [redisProvider],
-        };
-    }
-}
-
-/**
- * Global Redis queue module that provides Redis client for queue operations.
- * Configures Redis connection with timeout and key separator settings for queue functionality.
- */
-@Global()
-@Module({})
-export class RedisQueueModule {
-    /**
-     * Creates and configures the Redis queue module with connection settings.
-     * Sets up Redis client provider with timeout and key separator configuration for queue operations.
-     *
-     * @returns {DynamicModule} Configured dynamic module with Redis queue provider
-     */
-    static forRoot(): DynamicModule {
-        const redisProvider = {
-            provide: RedisClientQueueProvider,
-            inject: [ConfigService],
-            useFactory: (configService: ConfigService) => {
-                return createKeyv(
-                    {
-                        url: configService.get<string>('redis.queue.url'),
-                    },
-                    {
-                        connectionTimeout: 30000,
-                        useUnlink: true,
-                        keyPrefixSeparator: ':',
-                    }
-                );
-            },
-        };
-        return {
-            module: RedisQueueModule,
-            imports: [],
-            providers: [redisProvider],
-            exports: [redisProvider],
+            providers: [redisCacheProvider],
+            exports: [redisCacheProvider],
         };
     }
 }
