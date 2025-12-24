@@ -1,4 +1,4 @@
-import { ENUM_APP_ENVIRONMENT } from '@app/enums/app.enum';
+import { EnumAppEnvironment } from '@app/enums/app.enum';
 import {
     ENUM_POLICY_ACTION,
     ENUM_POLICY_SUBJECT,
@@ -30,12 +30,9 @@ const roleData: RoleCreateRequestDto[] = [
     },
 ];
 
-export const migrationRoleData: Record<
-    ENUM_APP_ENVIRONMENT,
-    RoleCreateRequestDto[]
-> = {
-    [ENUM_APP_ENVIRONMENT.local]: roleData,
-    [ENUM_APP_ENVIRONMENT.development]: roleData,
-    [ENUM_APP_ENVIRONMENT.staging]: roleData,
-    [ENUM_APP_ENVIRONMENT.production]: roleData,
+export const migrationRoleData: Record<EnumAppEnvironment, RoleCreateRequestDto[]> = {
+    [EnumAppEnvironment.local]: roleData,
+    [EnumAppEnvironment.development]: roleData,
+    [EnumAppEnvironment.staging]: roleData,
+    [EnumAppEnvironment.production]: roleData,
 };

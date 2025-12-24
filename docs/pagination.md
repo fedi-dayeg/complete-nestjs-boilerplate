@@ -200,12 +200,12 @@ Parameters:
 Usage:
 ```typescript
 @PaginationQueryFilterDate('createdAt', { 
-    type: ENUM_PAGINATION_FILTER_DATE_BETWEEN_TYPE.START 
+    type: EnumPaginationFilterDateBetweenType.START 
 })
 startDate?: Record<string, IPaginationDate>
 
 @PaginationQueryFilterDate('createdAt', { 
-    type: ENUM_PAGINATION_FILTER_DATE_BETWEEN_TYPE.END 
+    type: EnumPaginationFilterDateBetweenType.END 
 })
 endDate?: Record<string, IPaginationDate>
 ```
@@ -497,11 +497,11 @@ export class UserAdminController {
         @PaginationQueryFilterEqualString('country')
         country?: Record<string, IPaginationEqual>,
         @PaginationQueryFilterDate('createdAt', {
-            type: ENUM_PAGINATION_FILTER_DATE_BETWEEN_TYPE.START
+            type: EnumPaginationFilterDateBetweenType.START
         })
         startDate?: Record<string, IPaginationDate>,
         @PaginationQueryFilterDate('createdAt', {
-            type: ENUM_PAGINATION_FILTER_DATE_BETWEEN_TYPE.END
+            type: EnumPaginationFilterDateBetweenType.END
         })
         endDate?: Record<string, IPaginationDate>
     ) {

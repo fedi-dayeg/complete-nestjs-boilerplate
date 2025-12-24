@@ -84,7 +84,7 @@ name: string
 
 **`env`** - Current environment (development, production, staging, local)
 ```typescript
-env: ENUM_APP_ENVIRONMENT
+env: EnumAppEnvironment
 ```
 
 **`timezone`** - Default timezone for date operations

@@ -1,4 +1,4 @@
-import { ENUM_APP_ENVIRONMENT } from '@app/enums/app.enum';
+import { EnumAppEnvironment } from '@app/enums/app.enum';
 import { CountryRequestDto } from '@modules/country/dtos/request/country.request.dto';
 
 const countryData = [
@@ -12,12 +12,9 @@ const countryData = [
     },
 ];
 
-export const migrationCountryData: Record<
-    ENUM_APP_ENVIRONMENT,
-    CountryRequestDto[]
-> = {
-    [ENUM_APP_ENVIRONMENT.local]: countryData,
-    [ENUM_APP_ENVIRONMENT.development]: countryData,
-    [ENUM_APP_ENVIRONMENT.staging]: countryData,
-    [ENUM_APP_ENVIRONMENT.production]: countryData,
+export const migrationCountryData: Record<EnumAppEnvironment, CountryRequestDto[]> = {
+    [EnumAppEnvironment.local]: countryData,
+    [EnumAppEnvironment.development]: countryData,
+    [EnumAppEnvironment.staging]: countryData,
+    [EnumAppEnvironment.production]: countryData,
 };

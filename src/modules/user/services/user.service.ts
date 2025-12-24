@@ -1,9 +1,9 @@
-import { ENUM_APP_STATUS_CODE_ERROR } from '@app/enums/app.status-code.enum';
+import { EnumAppStatusCodeError } from '@app/enums/app.status-code.enum';
 import { AwsS3PresignDto } from '@common/aws/dtos/aws.s3-presign.dto';
 import { AwsS3Dto } from '@common/aws/dtos/aws.s3.dto';
 import { AwsS3Service } from '@common/aws/services/aws.s3.service';
 import { DatabaseIdDto } from '@common/database/dtos/database.id.dto';
-import { ENUM_FILE_EXTENSION_IMAGE } from '@common/file/enums/file.enum';
+import { EnumFileExtensionImage } from '@common/file/enums/file.enum';
 import { IFile } from '@common/file/interfaces/file.interface';
 import { FileService } from '@common/file/services/file.service';
 import { HelperService } from '@common/helper/services/helper.service';
@@ -21,7 +21,7 @@ import {
     IResponsePagingReturn,
     IResponseReturn,
 } from '@common/response/interfaces/response.interface';
-import { ENUM_AUTH_STATUS_CODE_ERROR } from '@modules/auth/enums/auth.status-code.enum';
+import { EnumAuthStatusCodeError } from '@modules/auth/enums/auth.status-code.enum';
 import {
     IAuthJwtRefreshTokenPayload,
     IAuthPassword,
@@ -115,8 +115,7 @@ export class UserService implements IUserService {
     ): Promise<IUser> {
         if (!request.user) {
             throw new UnauthorizedException({
-                statusCode:
-                    ENUM_AUTH_STATUS_CODE_ERROR.jwtAccessTokenInvalid,
+                statusCode: EnumAuthStatusCodeError.jwtAccessTokenInvalid,
                 message: 'auth.error.accessTokenUnauthorized',
             });
         }
@@ -301,7 +300,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -348,7 +347,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -432,7 +431,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -481,7 +480,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -502,7 +501,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -560,7 +559,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -631,7 +630,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -668,7 +667,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -713,7 +712,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -726,10 +725,10 @@ export class UserService implements IUserService {
         requestLog: IRequestLog
     ): Promise<IResponseReturn<void>> {
         try {
-            const extension: ENUM_FILE_EXTENSION_IMAGE =
+            const extension: EnumFileExtensionImage =
                 this.fileService.extractExtensionFromFilename(
                     file.originalname
-                ) as ENUM_FILE_EXTENSION_IMAGE;
+                ) as EnumFileExtensionImage;
             const key: string =
                 this.userUtil.createRandomFilenamePhotoProfileWithPath(userId, {
                     extension,
@@ -750,7 +749,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -818,7 +817,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -899,7 +898,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -998,7 +997,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1098,7 +1097,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1123,8 +1122,7 @@ export class UserService implements IUserService {
         const session = await this.sessionUtil.getLogin(userId, sessionId);
         if (session.fingerprint !== oldFingerprint) {
             throw new UnauthorizedException({
-                statusCode:
-                    ENUM_AUTH_STATUS_CODE_ERROR.jwtRefreshTokenInvalid,
+                statusCode: EnumAuthStatusCodeError.jwtRefreshTokenInvalid,
                 message: 'auth.error.refreshTokenInvalid',
             });
         }
@@ -1157,7 +1155,7 @@ export class UserService implements IUserService {
             };
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1241,7 +1239,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1285,7 +1283,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1368,7 +1366,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1445,7 +1443,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
@@ -1516,7 +1514,7 @@ export class UserService implements IUserService {
             return;
         } catch (err: unknown) {
             throw new InternalServerErrorException({
-                statusCode: ENUM_APP_STATUS_CODE_ERROR.unknown,
+                statusCode: EnumAppStatusCodeError.unknown,
                 message: 'http.serverError.internalServerError',
                 _error: err,
             });
