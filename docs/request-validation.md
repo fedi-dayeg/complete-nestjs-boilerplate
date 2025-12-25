@@ -736,3 +736,4 @@ See [Handling Error][ref-doc-handling-error] for complete error handling flow.
 
 [ref-doc-doc]: docs/doc.md
 [ref-doc-presign]: docs/presign.md
+[ref-doc-term-policy]: docs/term-policy.md

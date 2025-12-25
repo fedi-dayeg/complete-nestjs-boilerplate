@@ -70,11 +70,12 @@ export class TermPolicyUtil {
         const path: string = this.uploadContentPath
             .replace('{type}', type)
             .replace('{version}', version.toString());
-        return this.fileService.createRandomFilename({
-            path,
-            extension,
-            randomLength: 20,
-        });
+        let fullPath: string = `${path}/${language}.${extension.toLowerCase()}`;
+        if (fullPath.startsWith('/')) {
+            fullPath = fullPath.replace('/', '');
+        }
+
+        return fullPath;
     }
 
     checkContentExist(

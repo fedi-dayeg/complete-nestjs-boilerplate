@@ -518,13 +518,13 @@ flowchart TD
 ### Important Notes
 
 
-- `@TermPolicyAcceptanceProtected()` **requires** `@AuthJwtAccessProtected()` and `@UserProtected()` to be applied
-- Decorator order from top to bottom:`@TermPolicyAcceptanceProtected()` → `@UserProtected()` → `@AuthJwtAccessProtected()`. See [Authentication Documentation][ref-doc-authentication] for `@AuthJwtAccessProtected()` details
+- `@TermPolicyAcceptanceProtected()` **requires** `@UserProtected()` and `@AuthJwtAccessProtected()` to be applied
+- Decorator order from top to bottom: `@TermPolicyAcceptanceProtected()` → `@UserProtected()` → `@AuthJwtAccessProtected()`
+- For more details about `@AuthJwtAccessProtected()`, see [Authentication Documentation][ref-doc-authentication]
+- Without the required decorators, the endpoint will throw a 403 Forbidden error
 - If no term policies are specified, it defaults to requiring `termsOfService` and `privacy` acceptance
 - All specified term policies must be accepted by the user for access to be granted
-- Incorrect ordering will result in runtime errors
-- When `@TermPolicyAcceptanceProtected()` is used without parameters, it automatically requires acceptance of both `termsOfService` and `privacy` policies. This ensures baseline legal compliance for most features.
-- All specified term policies must be accepted. If even one required policy is not accepted, access is denied.
+- Incorrect decorator ordering will result in runtime errors
 
 <!-- REFERENCES -->
 
@@ -667,3 +667,4 @@ flowchart TD
 
 [ref-doc-third-party-integration]: docs/third-party-integration.md
 [ref-doc-presign]: docs/presign.md
+[ref-doc-term-policy]: docs/term-policy.md

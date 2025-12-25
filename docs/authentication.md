@@ -1114,3 +1114,4 @@ When a session is revoked:
 [ref-doc-third-party-integration]: docs/third-party-integration.md
 [ref-doc-third-party-integration]: docs/third-party-integration.md
 [ref-doc-presign]: docs/presign.md
+[ref-doc-term-policy]: docs/term-policy.md

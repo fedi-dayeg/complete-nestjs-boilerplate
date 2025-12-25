@@ -555,3 +555,4 @@ See [Message Documentation][ref-doc-message] for complete language configuration
 [ref-doc-doc]: docs/doc.md
 [ref-doc-third-party-integration]: docs/third-party-integration.md
 [ref-doc-presign]: docs/presign.md
+[ref-doc-term-policy]: docs/term-policy.md

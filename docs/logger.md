@@ -399,3 +399,4 @@ export const LOGGER_REQUEST_ID_HEADERS = [
 
 [ref-doc-third-party-integration]: docs/third-party-integration.md
 [ref-doc-presign]: docs/presign.md
+[ref-doc-term-policy]: docs/term-policy.md
