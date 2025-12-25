@@ -10,7 +10,7 @@
  *
  * All patterns are case-insensitive and work with both full URLs and paths.
  */
-export const LOGGER_EXCLUDED_ROUTES: string[] = [
+export const LoggerExcludedRoutes: string[] = [
     '/api/health',
     '/api/health/*',
     '/metrics',
@@ -25,16 +25,13 @@ export const LOGGER_EXCLUDED_ROUTES: string[] = [
  * Array of HTTP header names used to extract or identify request IDs.
  * These headers are checked in order to maintain request tracing across services.
  */
-export const LOGGER_REQUEST_ID_HEADERS = [
-    'x-correlation-id',
-    'x-request-id',
-] as const;
+export const LoggerRequestIdHeaders = ['x-correlation-id', 'x-request-id'] as const;
 
 /**
  * Array of object paths that may contain sensitive data in request/response objects.
  * Used by the logger redaction system to identify where sensitive fields might be located.
  */
-export const LOGGER_SENSITIVE_PATHS = [
+export const LoggerSensitivePaths = [
     'req.body',
     'req.headers',
     'res.body',
@@ -49,7 +46,7 @@ export const LOGGER_SENSITIVE_PATHS = [
  * Array of field names containing sensitive data that should be masked in logs.
  * Includes authentication tokens, personal identification, financial data, and biometric information.
  */
-export const LOGGER_SENSITIVE_FIELDS: string[] = [
+export const LoggerSensitiveFields: string[] = [
     'password',
     'newPassword',
     'oldPassword',
