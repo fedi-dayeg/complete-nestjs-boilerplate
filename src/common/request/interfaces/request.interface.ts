@@ -1,27 +1,26 @@
 import { Request } from 'express';
-import { IApiKeyPayload } from 'src/common/api-key/interfaces/api-key.interface';
-import { RequestPaginationSerialization } from 'src/common/request/serializations/request.pagination.serialization';
-import { IResult } from 'ua-parser-js';
+import { IAuthJwtAccessTokenPayload } from '@modules/auth/interfaces/auth.interface';
+import { IPaginationQuery } from '@common/pagination/interfaces/pagination.interface';
+import { ApiKey } from '@prisma/client';
+import { RoleAbilityDto } from '@modules/role/dtos/role.ability.dto';
+import { IUser } from '@modules/user/interfaces/user.interface';
+import { RequestUserAgentDto } from '@common/request/dtos/request.user-agent.dto';
 
-export interface IRequestApp extends Request {
-    apiKey?: IApiKeyPayload;
-    user?: Record<string, any>;
+export interface IRequestApp<T = IAuthJwtAccessTokenPayload> extends Request {
+    correlationId: string;
+    user?: T;
 
-    __id: string;
-    __xTimestamp?: number;
-    __timestamp: number;
-    __timezone: string;
-    __customLang: string[];
+    __apiKey?: ApiKey;
+    __user?: IUser;
+    __abilities?: RoleAbilityDto[];
+
+    __pagination?: IPaginationQuery;
+
+    __language: string;
     __version: string;
-    __repoVersion: string;
-    __userAgent: IResult;
+}
 
-    __class?: string;
-    __function?: string;
-
-    __filters?: Record<
-        string,
-        string | number | boolean | Array<string | number | boolean>
-    >;
-    __pagination?: RequestPaginationSerialization;
+export interface IRequestLog {
+    userAgent: RequestUserAgentDto;
+    ipAddress: string;
 }

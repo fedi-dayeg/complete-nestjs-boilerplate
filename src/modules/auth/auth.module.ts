@@ -1,0 +1,34 @@
+import { Global, Module } from '@nestjs/common';
+import { AuthJwtAccessStrategy } from '@modules/auth/guards/jwt/strategies/auth.jwt.access.strategy';
+import { AuthJwtRefreshStrategy } from '@modules/auth/guards/jwt/strategies/auth.jwt.refresh.strategy';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthUtil } from '@modules/auth/utils/auth.util';
+import { SessionModule } from '@modules/session/session.module';
+import { AuthService } from '@modules/auth/services/auth.service';
+
+@Global()
+@Module({
+    providers: [
+        AuthJwtAccessStrategy,
+        AuthJwtRefreshStrategy,
+        AuthUtil,
+        AuthService,
+    ],
+    exports: [AuthUtil, AuthService],
+    controllers: [],
+    imports: [
+        SessionModule,
+        JwtModule.registerAsync({
+            inject: [ConfigService],
+            imports: [ConfigModule],
+            useFactory: (configService: ConfigService): JwtModuleOptions => ({
+                signOptions: {
+                    audience: configService.get<string>('auth.jwt.audience'),
+                    issuer: configService.get<string>('auth.jwt.issuer'),
+                },
+            }),
+        }),
+    ],
+})
+export class AuthModule {}

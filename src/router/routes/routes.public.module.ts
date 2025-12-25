@@ -1,25 +1,27 @@
+import { CountryPublicController } from '@modules/country/controllers/country.public.controller';
+import { CountryModule } from '@modules/country/country.module';
+import { HelloPublicController } from '@modules/hello/controllers/hello.public.controller';
+import { HelloModule } from '@modules/hello/hello.module';
+import { RolePublicController } from '@modules/role/controllers/role.public.controller';
+import { TermPolicyPublicController } from '@modules/term-policy/controllers/term-policy.public.controller';
+import { UserPublicController } from '@modules/user/controllers/user.public.controller';
+import { UserModule } from '@modules/user/user.module';
 import { Module } from '@nestjs/common';
-import { UserPublicController } from "../../modules/user/controllers/user.public.controller";
-import { UserModule } from "../../modules/user/user.module";
-import { AuthModule } from "../../common/auth/auth.module";
-import { RoleModule } from "../../modules/role/role.module";
-// import { AuthModule } from 'src/common/auth/auth.module';
-// import { RoleModule } from 'src/modules/role/role.module';
-// import { UserPublicController } from 'src/modules/user/controllers/user.public.controller';
-// import { UserModule } from 'src/modules/user/user.module';
 
-// @Module({
-//     controllers: [UserPublicController],
-//     providers: [],
-//     exports: [],
-//     imports: [UserModule, AuthModule, RoleModule],
-// })
-// export class RoutesPublicModule {}
-
+/**
+ * Public routes module that provides publicly accessible endpoints.
+ * Contains controllers for countries, roles, hello world, users, term policies, and verification that don't require authentication.
+ */
 @Module({
-    controllers: [UserPublicController],
+    controllers: [
+        CountryPublicController,
+        RolePublicController,
+        HelloPublicController,
+        UserPublicController,
+        TermPolicyPublicController,
+    ],
     providers: [],
     exports: [],
-    imports: [UserModule, AuthModule, RoleModule],
+    imports: [CountryModule, HelloModule, UserModule],
 })
 export class RoutesPublicModule {}

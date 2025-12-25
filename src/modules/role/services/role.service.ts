@@ -1,190 +1,156 @@
-import { Injectable } from '@nestjs/common';
 import {
-    ENUM_AUTH_ACCESS_FOR,
-    ENUM_AUTH_ACCESS_FOR_DEFAULT,
-} from 'src/common/auth/constants/auth.enum.constant';
+    IPaginationIn,
+    IPaginationQueryOffsetParams,
+} from '@common/pagination/interfaces/pagination.interface';
+import { IRequestApp } from '@common/request/interfaces/request.interface';
 import {
-    IDatabaseCreateOptions,
-    IDatabaseExistOptions,
-    IDatabaseFindAllOptions,
-    IDatabaseFindOneOptions,
-    IDatabaseOptions,
-    IDatabaseManyOptions,
-    IDatabaseCreateManyOptions,
-} from 'src/common/database/interfaces/database.interface';
-import { PermissionEntity } from 'src/modules/permission/repository/entities/permission.entity';
-import { RoleCreateDto } from 'src/modules/role/dtos/role.create.dto';
-import { RoleUpdateNameDto } from 'src/modules/role/dtos/role.update-name.dto';
-import { RoleUpdatePermissionDto } from 'src/modules/role/dtos/role.update-permission.dto';
-import { IRoleService } from 'src/modules/role/interfaces/role.service.interface';
+    IResponsePagingReturn,
+    IResponseReturn,
+} from '@common/response/interfaces/response.interface';
+import { EnumAuthStatusCodeError } from '@modules/auth/enums/auth.status-code.enum';
+import { RoleCreateRequestDto } from '@modules/role/dtos/request/role.create.request.dto';
+import { RoleUpdateRequestDto } from '@modules/role/dtos/request/role.update.request.dto';
+import { RoleListResponseDto } from '@modules/role/dtos/response/role.list.response.dto';
+import { RoleAbilityDto } from '@modules/role/dtos/role.ability.dto';
+import { RoleDto } from '@modules/role/dtos/role.dto';
+import { ENUM_ROLE_STATUS_CODE_ERROR } from '@modules/role/enums/role.status-code.enum';
+import { IRoleService } from '@modules/role/interfaces/role.service.interface';
+import { RoleRepository } from '@modules/role/repositories/role.repository';
+import { RoleUtil } from '@modules/role/utils/role.util';
 import {
-    RoleDoc,
-    RoleEntity,
-} from 'src/modules/role/repository/entities/role.entity';
-import { RoleRepository } from 'src/modules/role/repository/repositories/role.repository';
-import { IRoleDoc } from "../interfaces/role.interface";
+    ConflictException,
+    ForbiddenException,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException,
+} from '@nestjs/common';
+import { EnumRoleType } from '@prisma/client';
 
 @Injectable()
 export class RoleService implements IRoleService {
-    constructor(private readonly roleRepository: RoleRepository) {}
+    constructor(
+        private readonly roleRepository: RoleRepository,
+        private readonly roleUtil: RoleUtil
+    ) {}
 
-    async findAll(
-        find?: Record<string, any>,
-        options?: IDatabaseFindAllOptions
-    ): Promise<RoleEntity[]> {
-        return this.roleRepository.findAll<RoleEntity>(find, {
-            ...options,
-            join: false,
-        });
+    async getList(
+        pagination: IPaginationQueryOffsetParams,
+        type?: Record<string, IPaginationIn>
+    ): Promise<IResponsePagingReturn<RoleListResponseDto>> {
+        const { data, ...others } =
+            await this.roleRepository.findWithPagination(pagination, type);
+
+        const roles: RoleListResponseDto[] = this.roleUtil.mapList(data);
+
+        return {
+            data: roles,
+            ...others,
+        };
     }
 
-    async findOneById<T>(
-        _id: string,
-        options?: IDatabaseFindOneOptions
-    ): Promise<T> {
-        return this.roleRepository.findOneById<T>(_id, options);
+    async getOne(id: string): Promise<IResponseReturn<RoleDto>> {
+        const role = await this.roleRepository.findOneById(id);
+        if (!role) {
+            throw new NotFoundException({
+                statusCode: ENUM_ROLE_STATUS_CODE_ERROR.notFound,
+                message: 'role.error.notFound',
+            });
+        }
+
+        return { data: this.roleUtil.mapOne(role) };
     }
 
-    async findOne<T>(
-        find: Record<string, any>,
-        options?: IDatabaseFindOneOptions
-    ): Promise<T> {
-        return this.roleRepository.findOne<T>(find, options);
+    async create({
+        name,
+        ...others
+    }: RoleCreateRequestDto): Promise<IResponseReturn<RoleDto>> {
+        const exist = await this.roleRepository.existByName(name);
+        if (exist) {
+            throw new ConflictException({
+                statusCode: ENUM_ROLE_STATUS_CODE_ERROR.exist,
+                message: 'role.error.exist',
+            });
+        }
+
+        const created = await this.roleRepository.create({ name, ...others });
+        return {
+            data: this.roleUtil.mapOne(created),
+            metadataActivityLog: this.roleUtil.mapActivityLogMetadata(created),
+        };
     }
 
-    async findOneByName<T>(
-      name: string,
-      options?: IDatabaseFindOneOptions
-    ): Promise<T> {
-        return this.roleRepository.findOne<T>({ name }, options);
+    async update(
+        id: string,
+        data: RoleUpdateRequestDto
+    ): Promise<IResponseReturn<RoleDto>> {
+        const role = await this.roleRepository.existById(id);
+        if (!role) {
+            throw new NotFoundException({
+                statusCode: ENUM_ROLE_STATUS_CODE_ERROR.notFound,
+                message: 'role.error.notFound',
+            });
+        }
+
+        const updated = await this.roleRepository.update(id, data);
+        return {
+            data: this.roleUtil.mapOne(updated),
+            metadataActivityLog: this.roleUtil.mapActivityLogMetadata(updated),
+        };
     }
 
-    async getTotal(
-        find?: Record<string, any>,
-        options?: IDatabaseOptions
-    ): Promise<number> {
-        return this.roleRepository.getTotal(find, options);
+    async delete(id: string): Promise<IResponseReturn<void>> {
+        const [role, roleUsed] = await Promise.all([
+            this.roleRepository.existById(id),
+            this.roleRepository.usedByUser(id),
+        ]);
+
+        if (!role) {
+            throw new NotFoundException({
+                statusCode: ENUM_ROLE_STATUS_CODE_ERROR.notFound,
+                message: 'role.error.notFound',
+            });
+        } else if (roleUsed) {
+            throw new ConflictException({
+                statusCode: ENUM_ROLE_STATUS_CODE_ERROR.used,
+                message: 'role.error.used',
+            });
+        }
+
+        const deleted = await this.roleRepository.delete(id);
+
+        return {
+            metadataActivityLog: this.roleUtil.mapActivityLogMetadata(deleted),
+        };
     }
 
-    async exist(
-        _id: string,
-        options?: IDatabaseExistOptions
-    ): Promise<boolean> {
-        return this.roleRepository.exists(
-            {
-                _id,
-            },
-            options
-        );
-    }
+    async validateRoleGuard(
+        request: IRequestApp,
+        requiredRoles: EnumRoleType[]
+    ): Promise<RoleAbilityDto[]> {
+        const { __user, user } = request;
+        if (!__user || !user) {
+            throw new ForbiddenException({
+                statusCode: EnumAuthStatusCodeError.jwtAccessTokenInvalid,
+                message: 'auth.error.accessTokenUnauthorized',
+            });
+        }
 
-    async existByName(
-        name: string,
-        options?: IDatabaseExistOptions
-    ): Promise<boolean> {
-        return this.roleRepository.exists(
-            {
-                name,
-            },
-            { ...options, withDeleted: true }
-        );
-    }
+        const { role } = __user;
 
-    async create(
-        { accessFor, permissions, name }: RoleCreateDto,
-        options?: IDatabaseCreateOptions
-    ): Promise<RoleDoc> {
-        const create: RoleEntity = new RoleEntity();
-        create.accessFor = accessFor;
-        create.permissions = permissions;
-        create.isActive = true;
-        create.name = name;
+        if (role.type === EnumRoleType.superAdmin) {
+            return [];
+        } else if (requiredRoles.length === 0) {
+            throw new InternalServerErrorException({
+                statusCode: ENUM_ROLE_STATUS_CODE_ERROR.predefinedNotFound,
+                message: 'role.error.predefinedNotFound',
+            });
+        } else if (!requiredRoles.includes(role.type)) {
+            throw new ForbiddenException({
+                statusCode: ENUM_ROLE_STATUS_CODE_ERROR.forbidden,
+                message: 'role.error.forbidden',
+            });
+        }
 
-        return this.roleRepository.create<RoleEntity>(create, options);
-    }
-
-    async createSuperAdmin(
-        options?: IDatabaseCreateOptions
-    ): Promise<RoleDoc> {
-        const create: RoleEntity = new RoleEntity();
-        create.name = 'superadmin';
-        create.permissions = [];
-        create.isActive = true;
-        create.accessFor = ENUM_AUTH_ACCESS_FOR.SUPER_ADMIN;
-
-        return this.roleRepository.create<RoleEntity>(create, options);
-    }
-
-    async updateName(
-        repository: RoleDoc,
-        { name }: RoleUpdateNameDto
-    ): Promise<RoleDoc> {
-        repository.name = name;
-
-        return this.roleRepository.save(repository);
-    }
-
-    async joinWithPermission(repository: RoleDoc): Promise<IRoleDoc> {
-        return repository.populate({
-            path: 'permissions',
-            localField: 'permissions',
-            foreignField: '_id',
-            model: PermissionEntity.name,
-        });
-    }
-
-    async updatePermission(
-        repository: RoleDoc,
-        { accessFor, permissions }: RoleUpdatePermissionDto
-    ): Promise<RoleDoc> {
-        repository.accessFor = accessFor;
-        repository.permissions = permissions;
-
-        return this.roleRepository.save(repository);
-    }
-
-    async active(repository: RoleDoc): Promise<RoleDoc> {
-        repository.isActive = true;
-
-        return this.roleRepository.save(repository);
-    }
-
-    async inactive(repository: RoleDoc): Promise<RoleDoc> {
-        repository.isActive = false;
-
-        return this.roleRepository.save(repository);
-    }
-
-    async delete(repository: RoleDoc): Promise<RoleDoc> {
-        return this.roleRepository.softDelete(repository);
-    }
-
-    async deleteMany(
-        find: Record<string, any>,
-        options?: IDatabaseManyOptions
-    ): Promise<boolean> {
-        return this.roleRepository.deleteMany(find, options);
-    }
-
-    async createMany(
-        data: RoleCreateDto[],
-        options?: IDatabaseCreateManyOptions
-    ): Promise<boolean> {
-        const create: RoleEntity[] = data.map(
-            ({ accessFor, permissions, name }) => {
-                const entity: RoleEntity = new RoleEntity();
-                entity.accessFor = accessFor;
-                entity.permissions = permissions;
-                entity.isActive = true;
-                entity.name = name;
-
-                return entity;
-            }
-        );
-        return this.roleRepository.createMany<RoleEntity>(create, options);
-    }
-
-    async getAccessFor(): Promise<string[]> {
-        return Object.values(ENUM_AUTH_ACCESS_FOR_DEFAULT);
+        return this.roleUtil.mapOne(__user.role).abilities;
     }
 }

@@ -1,158 +1,114 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
-import { Doc, DocPaging } from 'src/common/doc/decorators/doc.decorator';
-import { ResponseIdSerialization } from 'src/common/response/serializations/response.id.serialization';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import {
-    UserDocParamsGet,
-    UserDocQueryBlocked,
-    UserDocQueryIsActive,
-} from 'src/modules/user/constants/user.doc.constant';
-import { UserGetSerialization } from 'src/modules/user/serializations/user.get.serialization';
-import { UserImportSerialization } from 'src/modules/user/serializations/user.import.serialization';
-import { UserListSerialization } from 'src/modules/user/serializations/user.list.serialization';
+    Doc,
+    DocAuth,
+    DocGuard,
+    DocRequest,
+    DocResponse,
+    DocResponsePaging,
+} from '@common/doc/decorators/doc.decorator';
+import { UserListResponseDto } from '@modules/user/dtos/response/user.list.response.dto';
+import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
+import {
+    UserDocParamsId,
+    UserDocQueryList,
+} from '@modules/user/constants/user.doc.constant';
+import { EnumDocRequestBodyType } from '@common/doc/enums/doc.enum';
+import { UserCreateRequestDto } from '@modules/user/dtos/request/user.create.request.dto';
+import { DatabaseIdDto } from '@common/database/dtos/database.id.dto';
+import { UserUpdateStatusRequestDto } from '@modules/user/dtos/request/user.update-status.request.dto';
 
-export function UserListDoc(): MethodDecorator {
+export function UserAdminListDoc(): MethodDecorator {
     return applyDecorators(
-        DocPaging<UserListSerialization>('user.list', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            request: {
-                queries: [...UserDocQueryIsActive, ...UserDocQueryBlocked],
-            },
-            response: {
-                serialization: UserListSerialization,
-            },
+        Doc({
+            summary: 'get all users',
+        }),
+        DocRequest({
+            queries: UserDocQueryList,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true, policy: true }),
+        DocResponsePaging<UserListResponseDto>('user.list', {
+            dto: UserListResponseDto,
         })
     );
 }
 
-export function UserGetDoc(): MethodDecorator {
+export function UserAdminGetDoc(): MethodDecorator {
     return applyDecorators(
-        Doc<UserGetSerialization>('user.get', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            request: {
-                params: UserDocParamsGet,
-            },
-            response: { serialization: UserGetSerialization },
+        Doc({
+            summary: 'get detail an user',
+        }),
+        DocRequest({
+            params: UserDocParamsId,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true, policy: true }),
+        DocResponse<UserProfileResponseDto>('user.get', {
+            dto: UserProfileResponseDto,
         })
     );
 }
 
-export function UserCreateDoc(): MethodDecorator {
+export function UserAdminCreateDoc(): MethodDecorator {
     return applyDecorators(
-        Doc<ResponseIdSerialization>('user.create', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            response: {
-                httpStatus: HttpStatus.CREATED,
-                serialization: ResponseIdSerialization,
-            },
+        Doc({
+            summary: 'create a user',
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocRequest({
+            bodyType: EnumDocRequestBodyType.json,
+            dto: UserCreateRequestDto,
+        }),
+        DocGuard({ role: true, policy: true }),
+        DocResponse<DatabaseIdDto>('user.create', {
+            httpStatus: HttpStatus.CREATED,
+            dto: DatabaseIdDto,
         })
     );
 }
 
-export function UserUpdateDoc(): MethodDecorator {
+export function UserAdminUpdateStatusDoc(): MethodDecorator {
     return applyDecorators(
-        Doc<ResponseIdSerialization>('user.update', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            request: {
-                params: UserDocParamsGet,
-            },
-            response: { serialization: ResponseIdSerialization },
-        })
+        Doc({
+            summary: 'update status of user',
+        }),
+        DocRequest({
+            params: UserDocParamsId,
+            bodyType: EnumDocRequestBodyType.json,
+            dto: UserUpdateStatusRequestDto,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true, policy: true }),
+        DocResponse('user.updateStatus')
     );
 }
 
-export function UserDeleteDoc(): MethodDecorator {
+export function UserAdminUpdatePasswordDoc(): MethodDecorator {
     return applyDecorators(
-        Doc<void>('user.delete', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            request: {
-                params: UserDocParamsGet,
-            },
-        })
-    );
-}
-
-export function UserImportDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc<UserImportSerialization>('user.import', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            response: {
-                httpStatus: HttpStatus.CREATED,
-                serialization: UserImportSerialization,
-            },
-        })
-    );
-}
-
-export function UserExportDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc('user.export', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            response: {
-                httpStatus: HttpStatus.OK,
-            },
-        })
-    );
-}
-
-export function UserActiveDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc<void>('user.active', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            request: {
-                params: UserDocParamsGet,
-            },
-        })
-    );
-}
-
-export function UserInactiveDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc<void>('user.inactive', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            request: {
-                params: UserDocParamsGet,
-            },
-        })
-    );
-}
-
-export function UserBlockedDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc<void>('user.blocked', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            request: {
-                params: UserDocParamsGet,
-            },
-        })
+        Doc({
+            summary: 'update password of user',
+        }),
+        DocRequest({
+            params: UserDocParamsId,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true, policy: true }),
+        DocResponse('user.updatePassword')
     );
 }

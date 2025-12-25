@@ -1,125 +1,183 @@
-import { IAuthPassword } from 'src/common/auth/interfaces/auth.interface';
-import { AwsS3Serialization } from 'src/common/aws/serializations/aws.s3.serialization';
+import { AwsS3PresignDto } from '@common/aws/dtos/aws.s3-presign.dto';
+import { DatabaseIdDto } from '@common/database/dtos/database.id.dto';
+import { IFile } from '@common/file/interfaces/file.interface';
 import {
-    IDatabaseCreateOptions,
-    IDatabaseExistOptions,
-    IDatabaseFindAllOptions,
-    IDatabaseFindOneOptions,
-    IDatabaseOptions,
-    IDatabaseManyOptions,
-} from 'src/common/database/interfaces/database.interface';
-import { PermissionEntity } from 'src/modules/permission/repository/entities/permission.entity';
-import { UserCreateDto } from 'src/modules/user/dtos/user.create.dto';
-import { UserUpdateNameDto } from 'src/modules/user/dtos/user.update-name.dto';
-import { IUserDoc, IUserEntity } from "src/modules/user/interfaces/user.interface";
+    IPaginationEqual,
+    IPaginationIn,
+    IPaginationQueryCursorParams,
+    IPaginationQueryOffsetParams,
+} from '@common/pagination/interfaces/pagination.interface';
 import {
-    UserDoc,
-    UserEntity,
-} from 'src/modules/user/repository/entities/user.entity';
-import { UserPayloadPermissionSerialization } from 'src/modules/user/serializations/user.payload-permission.serialization';
-import { UserPayloadSerialization } from 'src/modules/user/serializations/user.payload.serialization';
-import { IPermissionGroup } from "../../permission/interfaces/permission.interface";
+    IRequestApp,
+    IRequestLog,
+} from '@common/request/interfaces/request.interface';
+import {
+    IResponsePagingReturn,
+    IResponseReturn,
+} from '@common/response/interfaces/response.interface';
+import { UserChangePasswordRequestDto } from '@modules/user/dtos/request/user.change-password.request.dto';
+import {
+    UserCheckEmailRequestDto,
+    UserCheckUsernameRequestDto,
+} from '@modules/user/dtos/request/user.check.request.dto';
+import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
+import { UserCreateSocialRequestDto } from '@modules/user/dtos/request/user.create-social.request.dto';
+import { UserCreateRequestDto } from '@modules/user/dtos/request/user.create.request.dto';
+import { UserForgotPasswordResetRequestDto } from '@modules/user/dtos/request/user.forgot-password-reset.request.dto';
+import { UserForgotPasswordRequestDto } from '@modules/user/dtos/request/user.forgot-password.request.dto';
+import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
+import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
+import { UserAddMobileNumberRequestDto } from '@modules/user/dtos/request/user.mobile-number.request.dto';
+import {
+    UserUpdateProfilePhotoRequestDto,
+    UserUpdateProfileRequestDto,
+} from '@modules/user/dtos/request/user.profile.request.dto';
+import { UserSignUpRequestDto } from '@modules/user/dtos/request/user.sign-up.request.dto';
+import { UserUpdateStatusRequestDto } from '@modules/user/dtos/request/user.update-status.request.dto';
+import { UserVerifyEmailRequestDto } from '@modules/user/dtos/request/user.verify-email.request.dto';
+import {
+    UserCheckEmailResponseDto,
+    UserCheckUsernameResponseDto,
+} from '@modules/user/dtos/response/user.check.response.dto';
+import { UserListResponseDto } from '@modules/user/dtos/response/user.list.response.dto';
+import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
+import { UserTokenResponseDto } from '@modules/user/dtos/response/user.token.response.dto';
+import { IUser } from '@modules/user/interfaces/user.interface';
+import { EnumUserLoginWith } from '@prisma/client';
+import {
+    UserSendEmailVerificationRequestDto
+} from '@modules/user/dtos/request/user.send-email-verification.request.dto.ts‎';
+import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 
 export interface IUserService {
-    findAll(
-        find?: Record<string, any>,
-        options?: IDatabaseFindAllOptions
-    ): Promise<IUserEntity[]>;
-
-    findOneById<T>(_id: string, options?: IDatabaseFindOneOptions): Promise<T>;
-
-    findOne<T>(
-        find: Record<string, any>,
-        options?: IDatabaseFindOneOptions
-    ): Promise<T>;
-
-    findOneByUsername<T>(
-        username: string,
-        options?: IDatabaseFindOneOptions
-    ): Promise<T>;
-
-    getTotal(
-        find?: Record<string, any>,
-        options?: IDatabaseOptions
-    ): Promise<number>;
-
-    create(
-        {
-            username,
-            firstName,
-            lastName,
-            email,
-            mobileNumber,
-            role,
-        }: UserCreateDto,
-        { passwordExpired, passwordHash, salt, passwordCreated }: IAuthPassword,
-        options?: IDatabaseCreateOptions
-    ): Promise<UserDoc>;
-
-    existByEmail(
+    validateUserGuard(
+        request: IRequestApp,
+        requiredVerified: boolean
+    ): Promise<IUser>;
+    getListOffset(
+        pagination: IPaginationQueryOffsetParams,
+        status?: Record<string, IPaginationIn>,
+        role?: Record<string, IPaginationEqual>,
+        country?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<UserListResponseDto>>;
+    getListActiveCursor(
+        pagination: IPaginationQueryCursorParams,
+        status?: Record<string, IPaginationIn>,
+        role?: Record<string, IPaginationEqual>,
+        country?: Record<string, IPaginationEqual>
+    ): Promise<IResponsePagingReturn<UserListResponseDto>>;
+    getOne(id: string): Promise<IResponseReturn<UserProfileResponseDto>>;
+    createByAdmin(
+        { countryId, email, name, roleId }: UserCreateRequestDto,
+        requestLog: IRequestLog,
+        createdBy: string
+    ): Promise<IResponseReturn<DatabaseIdDto>>;
+    updateStatusByAdmin(
+        userId: string,
+        { status }: UserUpdateStatusRequestDto,
+        requestLog: IRequestLog,
+        updatedBy: string
+    ): Promise<IResponseReturn<void>>;
+    checkUsername({
+        username,
+    }: UserCheckUsernameRequestDto): Promise<
+        IResponseReturn<UserCheckUsernameResponseDto>
+    >;
+    checkEmail({
+        email,
+    }: UserCheckEmailRequestDto): Promise<
+        IResponseReturn<UserCheckEmailResponseDto>
+    >;
+    getProfile(
+        userId: string
+    ): Promise<IResponseReturn<UserProfileResponseDto>>;
+    updateProfile(
+        userId: string,
+        { countryId, ...data }: UserUpdateProfileRequestDto,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<void>>;
+    generatePhotoProfilePresign(
+        userId: string,
+        { extension, size }: UserGeneratePhotoProfileRequestDto
+    ): Promise<IResponseReturn<AwsS3PresignDto>>;
+    updatePhotoProfile(
+        userId: string,
+        { photo, size }: UserUpdateProfilePhotoRequestDto,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<void>>;
+    deleteSelf(
+        userId: string,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<void>>;
+    addMobileNumber(
+        userId: string,
+        { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<UserMobileNumberResponseDto>>;
+    updateMobileNumber(
+        userId: string,
+        mobileNumberId: string,
+        { number, countryId, phoneCode }: UserAddMobileNumberRequestDto,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<UserMobileNumberResponseDto>>;
+    deleteMobileNumber(
+        userId: string,
+        mobileNumberId: string,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<UserMobileNumberResponseDto>>;
+    claimUsername(
+        userId: string,
+        { username }: UserClaimUsernameRequestDto,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<void>>;
+    uploadPhotoProfile(
+        userId: string,
+        file: IFile,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<void>>;
+    updatePasswordByAdmin(
+        userId: string,
+        requestLog: IRequestLog,
+        updatedBy: string
+    ): Promise<IResponseReturn<void>>;
+    changePassword(
+        userId: string,
+        { newPassword, oldPassword }: UserChangePasswordRequestDto,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<void>>;
+    loginCredential(
+        { email, password, from }: UserLoginRequestDto,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<UserTokenResponseDto>>;
+    loginWithSocial(
         email: string,
-        options?: IDatabaseExistOptions
-    ): Promise<boolean>;
-
-    joinWithRole(repository: UserDoc): Promise<IUserDoc>;
-
-    existByMobileNumber(
-        mobileNumber: string,
-        options?: IDatabaseExistOptions
-    ): Promise<boolean>;
-
-    existByUsername(
-        username: string,
-        options?: IDatabaseExistOptions
-    ): Promise<boolean>;
-
-    delete(repository: UserDoc): Promise<UserDoc>;
-
-    updateName(
-        repository: UserDoc,
-        { firstName, lastName }: UserUpdateNameDto
-    ): Promise<UserDoc>;
-
-    updatePhoto(
-        repository: UserDoc,
-        photo: AwsS3Serialization
-    ): Promise<UserDoc>;
-
-    updatePassword(
-        repository: UserDoc,
-        { passwordHash, passwordExpired, salt, passwordCreated }: IAuthPassword
-    ): Promise<UserDoc>;
-
-    active(repository: UserDoc): Promise<UserEntity>;
-
-    inactive(repository: UserDoc): Promise<UserEntity>;
-
-    blocked(repository: UserDoc): Promise<UserEntity>;
-
-    unblocked(repository: UserDoc): Promise<UserEntity>;
-
-    maxPasswordAttempt(repository: UserDoc): Promise<UserEntity>;
-
-    increasePasswordAttempt(repository: UserDoc): Promise<UserEntity>;
-
-    resetPasswordAttempt(repository: UserDoc): Promise<UserEntity>;
-
-    updatePasswordExpired(
-        repository: UserDoc,
-        passwordExpired: Date
-    ): Promise<UserEntity>;
-
-    createPhotoFilename(): Promise<Record<string, any>>;
-
-    payloadSerialization(data: IUserDoc): Promise<UserPayloadSerialization>;
-
-    payloadPermissionSerialization(
-        _id: string,
-        permissions: IPermissionGroup[]
-    ): Promise<UserPayloadPermissionSerialization>;
-
-    deleteMany(
-        find: Record<string, any>,
-        options?: IDatabaseManyOptions
-    ): Promise<boolean>;
+        loginWith: EnumUserLoginWith,
+        { from, ...others }: UserCreateSocialRequestDto,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<UserTokenResponseDto>>;
+    refreshToken(
+        user: IUser,
+        refreshToken: string,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<UserTokenResponseDto>>;
+    signUp(
+        { countryId, email, password, ...others }: UserSignUpRequestDto,
+        requestLog: IRequestLog
+    ): Promise<void>;
+    verifyEmail(
+        { token }: UserVerifyEmailRequestDto,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<void>>;
+    sendEmail(
+        { email }: UserSendEmailVerificationRequestDto,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<void>>;
+    forgotPassword(
+        { email }: UserForgotPasswordRequestDto,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<void>>;
+    resetPassword(
+        { newPassword, token }: UserForgotPasswordResetRequestDto,
+        requestLog: IRequestLog
+    ): Promise<IResponseReturn<void>>;
 }

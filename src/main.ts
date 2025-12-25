@@ -1,34 +1,51 @@
+import './instrument';
+
 import { NestApplication, NestFactory } from '@nestjs/core';
 import { Logger, VersioningType } from '@nestjs/common';
-import { AppModule } from 'src/app/app.module';
+import { AppModule } from '@app/app.module';
 import { ConfigService } from '@nestjs/config';
-import { useContainer } from 'class-validator';
-import swaggerInit from './swagger';
+import { useContainer, validate } from 'class-validator';
+import swaggerInit from 'src/swagger';
+import { plainToInstance } from 'class-transformer';
+import { AppEnvDto } from '@app/dtos/app.env.dto';
+import { MessageService } from '@common/message/services/message.service';
+import { Logger as PinoLogger } from 'nestjs-pino';
 
-async function bootstrap() {
-    const app: NestApplication = await NestFactory.create(AppModule);
+async function bootstrap(): Promise<void> {
+    const app: NestApplication = await NestFactory.create(AppModule, {
+        abortOnError: true,
+        bufferLogs: false,
+    });
+
+    // Custom Logger
+    app.useLogger(app.get(PinoLogger));
+
     const configService = app.get(ConfigService);
-    const databaseUri: string = configService.get<string>('database.host');
     const env: string = configService.get<string>('app.env');
+    const timezone: string = configService.get<string>('app.timezone');
     const host: string = configService.get<string>('app.http.host');
     const port: number = configService.get<number>('app.http.port');
     const globalPrefix: string = configService.get<string>('app.globalPrefix');
     const versioningPrefix: string = configService.get<string>(
-        'app.versioning.prefix'
+        'app.urlVersion.prefix'
     );
-    const version: string = configService.get<string>('app.versioning.version');
+    const version: string = configService.get<string>('app.urlVersion.version');
+    const appName: string = configService.get<string>('app.name');
+    const databaseUrl = configService.get<string>('database.url');
+    const databaseDebug = configService.get<boolean>('database.debug');
+    const loggerAuto = configService.get<boolean>('logger.auto');
+    const loggerDebugEnable = configService.get<boolean>('logger.enable');
+    const loggerDebugLevel = configService.get<string>('logger.level');
 
     // enable
-    const httpEnable: boolean = configService.get<boolean>('app.http.enable');
     const versionEnable: string = configService.get<string>(
-        'app.versioning.enable'
+        'app.urlVersion.enable'
     );
-    const jobEnable: boolean = configService.get<boolean>('app.jobEnable');
 
-    const logger = new Logger();
     process.env.NODE_ENV = env;
+    process.env.TZ = timezone;
 
-    // Global
+    // Setting
     app.setGlobalPrefix(globalPrefix);
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
@@ -41,34 +58,51 @@ async function bootstrap() {
         });
     }
 
+    // Validate Env
+    const logger = new Logger(`${appName}-Main`);
+    const classEnv = plainToInstance(AppEnvDto, process.env);
+    const errors = await validate(classEnv);
+    if (errors.length > 0) {
+        const messageService = app.get(MessageService);
+        const errorsMessage = messageService.setValidationMessage(errors);
+
+        logger.error(
+            `Env Variable Invalid: ${JSON.stringify(errorsMessage)}`,
+            'NestApplication'
+        );
+
+        throw new Error('Env Variable Invalid', {
+            cause: errorsMessage,
+        });
+    }
+
     // Swagger
     await swaggerInit(app);
 
     // Listen
     await app.listen(port, host);
 
-    logger.log(`==========================================================`);
-
-    logger.log(`Environment Variable`, 'NestApplication');
-    logger.log(JSON.parse(JSON.stringify(process.env)), 'NestApplication');
-
-    logger.log(`==========================================================`);
-
-    logger.log(`Job is ${jobEnable}`, 'NestApplication');
+    logger.log('=='.repeat(30), 'NestApplication');
+    logger.log(`App Environment: ${env}`, 'NestApplication');
+    logger.log(`App Name: ${appName}`, 'NestApplication');
+    logger.log(`App Global Prefix: ${globalPrefix}`, 'NestApplication');
     logger.log(
-        `Http is ${httpEnable}, ${
-            httpEnable ? 'routes registered' : 'no routes registered'
-        }`,
+        `App Versioning Prefix: /${versioningPrefix}`,
         'NestApplication'
     );
-    logger.log(`Http versioning is ${versionEnable}`, 'NestApplication');
-
+    logger.log(`App Version: ${version}`, 'NestApplication');
+    logger.log(`App Timezone: ${timezone}`, 'NestApplication');
     logger.log(
-        `Http Server running on ${await app.getUrl()}`,
+        `App URL: http://${host}:${port}${globalPrefix}`,
         'NestApplication'
     );
-    logger.log(`Database uri ${databaseUri}`, 'NestApplication');
+    logger.log(`Database URL: ${databaseUrl}`, 'NestApplication');
+    logger.log(`Database Debug: ${databaseDebug}`, 'NestApplication');
+    logger.log(`Logger Auto: ${loggerAuto}`, 'NestApplication');
+    logger.log(`Logger Debug Enable: ${loggerDebugEnable}`, 'NestApplication');
+    logger.log(`Logger Debug Level: ${loggerDebugLevel}`, 'NestApplication');
+    logger.log('=='.repeat(30), 'NestApplication');
 
-    logger.log(`==========================================================`);
+    return;
 }
 bootstrap();

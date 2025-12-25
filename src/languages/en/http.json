@@ -23,7 +23,8 @@
         "uriToLarge": "Uri To Large",
         "unsupportedMediaType": "Unsupported Media Type",
         "unprocessableEntity": "Unprocessable Entity",
-        "tooManyRequest": "Too Many Request"
+        "tooManyRequest": "Too Many Request",
+        "requestTimeOut": "Request Timeout"
     },
     "serverError": {
         "internalServerError": "Internal Server Error",
@@ -38,7 +39,7 @@
     "201": "Created",
     "202": "Accepted",
     "204": "No Content",
-   
+
     "301": "Move Permanently",
     "302": "Found",
     "304": "Not Modified",
@@ -62,6 +63,4 @@
     "502": "Bad Gateway",
     "503": "Service Unavailable",
     "504": "Gateway Timeout"
-
-
 }

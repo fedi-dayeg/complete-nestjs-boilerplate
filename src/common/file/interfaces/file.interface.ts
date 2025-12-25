@@ -1,6 +1,28 @@
+import { ENUM_FILE_EXTENSION } from '@common/file/enums/file.enum';
+
 export type IFile = Express.Multer.File;
 
-export type IFileExtract<T = Record<string, any>> = IFile & {
-    extract: Record<string, any>[];
-    dto?: T[];
-};
+export interface IFileUploadSingle {
+    field: string;
+    fileSize: number;
+}
+
+export interface IFileUploadMultiple extends IFileUploadSingle {
+    maxFiles: number;
+}
+
+export type IFileUploadMultipleField = Omit<IFileUploadMultiple, 'fileSize'>;
+
+export type IFileUploadMultipleFieldOptions = Pick<
+    IFileUploadSingle,
+    'fileSize'
+>;
+
+export type IFileInput = IFile | IFile[];
+
+export interface IFileRandomFilenameOptions {
+    path?: string;
+    prefix?: string;
+    extension: ENUM_FILE_EXTENSION;
+    randomLength?: number;
+}

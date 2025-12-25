@@ -1,34 +1,24 @@
 import { faker } from '@faker-js/faker';
-import { ENUM_AUTH_ACCESS_FOR } from 'src/common/auth/constants/auth.enum.constant';
+import { ApiParamOptions, ApiQueryOptions } from '@nestjs/swagger';
+import { EnumRoleType } from '@prisma/client';
 
-export const RoleDocQueryIsActive = [
+export const RoleDocParamsId: ApiParamOptions[] = [
     {
-        name: 'isActive',
+        name: 'roleId',
         allowEmptyValue: false,
         required: true,
         type: 'string',
-        example: 'true,false',
-        description: "boolean value with ',' delimiter",
+        example: faker.database.mongodbObjectId(),
     },
 ];
 
-export const RoleDocQueryAccessFor = [
+export const RoleDocQueryList: ApiQueryOptions[] = [
     {
-        name: 'accessFor',
-        allowEmptyValue: false,
-        required: true,
+        name: 'type',
+        allowEmptyValue: true,
+        required: false,
         type: 'string',
-        example: Object.values(ENUM_AUTH_ACCESS_FOR).join(','),
-        description: "enum value with ',' delimiter",
-    },
-];
-
-export const RoleDocParamsGet = [
-    {
-        name: 'role',
-        allowEmptyValue: false,
-        required: true,
-        type: 'string',
-        example: faker.datatype.uuid(),
+        example: Object.values(EnumRoleType).join(','),
+        description: `enum value with ',' delimiter. Available values: ${Object.values(EnumRoleType).join(',')}`,
     },
 ];

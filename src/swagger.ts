@@ -2,34 +2,41 @@ import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestApplication } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ENUM_APP_ENVIRONMENT } from 'src/app/constants/app.enum.constant';
-import {
-    AwsS3MultipartPartsSerialization,
-    AwsS3MultipartSerialization,
-} from 'src/common/aws/serializations/aws.s3-multipart.serialization';
-import { AwsS3Serialization } from 'src/common/aws/serializations/aws.s3.serialization';
-import { ResponseDefaultSerialization } from 'src/common/response/serializations/response.default.serialization';
-import { ResponsePagingSerialization } from 'src/common/response/serializations/response.paging.serialization';
+import { writeFileSync } from 'fs';
+import { EnumAppEnvironment } from '@app/enums/app.enum';
+import { MessageService } from '@common/message/services/message.service';
 
-export default async function (app: NestApplication) {
+export default async function (app: NestApplication): Promise<void> {
     const configService = app.get(ConfigService);
-    const env: string = configService.get<string>('app.env');
-    const logger = new Logger();
+    const messageService = app.get(MessageService);
 
-    const docName: string = configService.get<string>('doc.name');
-    const docDesc: string = configService.get<string>('doc.description');
-    const docVersion: string = configService.get<string>('doc.version');
-    const docPrefix: string = configService.get<string>('doc.prefix');
+    const env: string = configService.get<string>('app.env')!;
+    const appName: string = configService.get<string>('app.name');
+    const docName: string = configService.get<string>('doc.name')!;
+    const docDesc: string = configService.get<string>('doc.description')!;
+    const docVersion: string = configService.get<string>('app.version')!;
+    const docPrefix: string = configService.get<string>('doc.prefix')!;
+    const docUrl: string = configService.get<string>('app.url')!;
+    const docAuthorName: string = configService.get<string>('app.author.name')!;
+    const docAuthorEmail: string =
+        configService.get<string>('app.author.email')!;
 
-    if (env !== ENUM_APP_ENVIRONMENT.PRODUCTION) {
+    const logger = new Logger(`${appName}-Doc`);
+
+    if (env !== EnumAppEnvironment.production) {
         const documentBuild = new DocumentBuilder()
             .setTitle(docName)
             .setDescription(docDesc)
             .setVersion(docVersion)
-            .addTag("API's")
-            .addServer(`/`)
-            .addServer(`/staging`)
-            .addServer(`/production`)
+            .setDescription(
+                messageService.setMessage('app.description.swagger', {
+                    properties: {
+                        appName,
+                    },
+                })
+            )
+            .setContact(docAuthorName, docUrl, docAuthorEmail)
+            .addServer('/')
             .addBearerAuth(
                 { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
                 'accessToken'
@@ -38,45 +45,46 @@ export default async function (app: NestApplication) {
                 { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
                 'refreshToken'
             )
-            .addApiKey(
-                { type: 'apiKey', in: 'header', name: 'x-api-key' },
-                'apiKey'
+            .addBearerAuth(
+                { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+                'google'
+            )
+            .addBearerAuth(
+                { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+                'apple'
             )
             .addApiKey(
-                {
-                    type: 'apiKey',
-                    in: 'header',
-                    name: 'x-permission-token',
-                    description: 'grant permission for /admin prefix endpoints',
-                },
-                'permissionToken'
+                { type: 'apiKey', in: 'header', name: 'x-api-key' },
+                'xApiKey'
             )
             .build();
 
         const document = SwaggerModule.createDocument(app, documentBuild, {
             deepScanRoutes: true,
-            extraModels: [
-                ResponseDefaultSerialization,
-                ResponsePagingSerialization,
-                AwsS3MultipartPartsSerialization,
-                AwsS3MultipartSerialization,
-                AwsS3Serialization,
-            ],
         });
+
+        try {
+            writeFileSync('src/swagger.json', JSON.stringify(document));
+        } catch {}
 
         SwaggerModule.setup(docPrefix, app, document, {
+            jsonDocumentUrl: `${docPrefix}/json`,
             explorer: true,
             customSiteTitle: docName,
+            ui: env !== EnumAppEnvironment.production,
+            raw: ['json'],
+            swaggerOptions: {
+                docExpansion: 'none',
+                persistAuthorization: true,
+                displayOperationId: true,
+                operationsSorter: 'method',
+                tagsSorter: 'alpha',
+                tryItOutEnabled: true,
+                filter: true,
+                deepLinking: true,
+            },
         });
 
-        logger.log(
-            `==========================================================`
-        );
-
         logger.log(`Docs will serve on ${docPrefix}`, 'NestApplication');
-
-        logger.log(
-            `==========================================================`
-        );
     }
 }
