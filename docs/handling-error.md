@@ -13,7 +13,6 @@ The error handling system provides comprehensive exception management using Nest
 - [Message Documentation][ref-doc-message] - For error message internationalization
 - [Logger Documentation][ref-doc-logger] - For error logging and monitoring
 
-
 ## Table of Contents
 
 - [Overview](#overview)
@@ -26,20 +25,20 @@ The error handling system provides comprehensive exception management using Nest
 - [Error Response Structure](#error-response-structure)
 - [Response Metadata](#response-metadata)
 - [Response Headers](#response-headers)
-    - [Usage](#usage)
-      - [Standard HTTP Exception](#standard-http-exception)
-      - [Custom Error with Message Properties](#custom-error-with-message-properties)
-      - [Custom Error with Additional Data](#custom-error-with-additional-data)
-      - [Custom Error with Metadata](#custom-error-with-metadata)
+- [Usage](#usage)
+    - [Standard HTTP Exception](#standard-http-exception)
+    - [Custom Error with Message Properties](#custom-error-with-message-properties)
+    - [Custom Error with Additional Data](#custom-error-with-additional-data)
+    - [Custom Error with Metadata](#custom-error-with-metadata)
 
 ## Exception Filters
 
-Compelete NestJS Boilerplate uses 4 specialized exception filters registered globally in hierarchical order:
+Complete NestJS Boilerplate uses 4 specialized exception filters registered globally in hierarchical order:
+
 1. **AppValidationImportFilter** - Handles `FileImportException`
 2. **AppValidationFilter** - Handles `RequestValidationException`
 3. **AppHttpFilter** - Handles `HttpException`
 4. **AppGeneralFilter** - Catches all unhandled exceptions
-
 
 **Processing flow**:
 ```
@@ -60,16 +59,15 @@ Standardized error response + Sentry (if applicable)
 - Format into `ResponseErrorDto`
 - Send to Sentry (conditions vary by filter)
 
-
 ## Error Response Structure
 
 All errors are formatted into `ResponseErrorDto`:
 
 ```typescript
 {
-  "statusCode": number,       // Custom status code (not HTTP status)
-  "message": string,          // Localized error message
-  "metadata": { ... },        // Request/response metadata
+  "statusCode": number,        // Custom status code (not HTTP status)
+  "message": string,           // Localized error message
+  "metadata": { ... },         // Request/response metadata
   "errors": [ ... ],          // Optional: validation errors
   "data": { ... }             // Optional: additional error context
 }
@@ -101,6 +99,7 @@ All errors are formatted into `ResponseErrorDto`:
   "correlationId": "6ba7b810-9dad-11d1-80b4-00c04fd430c8"
 }
 ```
+
 **Field sources**:
 
 | Field | Source | Fallback |
@@ -163,7 +162,6 @@ x-correlation-id: 6ba7b810-9dad-11d1-80b4-00c04fd430c8
 **Path validation**: Redirects invalid paths (not starting with `globalPrefix` or `docPrefix`) to `{globalPrefix}/public/hello` with HTTP 308
 
 **Custom exception support**: Extracts custom properties if exception response implements `IAppException`:
-
 ```typescript
 interface IAppException<T = unknown> {
   statusCode: number;           // Custom status code
@@ -201,17 +199,13 @@ interface IAppException<T = unknown> {
 
 **Catches**: `@Catch(RequestValidationException)` - request validation errors
 
-
-
 **Use case**: Request body, query parameters, and path parameters validation failures using [class-validator][ref-class-validator]
-
 
 **Behavior**:
 - Formats field-specific validation errors
 - Uses `MessageService.setValidationMessage()`
 - Does not send to Sentry
 
-All exception filters automatically set these response headers:
 **Response example**:
 ```json
 {
@@ -230,23 +224,16 @@ All exception filters automatically set these response headers:
 
 See [Request Validation][ref-doc-request-validation] for details.
 
-
-
 ### AppValidationImportFilter
 
 **Location**: `src/app/filters/app.validation-import.filter.ts`
 
-
-
 **Catches**: `@Catch(FileImportException)` - file import validation errors
 
-
-## Throwing Custom Errors
-
-Use NestJS built-in exceptions with custom properties:
+**Use case**: CSV file import validation failures using [class-validator][ref-class-validator]
 
 **Behavior**:
-- Formats row-level validation errors with file/sheet information
+- Formats row-level validation errors
 - Uses `MessageService.setValidationImportMessage()`
 - Does not send to Sentry
 
@@ -258,11 +245,13 @@ Use NestJS built-in exceptions with custom properties:
   "errors": [
     {
       "row": 2,
-      "file": "users.xlsx",
-      "sheet": "Sheet1",
-      "key": "isEmail",
-      "property": "email",
-      "message": "Email must be a valid email address"
+      "errors": [
+        {
+          "key": "isEmail",
+          "property": "email",
+          "message": "Email must be a valid email address"
+        }
+      ]
     }
   ],
   "metadata": { ... }
@@ -271,8 +260,6 @@ Use NestJS built-in exceptions with custom properties:
 
 See [Request Validation][ref-doc-request-validation] for details.
 
-
-
 ## Usage
 
 ### Error with Default HTTP Exception
@@ -280,13 +267,11 @@ See [Request Validation][ref-doc-request-validation] for details.
 For standard HTTP errors:
 
 ```typescript
-import { NotFoundException } from '@nestjs/common';
 throw new NotFoundException();
 // HTTP 404, statusCode: 404, message: "Not Found"
 ```
 
 See [NestJS Exception Filters][ref-nestjs-exception-filters] for available exceptions.
-
 
 ### Error with Message Properties
 
@@ -320,13 +305,11 @@ throw new BadRequestException({
 }
 ```
 
-
 ### Error with Additional Data
 
 Add contextual data to help debugging:
 
 ```typescript
-// Throwing exception
 throw new BadRequestException({
   statusCode: EnumUserStatus_CODE_ERROR.statusInvalid,
   message: 'user.error.statusInvalid',
@@ -340,6 +323,7 @@ throw new BadRequestException({
   },
 });
 ```
+
 **Response**:
 ```json
 {
@@ -359,138 +343,84 @@ throw new BadRequestException({
 <!-- BADGE LINKS -->
 
 [ack-contributors-shield]: https://img.shields.io/github/contributors/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-
 [ack-forks-shield]: https://img.shields.io/github/forks/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-
 [ack-stars-shield]: https://img.shields.io/github/stars/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-
 [ack-issues-shield]: https://img.shields.io/github/issues/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-
 [ack-license-shield]: https://img.shields.io/github/license/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-
 [nestjs-shield]: https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white
-
 [nodejs-shield]: https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white
-
 [typescript-shield]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
-
 [mongodb-shield]: https://img.shields.io/badge/MongoDB-white?style=for-the-badge&logo=mongodb&logoColor=4EA94B
-
 [jwt-shield]: https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white
-
 [jest-shield]: https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white
-
 [pnpm-shield]: https://img.shields.io/badge/pnpm-%232C8EBB.svg?style=for-the-badge&logo=pnpm&logoColor=white&color=F9AD00
-
 [docker-shield]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
-
 [github-shield]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
-
 [linkedin-shield]: https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white
 
 <!-- CONTACTS -->
 
 [ref-author-linkedin]: https://www.linkedin.com/in/fedi-dayeg-192288369/
-
 [ref-author-email]: mailto:contact@fedidayeg.fr
-
 [ref-author-github]: https://github.com/fedi-dayeg
-
 [ref-author-paypal]: https://paypal.me/Fedidayeg25
-
 [ref-author-kofi]: https://ko-fi.com/fedidayeg
 
 <!-- Repo LINKS -->
 
 [ref-ack]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate
-
 [ref-ack-issues]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/issues
-
 [ref-ack-stars]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/stargazers
-
 [ref-ack-forks]:https://github.com/fedi-dayeg/complete-nestjs-boilerplate/network/members
-
 [ref-ack-contributors]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/graphs/contributors
-
 [ref-ack-license]: LICENSE.md
 
 <!-- THIRD PARTY -->
 
 [ref-nestjs]: http://nestjs.com
-
+[ref-nestjs-exception-filters]: https://docs.nestjs.com/exception-filters#built-in-http-exceptions
+[ref-nestjs-i18n]: https://nestjs-i18n.com/
+[ref-class-validator]: https://github.com/typestack/class-validator
 [ref-prisma]: https://www.prisma.io
-
 [ref-mongodb]: https://docs.mongodb.com/
-
 [ref-redis]: https://redis.io
-
 [ref-bullmq]: https://bullmq.io
-
 [ref-nodejs]: https://nodejs.org/
-
 [ref-typescript]: https://www.typescriptlang.org/
-
 [ref-docker]: https://docs.docker.com
-
 [ref-dockercompose]: https://docs.docker.com/compose/
-
 [ref-pnpm]: https://pnpm.io
-
 [ref-12factor]: https://12factor.net
-
 [ref-commander]: https://nest-commander.jaymcdoniel.dev
-
 [ref-package-json]: package.json
-
 [ref-jwt]: https://jwt.io
-
 [ref-jest]: https://jestjs.io/docs/getting-started
-
 [ref-git]: https://git-scm.com
-
 [ref-google-console]: https://console.cloud.google.com/
-
 [ref-google-client-secret]: https://developers.google.com/identity/protocols/oauth2
 
 <!-- DOCUMENTS -->
 
 [ref-doc-root]: readme.md
-
 [ref-doc-activity-log]: docs/activity-log.md
-
 [ref-doc-authentication]: docs/authentication.md
-
 [ref-doc-authorization]: docs/authorization.md
-
 [ref-doc-cache]: docs/cache.md
-
 [ref-doc-configuration]: docs/configuration.md
-
 [ref-doc-database]: docs/database.md
-
 [ref-doc-environment]: docs/environment.md
-
 [ref-doc-feature-flag]: docs/feature-flag.md
-
 [ref-doc-file-upload]: docs/file-upload.md
-
-[ref-doc-how-to-handling-error]: docs/how-to-handling-error.md
-
+[ref-doc-handling-error]: docs/handling-error.md
 [ref-doc-installation]: docs/installation.md
-
 [ref-doc-logger]: docs/logger.md
 [ref-doc-message]: docs/message.md
 [ref-doc-pagination]: docs/pagination.md
-
 [ref-doc-project-structure]: docs/project-structure.md
-
 [ref-doc-queue]: docs/queue.md
-
 [ref-doc-request-validation]: docs/request-validation.md
-
 [ref-doc-response]: docs/response.md
-
 [ref-doc-security-and-middleware]: docs/security-and-middleware.md
-
 [ref-doc-doc]: docs/doc.md
 [ref-doc-third-party-integration]: docs/third-party-integration.md
+[ref-doc-presign]: docs/presign.md

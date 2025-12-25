@@ -433,3 +433,4 @@ Below are explanations for the root folders and files outside `src/` (excluding 
 [ref-doc-doc]: docs/doc.md
 
 [ref-doc-third-party-integration]: docs/third-party-integration.md
+[ref-doc-presign]: docs/presign.md
