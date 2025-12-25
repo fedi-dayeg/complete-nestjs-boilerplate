@@ -466,7 +466,7 @@ import { IUserService } from '@modules/user/interfaces/user-service.interface';
 - **MongoDB**: Must run as replica set for transactions
 - **Prisma Client**: Regenerate after schema changes with `pnpm db:generate`
 - **Sessions**: Dual storage (Redis + Database) for performance and management
-- **JWT Algorithms**: ES256 for access tokens, ES512 for refresh tokens (since v8.0.0)
+- **JWT Algorithms**: ES256 for access tokens, ES512 for refresh tokens (since v2.0.0)
 - **Package Manager**: Use PNPM only (enforced by preinstall script)
 
 ## Scripts Reference
