@@ -2,7 +2,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { IAuthJwtAccessTokenPayload } from '@modules/auth/interfaces/auth.interface';
 import { AuthJwtAccessGuardKey } from '@modules/auth/constants/auth.constant';
-import { AuthService } from '@modules/auth/services/auth.service.ts‎';
+import { AuthService } from '@modules/auth/services/auth.service';
 
 /**
  * JWT Access Token Guard for protecting routes with access token authentication.

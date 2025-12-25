@@ -84,9 +84,9 @@ import {
     EnumVerificationType,
 } from '@prisma/client';
 import { Duration } from 'luxon';
-import { AuthService } from '@modules/auth/services/auth.service.ts‎';
 import { UserSendEmailVerificationRequestDto } from '@modules/user/dtos/request/user.send-email-verification.request.dto.ts‎';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
+import { AuthService } from '@modules/auth/services/auth.service';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -957,12 +957,11 @@ export class UserService implements IUserService {
         }
 
         try {
-            const { tokens, sessionId, fingerprint } =
-                this.authService.createTokens(
-                    user,
-                    from,
-                    EnumUserLoginWith.credential
-                );
+            const { tokens, sessionId, jti } = this.authService.createTokens(
+                user,
+                from,
+                EnumUserLoginWith.credential
+            );
             const expiredAt = this.helperService.dateForward(
                 this.helperService.dateCreate(),
                 Duration.fromObject({
@@ -972,18 +971,13 @@ export class UserService implements IUserService {
             );
 
             await Promise.all([
-                this.sessionUtil.setLogin(
-                    user.id,
-                    sessionId,
-                    fingerprint,
-                    expiredAt
-                ),
+                this.sessionUtil.setLogin(user.id, sessionId, jti, expiredAt),
                 this.userRepository.login(
                     user.id,
                     {
                         loginFrom: from,
                         loginWith: EnumUserLoginWith.credential,
-                        fingerprint,
+                        jti,
                         sessionId,
                         expiredAt,
                     },
@@ -1060,8 +1054,11 @@ export class UserService implements IUserService {
                 promises.push(this.userRepository.verify(user.id, requestLog));
             }
 
-            const { tokens, fingerprint, sessionId } =
-                this.authService.createTokens(user, from, loginWith);
+            const { tokens, jti, sessionId } = this.authService.createTokens(
+                user,
+                from,
+                loginWith
+            );
             const expiredAt = this.helperService.dateForward(
                 this.helperService.dateCreate(),
                 Duration.fromObject({
@@ -1072,17 +1069,12 @@ export class UserService implements IUserService {
 
             await Promise.all([
                 ...promises,
-                this.sessionUtil.setLogin(
-                    user.id,
-                    sessionId,
-                    fingerprint,
-                    expiredAt
-                ),
+                this.sessionUtil.setLogin(user.id, sessionId, jti, expiredAt),
                 this.userRepository.login(
                     user.id,
                     {
                         loginFrom: from,
-                        fingerprint,
+                        jti,
                         loginWith,
                         sessionId,
                         expiredAt,
@@ -1111,7 +1103,7 @@ export class UserService implements IUserService {
         const {
             sessionId,
             userId,
-            fingerprint: oldFingerprint,
+            jti: oldJti,
             loginFrom,
             loginWith,
         } = this.authUtil.payloadToken<IAuthJwtRefreshTokenPayload>(
@@ -1119,28 +1111,30 @@ export class UserService implements IUserService {
         );
 
         const session = await this.sessionUtil.getLogin(userId, sessionId);
-        if (session.fingerprint !== oldFingerprint) {
+        if (session.jti !== oldJti) {
             throw new UnauthorizedException({
                 statusCode: EnumAuthStatusCodeError.jwtRefreshTokenInvalid,
                 message: 'auth.error.refreshTokenInvalid',
             });
         }
         try {
-            const { fingerprint: newFingerprint, tokens } =
-                this.authService.refreshToken(user, refreshToken);
+            const { jti: newJti, tokens } = this.authService.refreshToken(
+                user,
+                refreshToken
+            );
 
             await Promise.all([
                 this.sessionUtil.updateLogin(
                     userId,
                     sessionId,
                     session,
-                    newFingerprint
+                    newJti
                 ),
                 this.userRepository.refresh(
                     userId,
                     {
                         sessionId,
-                        fingerprint: newFingerprint,
+                        jti: newJti,
                         expiredAt: session.expiredAt,
                         loginFrom: loginFrom,
                         loginWith: loginWith,

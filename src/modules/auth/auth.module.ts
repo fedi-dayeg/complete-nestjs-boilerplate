@@ -5,7 +5,7 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthUtil } from '@modules/auth/utils/auth.util';
 import { SessionModule } from '@modules/session/session.module';
-import { AuthService } from '@modules/auth/services/auth.service.ts‎';
+import { AuthService } from '@modules/auth/services/auth.service';
 
 @Global()
 @Module({
