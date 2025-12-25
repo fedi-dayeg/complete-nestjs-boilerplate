@@ -1,17 +1,3 @@
-# Required Variables:
-# - AWS_ECR_REPO_URL
-# - DOCKER_CONTAINER_NAME
-# - DOCKER_CONTAINER_PORT
-#
-# Required Secrets:
-# - AWS_ACCESS_KEY_ID
-# - AWS_SECRET_ACCESS_KEY
-# - AWS_REGION
-# - PROD_AWS_INSTANCE_ID
-# - DEV_AWS_INSTANCE_ID
-# - STAGING_AWS_INSTANCE_ID
-
-
 name: ReleaseWithAwsSdkEc2
 on:
   workflow_dispatch:
@@ -24,6 +10,18 @@ on:
 env:
   DOCKERFILE: ci/dockerfile
 
+# Required Variables:
+# - AWS_ECR_REPO_URL
+# - DOCKER_CONTAINER_NAME
+# - DOCKER_CONTAINER_PORT
+#
+# Required Secrets:
+# - AWS_ACCESS_KEY_ID
+# - AWS_SECRET_ACCESS_KEY
+# - AWS_REGION
+# - PROD_AWS_INSTANCE_ID
+# - DEV_AWS_INSTANCE_ID
+# - STAGING_AWS_INSTANCE_ID
 jobs:
   build_image:
     runs-on: ubuntu-latest
