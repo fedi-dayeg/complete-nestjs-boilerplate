@@ -1,4 +1,5 @@
 name: ReleaseVersion
+
 permissions:
   contents: write
 
@@ -13,24 +14,20 @@ jobs:
       - name: Git checkout
         uses: actions/checkout@v4
 
-
       - name: Get short sha commit
         id: git
         run: |
           echo "short_sha=$(git rev-parse --short $GITHUB_SHA)" >> "$GITHUB_OUTPUT"
-      
 
       - name: Get latest version
         id: version
         uses: martinbeentjes/npm-get-version-action@main
-
 
       - name: Log info
         run: |
           echo Branch name is: ${{ github.ref_name }}
           echo Short sha: ${{ steps.git.outputs.short_sha }}
           echo Version is: ${{ steps.version.outputs.current-version }}
-          
 
       - name: Release
         uses: softprops/action-gh-release@master
