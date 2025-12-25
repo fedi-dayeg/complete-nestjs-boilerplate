@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ENUM_SEND_EMAIL_PROCESS } from '@modules/email/enums/email.enum';
+import { EnumSendEmailProcess } from '@modules/email/enums/email.enum';
 import { title } from 'case';
 import { ConfigService } from '@nestjs/config';
 import { EmailSendDto } from '@modules/email/dtos/email.send.dto';
@@ -49,7 +49,7 @@ export class EmailUtil {
     }: EmailSendDto): Promise<boolean> {
         try {
             await this.awsSESService.send({
-                templateName: ENUM_SEND_EMAIL_PROCESS.changePassword,
+                templateName: EnumSendEmailProcess.changePassword,
                 recipients: [email],
                 sender: this.fromEmail,
                 templateData: {
@@ -76,7 +76,7 @@ export class EmailUtil {
     async sendWelcome({ username, email }: EmailSendDto): Promise<boolean> {
         try {
             await this.awsSESService.send({
-                templateName: ENUM_SEND_EMAIL_PROCESS.welcome,
+                templateName: EnumSendEmailProcess.welcome,
                 recipients: [email],
                 sender: this.fromEmail,
                 templateData: {
@@ -112,7 +112,7 @@ export class EmailUtil {
     ): Promise<boolean> {
         try {
             await this.awsSESService.send({
-                templateName: ENUM_SEND_EMAIL_PROCESS.welcome,
+                templateName: EnumSendEmailProcess.welcome,
                 recipients: [email],
                 sender: this.fromEmail,
                 templateData: {
@@ -157,7 +157,7 @@ export class EmailUtil {
     ): Promise<boolean> {
         try {
             await this.awsSESService.send({
-                templateName: ENUM_SEND_EMAIL_PROCESS.temporaryPassword,
+                templateName: EnumSendEmailProcess.temporaryPassword,
                 recipients: [email],
                 sender: this.fromEmail,
                 templateData: {
@@ -197,7 +197,7 @@ export class EmailUtil {
     ): Promise<boolean> {
         try {
             await this.awsSESService.send({
-                templateName: ENUM_SEND_EMAIL_PROCESS.forgotPassword,
+                templateName: EnumSendEmailProcess.forgotPassword,
                 recipients: [email],
                 sender: this.fromEmail,
                 templateData: {
@@ -233,7 +233,7 @@ export class EmailUtil {
     ): Promise<boolean> {
         try {
             await this.awsSESService.send({
-                templateName: ENUM_SEND_EMAIL_PROCESS.verification,
+                templateName: EnumSendEmailProcess.verification,
                 recipients: [email],
                 sender: this.fromEmail,
                 templateData: {
@@ -269,7 +269,7 @@ export class EmailUtil {
     ): Promise<boolean> {
         try {
             await this.awsSESService.send({
-                templateName: ENUM_SEND_EMAIL_PROCESS.emailVerified,
+                templateName: EnumSendEmailProcess.emailVerified,
                 recipients: [email],
                 sender: this.fromEmail,
                 templateData: {
@@ -301,7 +301,7 @@ export class EmailUtil {
     ): Promise<boolean> {
         try {
             await this.awsSESService.send({
-                templateName: ENUM_SEND_EMAIL_PROCESS.mobileNumberVerified,
+                templateName: EnumSendEmailProcess.mobileNumberVerified,
                 recipients: [email],
                 sender: this.fromEmail,
                 templateData: {

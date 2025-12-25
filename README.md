@@ -60,8 +60,9 @@ _You can [request feature][ref-ack-issues] or [report bug][ref-ack-issues] with 
 
 
 ### Next Features
-- [x] Add import and export endpoint (includes: direct upload and presign upload)
-- [x] Make sure github action works
+- [x] Change enum name to use PascalCase
+- [ ] Add import and export endpoint (includes: direct upload and presign upload)
+- [ ] Make sure github action works
 - [ ] Activity Log support bidirectional logging
 - [ ] Migrate to PNPM and update document installation before release v2
 - [ ] 2FA with TOTP Authentication (eg: Google Authenticator)
