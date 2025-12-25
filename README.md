@@ -2,7 +2,7 @@
 [![Forks][ack-forks-shield]][ref-ack-forks]
 [![Stargazers][ack-stars-shield]][ref-ack-stars]
 [![Issues][ack-issues-shield]][ref-ack-issues]
-[![MIT License][ack-license-shield]][ref-license]
+[![MIT License][ack-license-shield]][ref-ack-license]
 
 [![NestJs][nestjs-shield]][ref-nestjs]
 [![NodeJs][nodejs-shield]][ref-nodejs]
@@ -63,7 +63,7 @@ _You can [request feature][ref-ack-issues] or [report bug][ref-ack-issues] with 
 - [ ] Activity Log support bidirectional logging
 - [ ] Add import and export endpoint (includes: direct upload and presign upload)
 - [ ] Make sure github action works
-- [ ] Migrate to PNPM and update document installation before release v8
+- [ ] Migrate to PNPM and update document installation before release v2
 - [ ] 2FA with TOTP Authentication (eg: Google Authenticator)
 - [ ] Recovery Codes Method
 - [ ] Login with biometrics (fingerprint or face detection)
@@ -217,11 +217,11 @@ If you find this project helpful and would like to support its development, plea
 
 <!-- BADGE LINKS -->
 
-[ack-contributors-shield]: https://img.shields.io/github/contributors/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-forks-shield]: https://img.shields.io/github/forks/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-stars-shield]: https://img.shields.io/github/stars/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-issues-shield]: https://img.shields.io/github/issues/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-license-shield]: https://img.shields.io/github/license/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
+[ack-contributors-shield]: https://img.shields.io/github/contributors/fedi-dayeg/complete-nestjs-boilerplate?style=for-the-badge
+[ack-forks-shield]: https://img.shields.io/github/forks/fedi-dayeg/complete-nestjs-boilerplate?style=for-the-badge
+[ack-stars-shield]: https://img.shields.io/github/stars/fedi-dayeg/complete-nestjs-boilerplate?style=for-the-badge
+[ack-issues-shield]: https://img.shields.io/github/issues/fedi-dayeg/complete-nestjs-boilerplate?style=for-the-badge
+[ack-license-shield]: https://img.shields.io/github/license/fedi-dayeg/complete-nestjs-boilerplate?style=for-the-badge
 [nestjs-shield]: https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white
 [nodejs-shield]: https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white
 [typescript-shield]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
