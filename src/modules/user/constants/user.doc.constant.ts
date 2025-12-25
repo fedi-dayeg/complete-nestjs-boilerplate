@@ -1,33 +1,49 @@
 import { faker } from '@faker-js/faker';
+import { ApiParamOptions, ApiQueryOptions } from '@nestjs/swagger';
+import { EnumUserStatus } from '@prisma/client';
 
-export const UserDocQueryIsActive = [
+export const UserDocParamsId: ApiParamOptions[] = [
     {
-        name: 'isActive',
+        name: 'userId',
         allowEmptyValue: false,
         required: true,
         type: 'string',
-        example: 'true,false',
-        description: "boolean value with ',' delimiter",
+        example: faker.database.mongodbObjectId(),
     },
 ];
 
-export const UserDocQueryBlocked = [
+export const UserDocParamsMobileNumberId: ApiParamOptions[] = [
     {
-        name: 'blocked',
+        name: 'mobileNumberId',
         allowEmptyValue: false,
         required: true,
         type: 'string',
-        example: 'true,false',
-        description: "boolean value with ',' delimiter",
+        example: faker.database.mongodbObjectId(),
     },
 ];
 
-export const UserDocParamsGet = [
+export const UserDocQueryList: ApiQueryOptions[] = [
     {
-        name: 'user',
-        allowEmptyValue: false,
-        required: true,
+        name: 'roleId',
+        allowEmptyValue: true,
+        required: false,
         type: 'string',
-        example: faker.datatype.uuid(),
+        example: faker.database.mongodbObjectId(),
+        description: 'Filter by roleId',
+    },
+    {
+        name: 'countryId',
+        allowEmptyValue: true,
+        required: false,
+        type: 'string',
+        example: faker.database.mongodbObjectId(),
+    },
+    {
+        name: 'status',
+        allowEmptyValue: true,
+        required: false,
+        type: 'string',
+        example: Object.values(EnumUserStatus).join(','),
+        description: "value with ',' delimiter",
     },
 ];

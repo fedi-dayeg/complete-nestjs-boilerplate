@@ -1,16 +1,14 @@
 {
-    "list": "List Role Success.",
-    "get": "Get Role Success.",
-    "create": "Create Succeed",
-    "delete": "Delete Succeed",
-    "update": "Update Succeed",
-    "inactive": "Inactive Succeed",
-    "active": "Active Succeed",
+    "list": "Roles retrieved successfully.",
+    "get": "Role details fetched successfully.",
+    "create": "New role created successfully.",
+    "update": "Role updated successfully.",
+    "delete": "Role deleted successfully.",
     "error": {
-        "notFound": "Role not found",
-        "exist": "Role exist",
-        "active": "Role active invalid",
-        "used": "Role in used",
-        "inactive": "Role is inactive"
+        "notFound": "Sorry, we couldn't find the requested role.",
+        "exist": "A role with this name already exists.",
+        "used": "This role is currently in use and cannot be deleted.",
+        "forbidden": "Sorry, your role doesn't grant access to this resource.",
+        "predefinedNotFound": "Predefined roles not setted."
     }
 }

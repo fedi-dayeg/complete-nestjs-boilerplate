@@ -1,31 +1,52 @@
+import { EnumAppEnvironment } from '@app/enums/app.enum';
 import { registerAs } from '@nestjs/config';
-import { version } from 'package.json';
-import { APP_LANGUAGE } from 'src/app/constants/app.constant';
-import { ENUM_APP_ENVIRONMENT } from 'src/app/constants/app.enum.constant';
+import { author, repository, version } from 'package.json';
+
+export interface IConfigApp {
+    name: string;
+    env: EnumAppEnvironment;
+    timezone: string;
+    version: string;
+    author: {
+        name: string;
+        email: string;
+    };
+    url: string;
+    globalPrefix: string;
+    http: {
+        host: string;
+        port: number;
+    };
+    urlVersion: {
+        enable: boolean;
+        prefix: string;
+        version: string;
+    };
+}
 
 export default registerAs(
     'app',
-    (): Record<string, any> => ({
-        name: process.env.APP_NAME ?? 'nest',
-        env: process.env.APP_ENV ?? ENUM_APP_ENVIRONMENT.DEVELOPMENT,
-        language: process.env.APP_LANGUAGE?.split(',') ?? [APP_LANGUAGE],
-
-        repoVersion: version,
-        versioning: {
-            enable: process.env.HTTP_VERSIONING_ENABLE === 'true' ?? false,
-            prefix: 'v',
-            version: process.env.HTTP_VERSION ?? '1',
+    (): IConfigApp => ({
+        name: process.env.APP_NAME ?? 'Complete nestjs boilerplate',
+        env:
+            EnumAppEnvironment[process.env.APP_ENV] ?? EnumAppEnvironment.local,
+        timezone: process.env.APP_TIMEZONE ?? 'Europe/Paris',
+        version,
+        author: author as {
+            name: string;
+            email: string;
         },
-
+        url: repository.url,
         globalPrefix: '/api',
-        http: {
-            enable: process.env.HTTP_ENABLE === 'true' ?? false,
-            host: process.env.HTTP_HOST ?? 'localhost',
-            port: process.env.HTTP_PORT
-                ? Number.parseInt(process.env.HTTP_PORT)
-                : 3000,
-        },
 
-        jobEnable: process.env.JOB_ENABLE === 'true' ?? false,
+        http: {
+            host: process.env.HTTP_HOST ?? 'localhost',
+            port: process.env.HTTP_PORT ? +process.env.HTTP_PORT : 3000,
+        },
+        urlVersion: {
+            enable: process.env.URL_VERSIONING_ENABLE === 'true',
+            prefix: 'v',
+            version: process.env.URL_VERSION ?? '1',
+        },
     })
 );

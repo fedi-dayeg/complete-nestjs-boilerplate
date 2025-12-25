@@ -1,0 +1,6 @@
+{
+    "list": "Countries retrieved successfully.",
+    "error": {
+        "notFound": "Country not found."
+    }
+}

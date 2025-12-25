@@ -1,45 +1,88 @@
+import { UseInterceptors, applyDecorators } from '@nestjs/common';
 import {
-    applyDecorators,
-    createParamDecorator,
-    ExecutionContext,
-    SetMetadata,
-    UseInterceptors,
-} from '@nestjs/common';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+    FileFieldsInterceptor,
+    FileInterceptor,
+    FilesInterceptor,
+} from '@nestjs/platform-express';
 import {
-    FILE_CUSTOM_MAX_FILES_META_KEY,
-    FILE_CUSTOM_MAX_SIZE_META_KEY,
-} from 'src/common/file/constants/file.constant';
-import { FileCustomMaxFilesInterceptor } from 'src/common/file/interceptors/file.custom-max-files.interceptor';
-import { FileCustomMaxSizeInterceptor } from 'src/common/file/interceptors/file.custom-max-size.interceptor';
-import { IRequestApp } from 'src/common/request/interfaces/request.interface';
+    FileMaxMultiple,
+    FileSizeInBytes,
+} from '@common/file/constants/file.constant';
+import {
+    IFileUploadMultiple,
+    IFileUploadMultipleField,
+    IFileUploadMultipleFieldOptions,
+    IFileUploadSingle,
+} from '@common/file/interfaces/file.interface';
 
-export function UploadFileSingle(field: string): MethodDecorator {
-    return applyDecorators(UseInterceptors(FileInterceptor(field)));
-}
-
-export function UploadFileMultiple(field: string): MethodDecorator {
-    return applyDecorators(UseInterceptors(FilesInterceptor(field)));
-}
-
-export function FileCustomMaxFile(customMaxFiles: number): MethodDecorator {
+/**
+ * Creates a decorator for handling single file upload.
+ * This decorator uses FileInterceptor to handle file upload with specified field name and size limits.
+ * @param {IFileUploadSingle} [options] - Optional configuration for single file upload
+ * @returns {MethodDecorator} A method decorator that applies file upload interceptor for single file
+ */
+export function FileUploadSingle(options?: IFileUploadSingle): MethodDecorator {
     return applyDecorators(
-        UseInterceptors(FileCustomMaxFilesInterceptor),
-        SetMetadata(FILE_CUSTOM_MAX_FILES_META_KEY, customMaxFiles)
+        UseInterceptors(
+            FileInterceptor(options?.field ?? 'file', {
+                limits: {
+                    fileSize: options?.fileSize ?? FileSizeInBytes,
+                    files: 1,
+                },
+            })
+        )
     );
 }
 
-export function FileCustomMaxSize(customMaxSize: string): MethodDecorator {
+/**
+ * Creates a decorator for handling multiple file uploads with the same field name.
+ * This decorator uses FilesInterceptor to handle multiple files upload with specified field name, max files count, and size limits.
+ * @param {IFileUploadMultiple} [options] - Optional configuration for multiple file upload
+ * @returns {MethodDecorator} A method decorator that applies file upload interceptor for multiple files
+ */
+export function FileUploadMultiple(
+    options?: IFileUploadMultiple
+): MethodDecorator {
     return applyDecorators(
-        UseInterceptors(FileCustomMaxSizeInterceptor),
-        SetMetadata(FILE_CUSTOM_MAX_SIZE_META_KEY, customMaxSize)
+        UseInterceptors(
+            FilesInterceptor(
+                options?.field ?? 'files',
+                options?.maxFiles ?? FileMaxMultiple,
+                {
+                    limits: {
+                        fileSize: options?.fileSize ?? FileSizeInBytes,
+                    },
+                }
+            )
+        )
     );
 }
 
-export const FilePartNumber: () => ParameterDecorator = createParamDecorator(
-    (data: string, ctx: ExecutionContext): number => {
-        const request = ctx.switchToHttp().getRequest() as IRequestApp;
-        const { headers } = request;
-        return headers['x-part-number'] ? Number(headers['x-part-number']) : 0;
-    }
-);
+/**
+ * Creates a decorator for handling multiple file uploads with different field names.
+ * This decorator uses FileFieldsInterceptor to handle files upload from multiple fields with different configurations.
+ * @param {IFileUploadMultipleField[]} fields - Array of field configurations, each specifying field name and max file count
+ * @param {IFileUploadMultipleFieldOptions} [options] - Optional configuration for multiple field file upload
+ * @returns {MethodDecorator} A method decorator that applies file upload interceptor for multiple fields
+ */
+export function FileUploadMultipleFields(
+    fields: IFileUploadMultipleField[],
+    options?: IFileUploadMultipleFieldOptions
+): MethodDecorator {
+    return applyDecorators(
+        UseInterceptors(
+            FileFieldsInterceptor(
+                fields.map(e => ({
+                    name: e.field,
+                    maxCount: e.maxFiles,
+                })),
+                {
+                    limits: {
+                        fileSize: options?.fileSize ?? FileSizeInBytes,
+                        files: FileMaxMultiple,
+                    },
+                }
+            )
+        )
+    );
+}

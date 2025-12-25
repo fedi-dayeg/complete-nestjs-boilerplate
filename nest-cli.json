@@ -1,16 +1,53 @@
 {
-  "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
-  "compilerOptions": {
-    "plugins": ["@nestjs/swagger"],
-    "assets": [
-      { 
-        "include": "languages/**/*", 
-        "outDir": "dist/src" 
-      }
-    ],
-    "webpack": false,
-    "deleteOutDir": true,
-    "watchAssets": false
-  }
+    "collection": "@nestjs/schematics",
+    "sourceRoot": "src",
+    "compilerOptions": {
+        "builder": {
+            "type": "swc",
+            "options": {
+                "swcrcPath": ".swcrc"
+            }
+        },
+        "sourceMap": true,
+        "typeCheck": true,
+        "plugins": [
+            {
+                "name": "@nestjs/swagger",
+                "options": {
+                    "dtoFileNameSuffix": [".dto.ts"],
+                    "controllerFileNameSuffix": [".controller.ts"],
+                    "classValidatorShim": false,
+                    "dtoKeyOfComment": "description",
+                    "controllerKeyOfComment": "summary",
+                    "introspectComments": true
+                }
+            }
+        ],
+        "assets": [
+            {
+                "include": "languages/**/*",
+                "outDir": "dist"
+            },
+            {
+                "include": "**/**/templates/*",
+                "outDir": "dist"
+            }
+        ],
+        "deleteOutDir": true,
+        "watchAssets": true
+    },
+    "projects": {
+        "app": {
+            "type": "application",
+            "root": "src",
+            "entryFile": "main",
+            "sourceRoot": "src"
+        },
+        "migration": {
+            "type": "application",
+            "root": "src",
+            "entryFile": "migration",
+            "sourceRoot": "src"
+        }
+    }
 }

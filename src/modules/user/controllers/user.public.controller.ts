@@ -1,29 +1,52 @@
 import {
+    RequestIPAddress,
+    RequestUserAgent,
+} from '@common/request/decorators/request.decorator';
+import { RequestUserAgentDto } from '@common/request/dtos/request.user-agent.dto';
+import { Response } from '@common/response/decorators/response.decorator';
+import { IResponseReturn } from '@common/response/interfaces/response.interface';
+import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
+import { AuthJwtPayload } from '@modules/auth/decorators/auth.jwt.decorator';
+import {
+    AuthSocialAppleProtected,
+    AuthSocialGoogleProtected,
+} from '@modules/auth/decorators/auth.social.decorator';
+import { IAuthSocialPayload } from '@modules/auth/interfaces/auth.interface';
+import {
+    AuthPublicLoginSocialAppleDoc,
+    AuthPublicLoginSocialGoogleDoc,
+    UserPublicForgotPasswordDoc,
+    UserPublicLoginCredentialDoc,
+    UserPublicResetPasswordDoc,
+    UserPublicSendEmailVerificationDoc,
+    UserPublicSignUpDoc,
+    UserPublicVerifyEmailDoc,
+} from '@modules/user/docs/user.public.doc';
+import { UserCreateSocialRequestDto } from '@modules/user/dtos/request/user.create-social.request.dto';
+import { UserForgotPasswordResetRequestDto } from '@modules/user/dtos/request/user.forgot-password-reset.request.dto';
+import { UserForgotPasswordRequestDto } from '@modules/user/dtos/request/user.forgot-password.request.dto';
+import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
+import { UserSignUpRequestDto } from '@modules/user/dtos/request/user.sign-up.request.dto';
+import { UserVerifyEmailRequestDto } from '@modules/user/dtos/request/user.verify-email.request.dto';
+import { UserTokenResponseDto } from '@modules/user/dtos/response/user.token.response.dto';
+import { UserService } from '@modules/user/services/user.service';
+import {
     Body,
-    ConflictException,
     Controller,
-    Delete,
-    InternalServerErrorException,
+    HttpCode,
+    HttpStatus,
+    Patch,
     Post,
+    Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { EnumUserLoginWith } from '@prisma/client';
+
+//TODO fix this import
 import {
-    AuthJwtPayload,
-    AuthJwtPublicAccessProtected,
-} from 'src/common/auth/decorators/auth.jwt.decorator';
-import { AuthService } from 'src/common/auth/services/auth.service';
-import { ENUM_ERROR_STATUS_CODE_ERROR } from 'src/common/error/constants/error.status-code.constant';
-import { Response } from 'src/common/response/decorators/response.decorator';
-import { RoleDoc } from 'src/modules/role/repository/entities/role.entity';
-import { RoleService } from 'src/modules/role/services/role.service';
-import { ENUM_USER_STATUS_CODE_ERROR } from 'src/modules/user/constants/user.status-code.constant';
-import {
-    UserDeleteSelfDoc,
-    UserSignUpDoc,
-} from 'src/modules/user/docs/user.public.doc';
-import { UserSignUpDto } from 'src/modules/user/dtos/user.sign-up.dto';
-import { UserDoc } from 'src/modules/user/repository/entities/user.entity';
-import { UserService } from 'src/modules/user/services/user.service';
+    UserSendEmailVerificationRequestDto
+} from '@modules/user/dtos/request/user.send-email-verification.request.dto.ts‎';
+import { FeatureFlagProtected } from '@modules/feature-flag/decorators/feature-flag.decorator';
 
 @ApiTags('modules.public.user')
 @Controller({
@@ -31,89 +54,151 @@ import { UserService } from 'src/modules/user/services/user.service';
     path: '/user',
 })
 export class UserPublicController {
-    constructor(
-        private readonly userService: UserService,
-        private readonly authService: AuthService,
-        private readonly roleService: RoleService
-    ) {}
+    constructor(private readonly userService: UserService) {}
 
-    @UserSignUpDoc()
+    @UserPublicLoginCredentialDoc()
+    @Response('user.loginCredential')
+    @ApiKeyProtected()
+    @HttpCode(HttpStatus.OK)
+    @FeatureFlagProtected('loginWithCredential')
+    @Post('/login/credential')
+    async loginWithCredential(
+        @Body() body: UserLoginRequestDto,
+        @RequestIPAddress() ipAddress: string,
+        @RequestUserAgent() userAgent: RequestUserAgentDto
+    ): Promise<IResponseReturn<UserTokenResponseDto>> {
+        return this.userService.loginCredential(body, {
+            ipAddress,
+            userAgent,
+        });
+    }
+
+    @AuthPublicLoginSocialGoogleDoc()
+    @Response('user.loginWithSocialGoogle')
+    @AuthSocialGoogleProtected()
+    @FeatureFlagProtected('loginWithGoogle')
+    @Post('/login/social/google')
+    async loginWithGoogle(
+        @AuthJwtPayload<IAuthSocialPayload>('email')
+        email: string,
+        @RequestIPAddress() ipAddress: string,
+        @RequestUserAgent() userAgent: RequestUserAgentDto,
+        @Body() body: UserCreateSocialRequestDto
+    ): Promise<IResponseReturn<UserTokenResponseDto>> {
+        return this.userService.loginWithSocial(
+            email,
+            EnumUserLoginWith.socialGoogle,
+            body,
+            {
+                ipAddress,
+                userAgent,
+            }
+        );
+    }
+
+    @AuthPublicLoginSocialAppleDoc()
+    @Response('user.loginWithSocialApple')
+    @AuthSocialAppleProtected()
+    @FeatureFlagProtected('loginWithApple')
+    @Post('/login/social/apple')
+    async loginWithApple(
+        @AuthJwtPayload<IAuthSocialPayload>('email')
+        email: string,
+        @Body() body: UserCreateSocialRequestDto,
+        @RequestIPAddress() ipAddress: string,
+        @RequestUserAgent() userAgent: RequestUserAgentDto
+    ): Promise<IResponseReturn<UserTokenResponseDto>> {
+        return this.userService.loginWithSocial(
+            email,
+            EnumUserLoginWith.socialApple,
+            body,
+            {
+                ipAddress,
+                userAgent,
+            }
+        );
+    }
+
+    @UserPublicSignUpDoc()
     @Response('user.signUp')
+    @FeatureFlagProtected('signUp')
+    @ApiKeyProtected()
     @Post('/sign-up')
     async signUp(
         @Body()
-        { email, mobileNumber, username, ...body }: UserSignUpDto
+        body: UserSignUpRequestDto,
+        @RequestIPAddress() ipAddress: string,
+        @RequestUserAgent() userAgent: RequestUserAgentDto
     ): Promise<void> {
-        const role: RoleDoc = await this.roleService.findOneByName('user');
-
-        const usernameExist: boolean = await this.userService.existByUsername(
-            username
-        );
-        if (usernameExist) {
-            throw new ConflictException({
-                statusCode:
-                    ENUM_USER_STATUS_CODE_ERROR.USER_USERNAME_EXISTS_ERROR,
-                message: 'user.error.usernameExist',
-            });
-        }
-
-        const emailExist: boolean = await this.userService.existByEmail(email);
-        if (emailExist) {
-            throw new ConflictException({
-                statusCode: ENUM_USER_STATUS_CODE_ERROR.USER_EMAIL_EXIST_ERROR,
-                message: 'user.error.emailExist',
-            });
-        }
-
-        if (mobileNumber) {
-            const mobileNumberExist: boolean =
-                await this.userService.existByMobileNumber(mobileNumber);
-            if (mobileNumberExist) {
-                throw new ConflictException({
-                    statusCode:
-                        ENUM_USER_STATUS_CODE_ERROR.USER_MOBILE_NUMBER_EXIST_ERROR,
-                    message: 'user.error.mobileNumberExist',
-                });
-            }
-        }
-
-        try {
-            const password = await this.authService.createPassword(
-                body.password
-            );
-
-            await this.userService.create(
-                { email, mobileNumber, username, ...body, role: role._id },
-                password
-            );
-
-            return;
-        } catch (err: any) {
-            throw new InternalServerErrorException({
-                statusCode: ENUM_ERROR_STATUS_CODE_ERROR.ERROR_UNKNOWN,
-                message: 'http.serverError.internalServerError',
-                _error: err.message,
-            });
-        }
+        return this.userService.signUp(body, {
+            ipAddress,
+            userAgent,
+        });
     }
 
-    @UserDeleteSelfDoc()
-    @Response('user.deleteSelf')
-    @AuthJwtPublicAccessProtected()
-    @Delete('/delete')
-    async deleteSelf(@AuthJwtPayload('_id') _id: string): Promise<void> {
-        try {
-            const user: UserDoc = await this.userService.findOneById(_id);
+    @UserPublicVerifyEmailDoc()
+    @Response('user.verifyEmail')
+    @ApiKeyProtected()
+    @HttpCode(HttpStatus.OK)
+    @Patch('/verify/email')
+    async verifyEmail(
+        @Body() body: UserVerifyEmailRequestDto,
+        @RequestIPAddress() ipAddress: string,
+        @RequestUserAgent() userAgent: RequestUserAgentDto
+    ): Promise<IResponseReturn<void>> {
+        return this.userService.verifyEmail(body, {
+            ipAddress,
+            userAgent,
+        });
+    }
 
-            await this.userService.inactive(user);
-        } catch (err: any) {
-            throw new InternalServerErrorException({
-                statusCode: ENUM_ERROR_STATUS_CODE_ERROR.ERROR_UNKNOWN,
-                message: 'http.serverError.internalServerError',
-                _error: err.message,
-            });
-        }
+    @UserPublicSendEmailVerificationDoc()
+    @Response('user.sendEmailVerification')
+    @ApiKeyProtected()
+    @HttpCode(HttpStatus.OK)
+    @Post('/send/email')
+    async sendEmailVerification(
+        @Body() body: UserSendEmailVerificationRequestDto,
+        @RequestIPAddress() ipAddress: string,
+        @RequestUserAgent() userAgent: RequestUserAgentDto
+    ): Promise<IResponseReturn<void>> {
+        return this.userService.sendEmail(body, {
+            ipAddress,
+            userAgent,
+        });
+    }
 
-        return;
+    @UserPublicForgotPasswordDoc()
+    @Response('user.forgotPassword')
+    @FeatureFlagProtected('changePassword.forgotAllowed')
+    @ApiKeyProtected()
+    @HttpCode(HttpStatus.OK)
+    @Post('/password/forgot')
+    async forgotPassword(
+        @Body() body: UserForgotPasswordRequestDto,
+        @RequestIPAddress() ipAddress: string,
+        @RequestUserAgent() userAgent: RequestUserAgentDto
+    ): Promise<IResponseReturn<void>> {
+        return this.userService.forgotPassword(body, {
+            ipAddress,
+            userAgent,
+        });
+    }
+
+    @UserPublicResetPasswordDoc()
+    @Response('user.resetPassword')
+    @FeatureFlagProtected('changePassword.forgotAllowed')
+    @ApiKeyProtected()
+    @HttpCode(HttpStatus.OK)
+    @Put('/password/reset')
+    async reset(
+        @Body() body: UserForgotPasswordResetRequestDto,
+        @RequestIPAddress() ipAddress: string,
+        @RequestUserAgent() userAgent: RequestUserAgentDto
+    ): Promise<IResponseReturn<void>> {
+        return this.userService.resetPassword(body, {
+            ipAddress,
+            userAgent,
+        });
     }
 }

@@ -1,5 +1,14 @@
-export const REQUEST_PARAM_CLASS_DTOS_META_KEY = 'RequestParamClassDtosMetaKey';
+/**
+ * Meta key for request custom timeout decorator.
+ */
+export const RequestCustomTimeoutMetaKey = 'RequestCustomTimeoutMetaKey';
 
-export const REQUEST_CUSTOM_TIMEOUT_META_KEY = 'RequestCustomTimeoutMetaKey';
-export const REQUEST_CUSTOM_TIMEOUT_VALUE_META_KEY =
-    'RequestCustomTimeoutValueMetaKey';
+/**
+ * Meta key for request custom timeout value.
+ */
+export const RequestCustomTimeoutValueMetaKey = 'RequestCustomTimeoutValueMetaKey';
+
+/**
+ * Meta key for request environment.
+ */
+export const RequestEnvMetaKey = 'RequestEnvMetaKey';

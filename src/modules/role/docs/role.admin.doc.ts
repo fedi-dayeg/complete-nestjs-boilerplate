@@ -1,127 +1,72 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
-import { Doc, DocPaging } from 'src/common/doc/decorators/doc.decorator';
-import { ResponseIdSerialization } from 'src/common/response/serializations/response.id.serialization';
 import {
-    RoleDocParamsGet,
-    RoleDocQueryAccessFor,
-    RoleDocQueryIsActive,
-} from 'src/modules/role/constants/role.doc.constant';
-import { RoleAccessForSerialization } from 'src/modules/role/serializations/role.access-for.serialization';
-import { RoleGetSerialization } from 'src/modules/role/serializations/role.get.serialization';
-import { RoleListSerialization } from 'src/modules/role/serializations/role.list.serialization';
+    Doc,
+    DocAuth,
+    DocGuard,
+    DocRequest,
+    DocResponse,
+} from '@common/doc/decorators/doc.decorator';
+import { EnumDocRequestBodyType } from '@common/doc/enums/doc.enum';
+import { RoleDocParamsId } from '@modules/role/constants/role.doc.constant';
+import { RoleCreateRequestDto } from '@modules/role/dtos/request/role.create.request.dto';
+import { RoleUpdateRequestDto } from '@modules/role/dtos/request/role.update.request.dto';
+import { RoleDto } from '@modules/role/dtos/role.dto';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 
-export function RoleListDoc(): MethodDecorator {
+export function RoleAdminCreateDoc(): MethodDecorator {
     return applyDecorators(
-        DocPaging<RoleListSerialization>('role.list', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            request: {
-                queries: [...RoleDocQueryIsActive, ...RoleDocQueryAccessFor],
-            },
-            response: {
-                serialization: RoleListSerialization,
-            },
+        Doc({
+            summary: 'create a role',
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocRequest({
+            bodyType: EnumDocRequestBodyType.json,
+            dto: RoleCreateRequestDto,
+        }),
+        DocGuard({ role: true, policy: true }),
+        DocResponse<RoleDto>('role.create', {
+            httpStatus: HttpStatus.CREATED,
+            dto: RoleDto,
         })
     );
 }
 
-export function RoleGetDoc(): MethodDecorator {
+export function RoleAdminUpdateDoc(): MethodDecorator {
     return applyDecorators(
-        Doc<RoleGetSerialization>('role.get', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            request: {
-                params: RoleDocParamsGet,
-            },
-            response: { serialization: RoleGetSerialization },
+        Doc({
+            summary: 'update data a role',
+        }),
+        DocRequest({
+            params: RoleDocParamsId,
+            bodyType: EnumDocRequestBodyType.json,
+            dto: RoleUpdateRequestDto,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true, policy: true }),
+        DocResponse<RoleDto>('role.update', {
+            dto: RoleDto,
         })
     );
 }
 
-export function RoleCreateDoc(): MethodDecorator {
+export function RoleAdminDeleteDoc(): MethodDecorator {
     return applyDecorators(
-        Doc<ResponseIdSerialization>('role.create', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            response: {
-                httpStatus: HttpStatus.CREATED,
-                serialization: ResponseIdSerialization,
-            },
-        })
-    );
-}
-
-export function RoleUpdateDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc<ResponseIdSerialization>('role.update', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            request: {
-                params: RoleDocParamsGet,
-            },
-            response: { serialization: ResponseIdSerialization },
-        })
-    );
-}
-
-export function RoleDeleteDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc<void>('role.delete', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            request: {
-                params: RoleDocParamsGet,
-            },
-        })
-    );
-}
-
-export function RoleActiveDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc<void>('role.active', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            request: {
-                params: RoleDocParamsGet,
-            },
-        })
-    );
-}
-
-export function RoleInactiveDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc<void>('role.inactive', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            request: {
-                params: RoleDocParamsGet,
-            },
-        })
-    );
-}
-
-export function RoleAccessForDoc(): MethodDecorator {
-    return applyDecorators(
-        Doc<RoleAccessForSerialization>('role.accessFor', {
-            auth: {
-                jwtAccessToken: true,
-                permissionToken: true,
-            },
-            response: { serialization: RoleAccessForSerialization },
-        })
+        Doc({
+            summary: 'delete data a role',
+        }),
+        DocRequest({
+            params: RoleDocParamsId,
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocGuard({ role: true, policy: true }),
+        DocResponse('role.delete')
     );
 }

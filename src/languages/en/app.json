@@ -1,4 +1,5 @@
 {
-    "hello": "This is test endpoint service {serviceName}.",
-    "helloTimeout": "This is test endpoint service {serviceName} timeout."
+    "description": {
+        "swagger": "APIs Documentation for {appName} application."
+    }
 }

@@ -1,16 +1,49 @@
 import {
-    RoleDoc,
-    RoleEntity,
-} from 'src/modules/role/repository/entities/role.entity';
-import {
-    UserDoc,
-    UserEntity,
-} from 'src/modules/user/repository/entities/user.entity';
+    Country,
+    EnumUserLoginFrom,
+    EnumUserLoginWith,
+    EnumVerificationType,
+    Role,
+    User,
+    UserMobileNumber,
+} from '@prisma/client';
 
-export interface IUserEntity extends Omit<UserEntity, 'role'> {
-    role: RoleEntity;
+export interface IUser extends User {
+    role: Role;
 }
 
-export interface IUserDoc extends Omit<UserDoc, 'role'> {
-    role: RoleDoc;
+export interface IUserMobileNumber extends UserMobileNumber {
+    country: Country;
+}
+
+export interface IUserProfile extends IUser {
+    mobileNumbers: IUserMobileNumber[];
+    country: Country;
+}
+
+export interface IUserLogin {
+    loginFrom: EnumUserLoginFrom;
+    loginWith: EnumUserLoginWith;
+    expiredAt: Date;
+    jti: string;
+    sessionId: string;
+}
+
+export interface IUserForgotPasswordCreate {
+    expiredAt: Date;
+    expiredInMinutes: number;
+    resendInMinutes: number;
+    reference: string;
+    token: string;
+    link: string;
+}
+
+export interface IUserVerificationCreate {
+    type: EnumVerificationType;
+    expiredAt: Date;
+    expiredInMinutes: number;
+    resendInMinutes: number;
+    reference: string;
+    token: string;
+    link?: string;
 }

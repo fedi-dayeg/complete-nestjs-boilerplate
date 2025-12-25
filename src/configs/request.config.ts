@@ -1,62 +1,56 @@
+import { FileSizeInBytes } from '@common/file/constants/file.constant';
 import { registerAs } from '@nestjs/config';
 import bytes from 'bytes';
 import ms from 'ms';
-import { seconds } from 'src/common/helper/constants/helper.function.constant';
-import { ENUM_REQUEST_METHOD } from 'src/common/request/constants/request.enum.constant';
+
+export interface IConfigRequest {
+    body: {
+        json: { limitInBytes: number };
+        text: { limitInBytes: number };
+        urlencoded: { limitInBytes: number };
+        applicationOctetStream: { limitInBytes: number };
+    };
+    timeoutInMs: number;
+    cors: {
+        allowMethod: string[];
+        allowOrigin: string[];
+        allowHeader: string[];
+    };
+    throttle: {
+        ttlInMs: number;
+        limit: number;
+    };
+}
 
 export default registerAs(
     'request',
-    (): Record<string, any> => ({
+    (): IConfigRequest => ({
         body: {
             json: {
-                maxFileSize: bytes('100kb'), // 100kb
-            },
-            raw: {
-                maxFileSize: bytes('5.5mb'), // 5.5mb
+                limitInBytes: bytes('500kb'),
             },
             text: {
-                maxFileSize: bytes('100kb'), // 100kb
+                limitInBytes: bytes('1mb'),
             },
             urlencoded: {
-                maxFileSize: bytes('100kb'), // 100kb
+                limitInBytes: bytes('1mb'),
+            },
+            applicationOctetStream: {
+                limitInBytes: FileSizeInBytes,
             },
         },
-        timestamp: {
-            toleranceTimeInMs: ms('5m'), // 5 mins
-        },
-        timeout: ms('30s'), // 30s based on ms module
-        userAgent: {
-            os: [
-                'Mobile',
-                'Mac OS',
-                'Windows',
-                'UNIX',
-                'Linux',
-                'iOS',
-                'Android',
-            ],
-            browser: [
-                'IE',
-                'Safari',
-                'Edge',
-                'Opera',
-                'Chrome',
-                'Firefox',
-                'Samsung Browser',
-                'UCBrowser',
-            ],
-        },
+        timeoutInMs: ms('30s'),
         cors: {
             allowMethod: [
-                ENUM_REQUEST_METHOD.GET,
-                ENUM_REQUEST_METHOD.DELETE,
-                ENUM_REQUEST_METHOD.PUT,
-                ENUM_REQUEST_METHOD.PATCH,
-                ENUM_REQUEST_METHOD.POST,
+                'GET',
+                'DELETE',
+                'PUT',
+                'PATCH',
+                'POST',
+                'HEAD',
+                'OPTIONS',
             ],
-            allowOrigin: '*', // allow all origin
-            // allowOrigin: [/example\.com(\:\d{1,4})?$/], // allow all subdomain, and all port
-            // allowOrigin: [/example\.com$/], // allow all subdomain without port
+            allowOrigin: process.env.MIDDLEWARE_CORS_ORIGIN?.split(',') ?? [],
             allowHeader: [
                 'Accept',
                 'Accept-Language',
@@ -80,16 +74,16 @@ export default registerAs(
                 'x-api-key',
                 'x-timezone',
                 'x-request-id',
+                'x-correlation-id',
                 'x-version',
                 'x-repo-version',
-                'x-permission-token',
                 'X-Response-Time',
                 'user-agent',
             ],
         },
         throttle: {
-            ttl: seconds('500'), // 0.5 secs
-            limit: 10, // max request per reset time
+            ttlInMs: ms('500'),
+            limit: 10,
         },
     })
 );

@@ -1,13 +1,16 @@
 import { registerAs } from '@nestjs/config';
 
+export interface IConfigDatabase {
+    url: string;
+    debug: boolean;
+}
+
 export default registerAs(
     'database',
-    (): Record<string, any> => ({
-        host: process.env?.DATABASE_HOST ?? 'mongodb://localhost:27017',
-        name: process.env?.DATABASE_NAME ?? 'nest',
-        user: process.env?.DATABASE_USER,
-        password: process?.env.DATABASE_PASSWORD,
+    (): IConfigDatabase => ({
+        url:
+            process.env?.DATABASE_URL ??
+            'mongodb://localhost:27017,localhost:27018,localhost:27019',
         debug: process.env.DATABASE_DEBUG === 'true',
-        options: process.env?.DATABASE_OPTIONS,
     })
 );
