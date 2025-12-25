@@ -25,7 +25,7 @@ jobs:
         uses: martinbeentjes/npm-get-version-action@main
 
 
-      - name: Git
+      - name: Log info
         run: |
           echo Branch name is: ${{ github.ref_name }}
           echo Short sha: ${{ steps.git.outputs.short_sha }}
