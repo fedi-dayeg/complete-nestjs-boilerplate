@@ -31,16 +31,16 @@ import {
 import { Injectable } from '@nestjs/common';
 import {
     Country,
-    ENUM_ACTIVITY_LOG_ACTION,
-    ENUM_PASSWORD_HISTORY_TYPE,
-    ENUM_ROLE_TYPE,
-    ENUM_TERM_POLICY_STATUS,
-    ENUM_TERM_POLICY_TYPE,
-    ENUM_USER_LOGIN_WITH,
-    ENUM_USER_SIGN_UP_FROM,
-    ENUM_USER_SIGN_UP_WITH,
-    ENUM_USER_STATUS,
-    ENUM_VERIFICATION_TYPE,
+    EnumActivityLogAction,
+    EnumPasswordHistoryType,
+    EnumRoleType,
+    EnumTermPolicyStatus,
+    EnumTermPolicyType,
+    EnumUserLoginWith,
+    EnumUserSignUpFrom,
+    EnumUserSignUpWith,
+    EnumUserStatus,
+    EnumVerificationType,
     ForgotPassword,
     Prisma,
     User,
@@ -92,7 +92,7 @@ export class UserRepository {
                 ...country,
                 ...role,
                 deletedAt: null,
-                status: ENUM_USER_STATUS.active,
+                status: EnumUserStatus.active,
             },
             include: {
                 role: true,
@@ -108,13 +108,13 @@ export class UserRepository {
 
     async findOneActiveById(id: string): Promise<User | null> {
         return this.databaseService.user.findUnique({
-            where: { id, deletedAt: null, status: ENUM_USER_STATUS.active },
+            where: { id, deletedAt: null, status: EnumUserStatus.active },
         });
     }
 
     async findOneActiveByEmail(email: string): Promise<User | null> {
         return this.databaseService.user.findUnique({
-            where: { email, deletedAt: null, status: ENUM_USER_STATUS.active },
+            where: { email, deletedAt: null, status: EnumUserStatus.active },
         });
     }
 
@@ -144,7 +144,7 @@ export class UserRepository {
 
     async findOneActiveProfileById(id: string): Promise<IUserProfile | null> {
         return this.databaseService.user.findUnique({
-            where: { id, deletedAt: null, status: ENUM_USER_STATUS.active },
+            where: { id, deletedAt: null, status: EnumUserStatus.active },
             include: {
                 role: true,
                 country: true,
@@ -165,7 +165,7 @@ export class UserRepository {
                 userId,
                 user: {
                     deletedAt: null,
-                    status: ENUM_USER_STATUS.active,
+                    status: EnumUserStatus.active,
                 },
             },
             orderBy: {
@@ -197,7 +197,7 @@ export class UserRepository {
                 },
                 user: {
                     deletedAt: null,
-                    status: ENUM_USER_STATUS.active,
+                    status: EnumUserStatus.active,
                 },
             },
             include: {
@@ -215,13 +215,13 @@ export class UserRepository {
             where: {
                 token,
                 isUsed: false,
-                type: ENUM_VERIFICATION_TYPE.email,
+                type: EnumVerificationType.email,
                 expiredAt: {
                     gt: today,
                 },
                 user: {
                     deletedAt: null,
-                    status: ENUM_USER_STATUS.active,
+                    status: EnumUserStatus.active,
                 },
             },
             include: {
@@ -236,10 +236,10 @@ export class UserRepository {
         return this.databaseService.verification.findFirst({
             where: {
                 userId,
-                type: ENUM_VERIFICATION_TYPE.email,
+                type: EnumVerificationType.email,
                 user: {
                     deletedAt: null,
-                    status: ENUM_USER_STATUS.active,
+                    status: EnumUserStatus.active,
                 },
             },
             orderBy: {
@@ -308,7 +308,7 @@ export class UserRepository {
             type: roleType,
         }: {
             id: string;
-            type: ENUM_ROLE_TYPE;
+            type: EnumRoleType;
         },
         { ipAddress, userAgent }: IRequestLog,
         createdBy: string
@@ -317,11 +317,11 @@ export class UserRepository {
             where: {
                 type: {
                     in: [
-                        ENUM_TERM_POLICY_TYPE.termsOfService,
-                        ENUM_TERM_POLICY_TYPE.privacy,
+                        EnumTermPolicyType.termsOfService,
+                        EnumTermPolicyType.privacy,
                     ],
                 },
-                status: ENUM_TERM_POLICY_STATUS.published,
+                status: EnumTermPolicyStatus.published,
             },
             select: {
                 id: true,
@@ -337,21 +337,21 @@ export class UserRepository {
                     countryId,
                     roleId,
                     name,
-                    signUpFrom: ENUM_USER_SIGN_UP_FROM.admin,
-                    signUpWith: ENUM_USER_SIGN_UP_WITH.credential,
+                    signUpFrom: EnumUserSignUpFrom.admin,
+                    signUpWith: EnumUserSignUpWith.credential,
                     passwordCreated,
                     passwordExpired,
                     password: passwordHash,
                     salt,
                     passwordAttempt: 0,
                     username,
-                    isVerified: roleType === ENUM_ROLE_TYPE.user ? false : true,
-                    status: ENUM_USER_STATUS.active,
+                    isVerified: roleType === EnumRoleType.user ? false : true,
+                    status: EnumUserStatus.active,
                     termPolicy: {
-                        [ENUM_TERM_POLICY_TYPE.cookies]: false,
-                        [ENUM_TERM_POLICY_TYPE.marketing]: false,
-                        [ENUM_TERM_POLICY_TYPE.privacy]: true,
-                        [ENUM_TERM_POLICY_TYPE.termsOfService]: true,
+                        [EnumTermPolicyType.cookies]: false,
+                        [EnumTermPolicyType.marketing]: false,
+                        [EnumTermPolicyType.privacy]: true,
+                        [EnumTermPolicyType.termsOfService]: true,
                     },
                     createdBy,
                     deletedAt: null,
@@ -369,7 +369,7 @@ export class UserRepository {
                         create: {
                             password: passwordHash,
                             salt,
-                            type: ENUM_PASSWORD_HISTORY_TYPE.admin,
+                            type: EnumPasswordHistoryType.admin,
                             expiredAt: passwordPeriodExpired,
                             createdAt: passwordCreated,
                             createdBy: createdBy,
@@ -379,7 +379,7 @@ export class UserRepository {
                         createMany: {
                             data: [
                                 {
-                                    action: ENUM_ACTIVITY_LOG_ACTION.userCreated,
+                                    action: EnumActivityLogAction.userCreated,
                                     ipAddress,
                                     userAgent:
                                         this.databaseUtil.toPlainObject(
@@ -388,7 +388,7 @@ export class UserRepository {
                                     createdBy: createdBy,
                                 },
                                 {
-                                    action: ENUM_ACTIVITY_LOG_ACTION.userSendVerificationEmail,
+                                    action: EnumActivityLogAction.userSendVerificationEmail,
                                     ipAddress,
                                     userAgent:
                                         this.databaseUtil.toPlainObject(
@@ -429,9 +429,9 @@ export class UserRepository {
                 activityLogs: {
                     create: {
                         action:
-                            status === ENUM_USER_STATUS.blocked
-                                ? ENUM_ACTIVITY_LOG_ACTION.userBlocked
-                                : ENUM_ACTIVITY_LOG_ACTION.userUpdateStatus,
+                            status === EnumUserStatus.blocked
+                                ? EnumActivityLogAction.userBlocked
+                                : EnumActivityLogAction.userUpdateStatus,
                         ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: updatedBy,
@@ -454,7 +454,7 @@ export class UserRepository {
                 updatedBy: userId,
                 activityLogs: {
                     create: {
-                        action: ENUM_ACTIVITY_LOG_ACTION.userUpdateProfile,
+                        action: EnumActivityLogAction.userUpdateProfile,
                         ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: userId,
@@ -476,7 +476,7 @@ export class UserRepository {
                 updatedBy: userId,
                 activityLogs: {
                     create: {
-                        action: ENUM_ACTIVITY_LOG_ACTION.userUpdatePhotoProfile,
+                        action: EnumActivityLogAction.userUpdatePhotoProfile,
                         ipAddress: ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: userId,
@@ -497,10 +497,10 @@ export class UserRepository {
                 deletedAt,
                 deletedBy: userId,
                 updatedBy: userId,
-                status: ENUM_USER_STATUS.inactive,
+                status: EnumUserStatus.inactive,
                 activityLogs: {
                     create: {
-                        action: ENUM_ACTIVITY_LOG_ACTION.userDeleteSelf,
+                        action: EnumActivityLogAction.userDeleteSelf,
                         ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: userId,
@@ -562,7 +562,7 @@ export class UserRepository {
                 updatedBy,
                 activityLogs: {
                     create: {
-                        action: ENUM_ACTIVITY_LOG_ACTION.userAddMobileNumber,
+                        action: EnumActivityLogAction.userAddMobileNumber,
                         ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: userId,
@@ -620,7 +620,7 @@ export class UserRepository {
                 updatedBy: userId,
                 activityLogs: {
                     create: {
-                        action: ENUM_ACTIVITY_LOG_ACTION.userUpdateMobileNumber,
+                        action: EnumActivityLogAction.userUpdateMobileNumber,
                         ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: userId,
@@ -657,7 +657,7 @@ export class UserRepository {
                 updatedBy: userId,
                 activityLogs: {
                     create: {
-                        action: ENUM_ACTIVITY_LOG_ACTION.userDeleteMobileNumber,
+                        action: EnumActivityLogAction.userDeleteMobileNumber,
                         ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: userId,
@@ -691,7 +691,7 @@ export class UserRepository {
                 updatedBy: userId,
                 activityLogs: {
                     create: {
-                        action: ENUM_ACTIVITY_LOG_ACTION.userClaimUsername,
+                        action: EnumActivityLogAction.userClaimUsername,
                         ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: userId,
@@ -726,7 +726,7 @@ export class UserRepository {
                     create: {
                         password: passwordHash,
                         salt,
-                        type: ENUM_PASSWORD_HISTORY_TYPE.admin,
+                        type: EnumPasswordHistoryType.admin,
                         expiredAt: passwordPeriodExpired,
                         createdAt: passwordCreated,
                         createdBy: updatedBy,
@@ -734,7 +734,7 @@ export class UserRepository {
                 },
                 activityLogs: {
                     create: {
-                        action: ENUM_ACTIVITY_LOG_ACTION.userUpdatePasswordByAdmin,
+                        action: EnumActivityLogAction.userUpdatePasswordByAdmin,
                         ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: updatedBy,
@@ -788,7 +788,7 @@ export class UserRepository {
                     create: {
                         password: passwordHash,
                         salt,
-                        type: ENUM_PASSWORD_HISTORY_TYPE.profile,
+                        type: EnumPasswordHistoryType.profile,
                         expiredAt: passwordPeriodExpired,
                         createdAt: passwordCreated,
                         createdBy: userId,
@@ -796,7 +796,7 @@ export class UserRepository {
                 },
                 activityLogs: {
                     create: {
-                        action: ENUM_ACTIVITY_LOG_ACTION.userChangePassword,
+                        action: EnumActivityLogAction.userChangePassword,
                         ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: userId,
@@ -817,18 +817,18 @@ export class UserRepository {
         { loginFrom, loginWith, sessionId, expiredAt, fingerprint }: IUserLogin,
         { ipAddress, userAgent }: IRequestLog
     ): Promise<User> {
-        let action: ENUM_ACTIVITY_LOG_ACTION =
-            ENUM_ACTIVITY_LOG_ACTION.userLoginCredential;
+        let action: EnumActivityLogAction =
+            EnumActivityLogAction.userLoginCredential;
         switch (loginWith) {
-            case ENUM_USER_LOGIN_WITH.socialApple:
-                action = ENUM_ACTIVITY_LOG_ACTION.userLoginApple;
+            case EnumUserLoginWith.socialApple:
+                action = EnumActivityLogAction.userLoginApple;
                 break;
-            case ENUM_USER_LOGIN_WITH.socialGoogle:
-                action = ENUM_ACTIVITY_LOG_ACTION.userLoginGoogle;
+            case EnumUserLoginWith.socialGoogle:
+                action = EnumActivityLogAction.userLoginGoogle;
                 break;
-            case ENUM_USER_LOGIN_WITH.credential:
+            case EnumUserLoginWith.credential:
             default:
-                action = ENUM_ACTIVITY_LOG_ACTION.userLoginCredential;
+                action = EnumActivityLogAction.userLoginCredential;
                 break;
         }
 
@@ -867,7 +867,7 @@ export class UserRepository {
         email: string,
         username: string,
         roleId: string,
-        loginWith: ENUM_USER_LOGIN_WITH,
+        loginWith: EnumUserLoginWith,
         {
             countryId,
             name,
@@ -879,21 +879,21 @@ export class UserRepository {
     ): Promise<IUser> {
         const userId = this.databaseUtil.createId();
         const signUpWith =
-            loginWith === ENUM_USER_LOGIN_WITH.socialApple
-                ? ENUM_USER_SIGN_UP_WITH.socialApple
-                : ENUM_USER_SIGN_UP_WITH.socialGoogle;
+            loginWith === EnumUserLoginWith.socialApple
+                ? EnumUserSignUpWith.socialApple
+                : EnumUserSignUpWith.socialGoogle;
 
         const termPolicies = await this.databaseService.termPolicy.findMany({
             where: {
                 type: {
                     in: [
-                        ENUM_TERM_POLICY_TYPE.termsOfService,
-                        ENUM_TERM_POLICY_TYPE.privacy,
-                        cookies ? ENUM_TERM_POLICY_TYPE.cookies : null,
-                        marketing ? ENUM_TERM_POLICY_TYPE.marketing : null,
-                    ].filter(Boolean) as ENUM_TERM_POLICY_TYPE[],
+                        EnumTermPolicyType.termsOfService,
+                        EnumTermPolicyType.privacy,
+                        cookies ? EnumTermPolicyType.cookies : null,
+                        marketing ? EnumTermPolicyType.marketing : null,
+                    ].filter(Boolean) as EnumTermPolicyType[],
                 },
-                status: ENUM_TERM_POLICY_STATUS.published,
+                status: EnumTermPolicyStatus.published,
             },
             select: {
                 id: true,
@@ -912,18 +912,18 @@ export class UserRepository {
                     signUpWith,
                     username,
                     isVerified: true,
-                    status: ENUM_USER_STATUS.active,
+                    status: EnumUserStatus.active,
                     termPolicy: {
-                        [ENUM_TERM_POLICY_TYPE.cookies]: cookies,
-                        [ENUM_TERM_POLICY_TYPE.marketing]: marketing,
-                        [ENUM_TERM_POLICY_TYPE.privacy]: true,
-                        [ENUM_TERM_POLICY_TYPE.termsOfService]: true,
+                        [EnumTermPolicyType.cookies]: cookies,
+                        [EnumTermPolicyType.marketing]: marketing,
+                        [EnumTermPolicyType.privacy]: true,
+                        [EnumTermPolicyType.termsOfService]: true,
                     },
                     createdBy: userId,
                     deletedAt: null,
                     activityLogs: {
                         create: {
-                            action: ENUM_ACTIVITY_LOG_ACTION.userCreated,
+                            action: EnumActivityLogAction.userCreated,
                             ipAddress,
                             userAgent:
                                 this.databaseUtil.toPlainObject(userAgent),
@@ -960,7 +960,7 @@ export class UserRepository {
                 updatedBy: userId,
                 activityLogs: {
                     create: {
-                        action: ENUM_ACTIVITY_LOG_ACTION.userVerifiedEmail,
+                        action: EnumActivityLogAction.userVerifiedEmail,
                         ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: userId,
@@ -995,13 +995,13 @@ export class UserRepository {
             where: {
                 type: {
                     in: [
-                        ENUM_TERM_POLICY_TYPE.termsOfService,
-                        ENUM_TERM_POLICY_TYPE.privacy,
-                        cookies ? ENUM_TERM_POLICY_TYPE.cookies : null,
-                        marketing ? ENUM_TERM_POLICY_TYPE.marketing : null,
-                    ].filter(Boolean) as ENUM_TERM_POLICY_TYPE[],
+                        EnumTermPolicyType.termsOfService,
+                        EnumTermPolicyType.privacy,
+                        cookies ? EnumTermPolicyType.cookies : null,
+                        marketing ? EnumTermPolicyType.marketing : null,
+                    ].filter(Boolean) as EnumTermPolicyType[],
                 },
-                status: ENUM_TERM_POLICY_STATUS.published,
+                status: EnumTermPolicyStatus.published,
             },
             select: {
                 id: true,
@@ -1018,10 +1018,10 @@ export class UserRepository {
                     name,
                     roleId,
                     signUpFrom: from,
-                    signUpWith: ENUM_USER_SIGN_UP_WITH.credential,
+                    signUpWith: EnumUserSignUpWith.credential,
                     username,
                     isVerified: false,
-                    status: ENUM_USER_STATUS.active,
+                    status: EnumUserStatus.active,
                     passwordCreated,
                     passwordExpired,
                     password: passwordHash,
@@ -1031,17 +1031,17 @@ export class UserRepository {
                         create: {
                             password: passwordHash,
                             salt,
-                            type: ENUM_PASSWORD_HISTORY_TYPE.signUp,
+                            type: EnumPasswordHistoryType.signUp,
                             expiredAt: passwordPeriodExpired,
                             createdAt: passwordCreated,
                             createdBy: userId,
                         },
                     },
                     termPolicy: {
-                        [ENUM_TERM_POLICY_TYPE.cookies]: cookies,
-                        [ENUM_TERM_POLICY_TYPE.marketing]: marketing,
-                        [ENUM_TERM_POLICY_TYPE.privacy]: true,
-                        [ENUM_TERM_POLICY_TYPE.termsOfService]: true,
+                        [EnumTermPolicyType.cookies]: cookies,
+                        [EnumTermPolicyType.marketing]: marketing,
+                        [EnumTermPolicyType.privacy]: true,
+                        [EnumTermPolicyType.termsOfService]: true,
                     },
                     createdBy: userId,
                     deletedAt: null,
@@ -1049,7 +1049,7 @@ export class UserRepository {
                         createMany: {
                             data: [
                                 {
-                                    action: ENUM_ACTIVITY_LOG_ACTION.userSignedUp,
+                                    action: EnumActivityLogAction.userSignedUp,
                                     ipAddress,
                                     userAgent:
                                         this.databaseUtil.toPlainObject(
@@ -1058,7 +1058,7 @@ export class UserRepository {
                                     createdBy: userId,
                                 },
                                 {
-                                    action: ENUM_ACTIVITY_LOG_ACTION.userSendVerificationEmail,
+                                    action: EnumActivityLogAction.userSendVerificationEmail,
                                     ipAddress,
                                     userAgent:
                                         this.databaseUtil.toPlainObject(
@@ -1108,12 +1108,12 @@ export class UserRepository {
             where: {
                 id: userId,
                 deletedAt: null,
-                status: ENUM_USER_STATUS.active,
+                status: EnumUserStatus.active,
             },
             data: {
                 activityLogs: {
                     create: {
-                        action: ENUM_ACTIVITY_LOG_ACTION.userForgotPassword,
+                        action: EnumActivityLogAction.userForgotPassword,
                         ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: userId,
@@ -1161,7 +1161,7 @@ export class UserRepository {
                         isVerified: true,
                         activityLogs: {
                             create: {
-                                action: ENUM_ACTIVITY_LOG_ACTION.userVerifiedEmail,
+                                action: EnumActivityLogAction.userVerifiedEmail,
                                 ipAddress,
                                 userAgent:
                                     this.databaseUtil.toPlainObject(userAgent),
@@ -1216,7 +1216,7 @@ export class UserRepository {
                             },
                             activityLogs: {
                                 create: {
-                                    action: ENUM_ACTIVITY_LOG_ACTION.userSendVerificationEmail,
+                                    action: EnumActivityLogAction.userSendVerificationEmail,
                                     ipAddress: requestLog.ipAddress,
                                     userAgent: this.databaseUtil.toPlainObject(
                                         requestLog.userAgent
@@ -1258,7 +1258,7 @@ export class UserRepository {
                 },
                 activityLogs: {
                     create: {
-                        action: ENUM_ACTIVITY_LOG_ACTION.userRefreshToken,
+                        action: EnumActivityLogAction.userRefreshToken,
                         ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: userId,
@@ -1275,10 +1275,10 @@ export class UserRepository {
         return this.databaseService.user.update({
             where: { id: userId, deletedAt: null },
             data: {
-                status: ENUM_USER_STATUS.inactive,
+                status: EnumUserStatus.inactive,
                 activityLogs: {
                     create: {
-                        action: ENUM_ACTIVITY_LOG_ACTION.userReachMaxPasswordAttempt,
+                        action: EnumActivityLogAction.userReachMaxPasswordAttempt,
                         ipAddress,
                         userAgent: this.databaseUtil.toPlainObject(userAgent),
                         createdBy: userId,

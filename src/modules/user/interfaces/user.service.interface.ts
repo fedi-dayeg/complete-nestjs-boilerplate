@@ -43,7 +43,7 @@ import { UserListResponseDto } from '@modules/user/dtos/response/user.list.respo
 import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
 import { UserTokenResponseDto } from '@modules/user/dtos/response/user.token.response.dto';
 import { IUser } from '@modules/user/interfaces/user.interface';
-import { ENUM_USER_LOGIN_WITH } from '@prisma/client';
+import { EnumUserLoginWith } from '@prisma/client';
 import {
     UserSendEmailVerificationRequestDto
 } from '@modules/user/dtos/request/user.send-email-verification.request.dto.ts‎';
@@ -151,7 +151,7 @@ export interface IUserService {
     ): Promise<IResponseReturn<UserTokenResponseDto>>;
     loginWithSocial(
         email: string,
-        loginWith: ENUM_USER_LOGIN_WITH,
+        loginWith: EnumUserLoginWith,
         { from, ...others }: UserCreateSocialRequestDto,
         requestLog: IRequestLog
     ): Promise<IResponseReturn<UserTokenResponseDto>>;

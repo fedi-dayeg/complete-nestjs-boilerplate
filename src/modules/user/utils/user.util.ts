@@ -13,7 +13,7 @@ import {
 } from '@modules/user/interfaces/user.interface';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ENUM_VERIFICATION_TYPE, PasswordHistory, User } from '@prisma/client';
+import { EnumVerificationType, PasswordHistory, User } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 import { Duration } from 'luxon';
 import { Profanity } from '@2toad/profanity';
@@ -244,14 +244,14 @@ export class UserUtil {
     }
 
     verificationCreateVerification(
-        type: ENUM_VERIFICATION_TYPE
+        type: EnumVerificationType
     ): IUserVerificationCreate {
         const token =
-            type === ENUM_VERIFICATION_TYPE.mobileNumber
+            type === EnumVerificationType.mobileNumber
                 ? this.verificationCreateOtp()
                 : this.verificationCreateToken();
         const link =
-            type === ENUM_VERIFICATION_TYPE.mobileNumber
+            type === EnumVerificationType.mobileNumber
                 ? null
                 : `${this.homeUrl}/${this.verificationLinkBaseUrl}/${token}`;
 

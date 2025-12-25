@@ -310,7 +310,7 @@ Below are explanations for the root folders and files outside `src/` (excluding 
 
 [jest-shield]: https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white
 
-[yarn-shield]: https://img.shields.io/badge/yarn-%232C8EBB.svg?style=for-the-badge&logo=yarn&logoColor=white
+[pnpm-shield]: https://img.shields.io/badge/pnpm-%232C8EBB.svg?style=for-the-badge&logo=pnpm&logoColor=white&color=F9AD00
 
 [docker-shield]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
 
@@ -366,7 +366,7 @@ Below are explanations for the root folders and files outside `src/` (excluding 
 
 [ref-dockercompose]: https://docs.docker.com/compose/
 
-[ref-yarn]: https://yarnpkg.com
+[ref-pnpm]: https://pnpm.io
 
 [ref-12factor]: https://12factor.net
 

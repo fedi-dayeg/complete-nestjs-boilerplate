@@ -1,16 +1,15 @@
-name: Linter
+name: Test
 on:
-
   workflow_dispatch:
-  pull_request:
-    branches: 
-    - master
-    - development
+  # pull_request:
+  #     branches:
+  #       - main
+  #       - development
 
 jobs:
-  linter:
+  test:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: ['lts/*']
@@ -26,6 +25,8 @@ jobs:
 
       - name: Install dependencies
         run: pnpm --frozen-lockfile --non-interactive
-          
-      - name: Linter
-        run: pnpm lint
+
+      - name: Unit Test
+        run: NODE_ENV=test pnpm test
+        env:
+          CI: true

@@ -162,7 +162,7 @@ Exception filters automatically translate message paths.
 
 ```typescript
 throw new BadRequestException({
-    statusCode: ENUM_USER_STATUS_CODE_ERROR.emailExist,
+    statusCode: EnumUserStatus_CODE_ERROR.emailExist,
     message: 'user.error.emailExists', // Will be translated
 });
 ```
@@ -171,7 +171,7 @@ With variables:
 
 ```typescript
 throw new NotFoundException({
-    statusCode: ENUM_USER_STATUS_CODE_ERROR.notFound,
+    statusCode: EnumUserStatus_CODE_ERROR.notFound,
     message: 'user.error.notFoundWithId',
     _metadata: {
         customProperty: {
@@ -318,7 +318,7 @@ export enum EnumMessageLanguage {
 
 [jest-shield]: https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white
 
-[yarn-shield]: https://img.shields.io/badge/yarn-%232C8EBB.svg?style=for-the-badge&logo=yarn&logoColor=white
+[pnpm-shield]: https://img.shields.io/badge/pnpm-%232C8EBB.svg?style=for-the-badge&logo=pnpm&logoColor=white&color=F9AD00
 
 [docker-shield]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
 
@@ -374,7 +374,7 @@ export enum EnumMessageLanguage {
 
 [ref-dockercompose]: https://docs.docker.com/compose/
 
-[ref-yarn]: https://yarnpkg.com
+[ref-pnpm]: https://pnpm.io
 
 [ref-12factor]: https://12factor.net
 

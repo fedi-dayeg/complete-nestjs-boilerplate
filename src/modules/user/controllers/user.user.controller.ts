@@ -16,7 +16,7 @@ import { UserService } from '@modules/user/services/user.service';
 import { Controller, Delete } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
-import { ENUM_ROLE_TYPE } from '@prisma/client';
+import { EnumRoleType } from '@prisma/client';
 
 @ApiTags('modules.user.user')
 @Controller({
@@ -28,7 +28,7 @@ export class UserUserController {
 
     @UserUserDeleteSelfDoc()
     @Response('user.deleteSelf')
-    @RoleProtected(ENUM_ROLE_TYPE.user)
+    @RoleProtected(EnumRoleType.user)
     @UserProtected()
     @AuthJwtAccessProtected()
     @ApiKeyProtected()

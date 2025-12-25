@@ -1,3 +1,4 @@
-yarn lint:staged
-yarn deadcode
-yarn spell
+pnpm lint:staged
+pnpm deadcode
+pnpm spell
+NODE_ENV=test pnpm test
