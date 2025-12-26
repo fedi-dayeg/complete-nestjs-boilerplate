@@ -10,18 +10,6 @@ on:
 env:
   DOCKERFILE: ci/dockerfile
 
-# Required Variables:
-# - AWS_ECR_REPO_URL
-# - DOCKER_CONTAINER_NAME
-# - DOCKER_CONTAINER_PORT
-#
-# Required Secrets:
-# - AWS_ACCESS_KEY_ID
-# - AWS_SECRET_ACCESS_KEY
-# - AWS_REGION
-# - PROD_AWS_INSTANCE_ID
-# - DEV_AWS_INSTANCE_ID
-# - STAGING_AWS_INSTANCE_ID
 jobs:
   build_image:
     runs-on: ubuntu-latest
@@ -79,6 +67,13 @@ jobs:
           docker tag ${{ vars.AWS_ECR_REPO_URL }}:${{ matrix.env }} ${{ vars.AWS_ECR_REPO_URL }}:sha-${{ steps.git.outputs.short_sha }}
           docker push ${{ vars.AWS_ECR_REPO_URL }}:sha-${{ steps.git.outputs.short_sha }}
           docker push ${{ vars.AWS_ECR_REPO_URL }}:${{ matrix.env }}
+          
+          # Push latest tag only for production
+          if [ "${{ matrix.env }}" = "production" ]; then
+            docker tag ${{ vars.AWS_ECR_REPO_URL }}:${{ matrix.env }} ${{ vars.AWS_ECR_REPO_URL }}:latest
+            docker push ${{ vars.AWS_ECR_REPO_URL }}:latest
+          fi
+
   deploy:
     needs: [build_image]
     runs-on: ubuntu-latest
@@ -88,13 +83,10 @@ jobs:
         include:
           - branch: main
             env: production
-            instance: ${{ secrets.PROD_AWS_INSTANCE_ID }}
           - branch: development
             env: development
-            instance: ${{ secrets.DEV_AWS_INSTANCE_ID }}
           - branch: staging
             env: staging
-            instance: ${{ secrets.STAGING_AWS_INSTANCE_ID }}
 
     steps:
       - name: Checkout
@@ -107,11 +99,24 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+
+      - name: Set EC2 instance variable
+        if: ${{ github.ref_name == matrix.branch }}
+        run: |
+          if [ "${{ matrix.env }}" = "production" ]; then
+            echo "EC2_INSTANCE=${{ secrets.PROD_AWS_INSTANCE_ID }}" >> $GITHUB_ENV
+          elif [ "${{ matrix.env }}" = "development" ]; then
+            echo "EC2_INSTANCE=${{ secrets.DEV_AWS_INSTANCE_ID }}" >> $GITHUB_ENV
+          elif [ "${{ matrix.env }}" = "staging" ]; then
+            echo "EC2_INSTANCE=${{ secrets.STAGING_AWS_INSTANCE_ID }}" >> $GITHUB_ENV
+          fi
+
+
       - name: Update AWS EC2 Instance
         if: ${{ github.ref_name == matrix.branch }}
         run: |
           aws ssm send-command \
-              --instance-ids "${{ matrix.instance }}" \
+              --instance-ids "${{ env.EC2_INSTANCE }}" \
               --document-name "AWS-RunShellScript" \
               --comment "Release new version" \
               --parameters commands='[
@@ -129,11 +134,11 @@ jobs:
       matrix:
         include:
           - branch: main
-            instance: ${{ secrets.PROD_AWS_INSTANCE_ID }}
+            env: production
           - branch: development
-            instance: ${{ secrets.DEV_AWS_INSTANCE_ID }}
+            env: development
           - branch: staging
-            instance: ${{ secrets.STAGING_AWS_INSTANCE_ID }}
+            env: staging
 
     steps:
       - name: Checkout
@@ -146,11 +151,22 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Set EC2 instance variable
+        if: ${{ github.ref_name == matrix.branch }}
+        run: |
+          if [ "${{ matrix.env }}" = "production" ]; then
+            echo "EC2_INSTANCE=${{ secrets.PROD_AWS_INSTANCE_ID }}" >> $GITHUB_ENV
+          elif [ "${{ matrix.env }}" = "development" ]; then
+            echo "EC2_INSTANCE=${{ secrets.DEV_AWS_INSTANCE_ID }}" >> $GITHUB_ENV
+          elif [ "${{ matrix.env }}" = "staging" ]; then
+            echo "EC2_INSTANCE=${{ secrets.STAGING_AWS_INSTANCE_ID }}" >> $GITHUB_ENV
+          fi
+
       - name: Clean AWS EC2 Instance
         if: ${{ github.ref_name == matrix.branch }}
         run: |
           aws ssm send-command \
-              --instance-ids "${{ matrix.instance }}" \
+              --instance-ids "${{ env.EC2_INSTANCE }}" \
               --document-name "AWS-RunShellScript" \
               --comment "Clean up" \
               --parameters commands='[
