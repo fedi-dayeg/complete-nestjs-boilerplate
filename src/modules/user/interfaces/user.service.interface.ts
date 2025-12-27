@@ -12,6 +12,7 @@ import {
     IRequestLog,
 } from '@common/request/interfaces/request.interface';
 import {
+    IResponseFileReturn,
     IResponsePagingReturn,
     IResponseReturn,
 } from '@common/response/interfaces/response.interface';
@@ -46,27 +47,26 @@ import { UserLoginResponseDto } from '@modules/user/dtos/response/user.login.res
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import { IUser } from '@modules/user/interfaces/user.interface';
 import { EnumUserLoginWith } from '@prisma/client';
-import { UserLoginVerifyTwoFactorRequestDto } from '@modules/user/dtos/request/user.login-verify-two-factor.request.dto';
 import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
 import { UserTwoFactorEnableRequestDto } from '@modules/user/dtos/request/user.two-factor-enable.request.dto';
 import { UserTwoFactorEnableResponseDto } from '@modules/user/dtos/response/user.two-factor-enable.response.dto';
 import { UserTwoFactorDisableRequestDto } from '@modules/user/dtos/request/user.two-factor-disable.request.dto';
+import { UserLoginVerifyTwoFactorRequestDto } from '@modules/user/dtos/request/user.login-verify-two-factor.request.dto';
 import { AuthTokenResponseDto } from '@modules/auth/dtos/response/auth.token.response.dto';
 import { UserImportRequestDto } from '@modules/user/dtos/request/user.import.request.dto';
-import { UserGenerateImportRequestDto } from '@modules/user/dtos/request/user.generate-import.request.dto';
 
 export interface IUserService {
     validateUserGuard(
         request: IRequestApp,
         requiredVerified: boolean
     ): Promise<IUser>;
-    getListOffset(
+    getListOffsetByAdmin(
         pagination: IPaginationQueryOffsetParams,
         status?: Record<string, IPaginationIn>,
         role?: Record<string, IPaginationEqual>,
         country?: Record<string, IPaginationEqual>
     ): Promise<IResponsePagingReturn<UserListResponseDto>>;
-    getListActiveCursor(
+    getListCursor(
         pagination: IPaginationQueryCursorParams,
         status?: Record<string, IPaginationIn>,
         role?: Record<string, IPaginationEqual>,
@@ -217,17 +217,14 @@ export interface IUserService {
         updatedBy: string,
         requestLog: IRequestLog
     ): Promise<IResponseReturn<void>>;
-    generateImportPresign({
-        size,
-    }: UserGenerateImportRequestDto): Promise<IResponseReturn<AwsS3PresignDto>>;
-    import(
-        { importKey, size }: UserImportRequestDto,
+    importByAdmin(
+        data: UserImportRequestDto[],
         createdBy: string,
         requestLog: IRequestLog
     ): Promise<IResponseReturn<void>>;
-    export(
+    exportByAdmin(
         status?: Record<string, IPaginationIn>,
         role?: Record<string, IPaginationEqual>,
         country?: Record<string, IPaginationEqual>
-    ): Promise<IResponseReturn<AwsS3PresignDto>>;
+    ): Promise<IResponseFileReturn>;
 }
