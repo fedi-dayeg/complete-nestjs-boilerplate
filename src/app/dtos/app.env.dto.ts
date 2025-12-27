@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
     IsBoolean,
     IsEnum,
+    IsIP,
     IsInt,
     IsNotEmpty,
     IsNumber,
@@ -75,8 +76,7 @@ export class AppEnvDto {
      */
     @IsNotEmpty()
     @IsString()
-    //
-    // @IsIP('4')
+    @IsIP('4')
     HTTP_HOST: string;
 
     /**
@@ -107,6 +107,7 @@ export class AppEnvDto {
     @IsNotEmpty()
     @IsEnum(EnumLoggerLevel)
     LOGGER_LEVEL: EnumLoggerLevel;
+
     /**
      * Whether to write logs to file
      */
@@ -193,11 +194,10 @@ export class AppEnvDto {
     AUTH_JWT_ISSUER: string;
 
     /**
-     *  JWKS URI for access token verification
+     * JWKS URI for access token verification
      */
     @IsString()
     @IsNotEmpty()
-    //@IsUrl()
     @MinLength(1)
     AUTH_JWT_ACCESS_TOKEN_JWKS_URI: string;
 
@@ -239,6 +239,7 @@ export class AppEnvDto {
      */
     @IsString()
     @IsNotEmpty()
+    @MinLength(1)
     AUTH_JWT_REFRESH_TOKEN_JWKS_URI: string;
 
     /**
@@ -275,23 +276,50 @@ export class AppEnvDto {
     AUTH_JWT_REFRESH_TOKEN_EXPIRED: string;
 
     /**
-     * AWS S3 access key for authentication
-     */
-    //@IsNotEmpty()
-    @IsString()
-    AWS_S3_PUBLIC_CREDENTIAL_KEY?: string;
-
-    /**
-     * AWS S3 secret key for authentication
-     */
-    //@IsNotEmpty()
-    @IsString()
-    AWS_S3_PUBLIC_CREDENTIAL_SECRET?: string;
-
-    /**
-     * AWS S3 access key for authentication
+     * Two-factor authentication issuer (TOTP label)
      */
     @IsNotEmpty()
+    @IsString()
+    AUTH_TWO_FACTOR_ISSUER: string;
+
+    /**
+     * Two-factor encryption key
+     */
+    @IsNotEmpty()
+    @IsString()
+    AUTH_TWO_FACTOR_ENCRYPTION_KEY: string;
+
+    /**
+     * Google OAuth client ID for social authentication (optional)
+     */
+    @IsOptional()
+    @IsString()
+    AUTH_SOCIAL_GOOGLE_CLIENT_ID?: string;
+
+    /**
+     * Google OAuth client secret for social authentication (optional)
+     */
+    @IsOptional()
+    @IsString()
+    AUTH_SOCIAL_GOOGLE_CLIENT_SECRET?: string;
+
+    /**
+     * Apple OAuth client ID for social authentication (optional)
+     */
+    @IsOptional()
+    @IsString()
+    AUTH_SOCIAL_APPLE_CLIENT_ID?: string;
+
+    /**
+     * Apple Sign In client ID for social authentication (optional)
+     */
+    @IsOptional()
+    @IsString()
+    AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID?: string;
+
+    /**
+     * AWS S3 access key for authentication
+     */
     @IsOptional()
     @IsString()
     AWS_S3_CREDENTIAL_KEY?: string;
@@ -299,7 +327,6 @@ export class AppEnvDto {
     /**
      * AWS S3 secret key for authentication
      */
-    @IsNotEmpty()
     @IsOptional()
     @IsString()
     AWS_S3_CREDENTIAL_SECRET?: string;
@@ -359,55 +386,6 @@ export class AppEnvDto {
     @IsOptional()
     @IsString()
     AWS_SES_REGION?: string;
-
-    /**
-     * Google OAuth client ID for social authentication (optional)
-     */
-    @IsOptional()
-    @IsString()
-    AUTH_SOCIAL_GOOGLE_CLIENT_ID?: string;
-
-    /**
-     * Google OAuth client secret for social authentication (optional)
-     */
-    @IsOptional()
-    @IsString()
-    AUTH_SOCIAL_GOOGLE_CLIENT_SECRET?: string;
-
-    /**
-     * Apple OAuth client ID for social authentication (optional)
-     */
-    @IsOptional()
-    @IsString()
-    AUTH_SOCIAL_APPLE_CLIENT_ID?: string;
-
-    /**
-     * Apple Sign In client ID for social authentication (optional)
-     */
-    @IsOptional()
-    @IsString()
-    AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID?: string;
-
-    /**
-     * Two-factor authentication issuer (TOTP label)
-     */
-    @IsOptional()
-    @IsString()
-    AUTH_TWO_FACTOR_ISSUER?: string;
-
-    /**
-     * Two-factor authentication label (TOTP account label)
-     */
-    @IsOptional()
-    @IsString()
-    AUTH_TWO_FACTOR_LABEL?: string;
-
-    /**
-     * Two-factor encryption key
-     */
-    @IsOptional()
-    @IsString()
-    AUTH_TWO_FACTOR_ENCRYPTION_KEY?: string;
 
     /**
      * Redis server URL for caching

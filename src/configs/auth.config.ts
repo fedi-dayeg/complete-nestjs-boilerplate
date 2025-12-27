@@ -51,7 +51,6 @@ export interface IConfigAuth {
     };
     twoFactor: {
         issuer: string;
-        label: string;
         digits: number;
         step: number;
         window: number;
@@ -130,13 +129,12 @@ export default registerAs(
             cachePrefixKey: 'ApiKey',
         },
         twoFactor: {
-            issuer: process.env.AUTH_TWO_FACTOR_ISSUER ?? 'COMPLETE',
-            label: process.env.AUTH_TWO_FACTOR_LABEL ?? 'COMPLETE Auth',
+            issuer: process.env.AUTH_TWO_FACTOR_ISSUER ?? 'COMPLETE Auth',
             digits: 6,
             step: 30,
             window: 1,
             secretLength: 32,
-            challengeTtlInMs: 5 * 60 * 1000,
+            challengeTtlInMs: ms('5m'),
             cachePrefixKey: 'TwoFactor',
             backupCodes: {
                 count: 8,

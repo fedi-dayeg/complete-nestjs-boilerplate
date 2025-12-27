@@ -12,25 +12,28 @@ import {
     AuthSocialGoogleProtected,
 } from '@modules/auth/decorators/auth.social.decorator';
 import { IAuthSocialPayload } from '@modules/auth/interfaces/auth.interface';
+import { FeatureFlagProtected } from '@modules/feature-flag/decorators/feature-flag.decorator';
 import {
     AuthPublicLoginSocialAppleDoc,
     AuthPublicLoginSocialGoogleDoc,
     UserPublicForgotPasswordDoc,
     UserPublicLoginCredentialDoc,
-    UserPublicLoginTwoFactorVerifyDoc,
     UserPublicResetPasswordDoc,
     UserPublicSendEmailVerificationDoc,
     UserPublicSignUpDoc,
     UserPublicVerifyEmailDoc,
+    UserPublicVerifyTwoFactorDoc,
 } from '@modules/user/docs/user.public.doc';
 import { UserCreateSocialRequestDto } from '@modules/user/dtos/request/user.create-social.request.dto';
 import { UserForgotPasswordResetRequestDto } from '@modules/user/dtos/request/user.forgot-password-reset.request.dto';
 import { UserForgotPasswordRequestDto } from '@modules/user/dtos/request/user.forgot-password.request.dto';
 import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
-import { UserTwoFactorVerifyLoginRequestDto } from '@modules/user/dtos/request/user.two-factor-verify-login.request.dto';
+import { UserSendEmailVerificationRequestDto } from '@modules/user/dtos/request/user.send-email-verification.request.dto';
 import { UserSignUpRequestDto } from '@modules/user/dtos/request/user.sign-up.request.dto';
+import { UserTwoFactorVerifyRequestDto } from '@modules/user/dtos/request/user.two-factor-verify.request.dto';
 import { UserVerifyEmailRequestDto } from '@modules/user/dtos/request/user.verify-email.request.dto';
 import { UserLoginResponseDto } from '@modules/user/dtos/response/user.login.response.dto';
+import { UserTokenResponseDto } from '@modules/user/dtos/response/user.token.response.dto';
 import { UserService } from '@modules/user/services/user.service';
 import {
     Body,
@@ -43,12 +46,6 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { EnumUserLoginWith } from '@prisma/client';
-
-//TODO fix this import
-import {
-    UserSendEmailVerificationRequestDto
-} from '@modules/user/dtos/request/user.send-email-verification.request.dto.ts‎';
-import { FeatureFlagProtected } from '@modules/feature-flag/decorators/feature-flag.decorator';
 
 @ApiTags('modules.public.user')
 @Controller({
@@ -121,22 +118,6 @@ export class UserPublicController {
         );
     }
 
-    @UserPublicLoginTwoFactorVerifyDoc()
-    @Response('user.loginTwoFactor')
-    @ApiKeyProtected()
-    @HttpCode(HttpStatus.OK)
-    @Post('/login/2fa')
-    async verifyLoginTwoFactor(
-        @Body() body: UserTwoFactorVerifyLoginRequestDto,
-        @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
-    ): Promise<IResponseReturn<UserLoginResponseDto>> {
-        return this.userService.verifyLoginTwoFactor(body, {
-            ipAddress,
-            userAgent,
-        });
-    }
-
     @UserPublicSignUpDoc()
     @Response('user.signUp')
     @FeatureFlagProtected('signUp')
@@ -157,7 +138,6 @@ export class UserPublicController {
     @UserPublicVerifyEmailDoc()
     @Response('user.verifyEmail')
     @ApiKeyProtected()
-    @HttpCode(HttpStatus.OK)
     @Patch('/verify/email')
     async verifyEmail(
         @Body() body: UserVerifyEmailRequestDto,
@@ -207,7 +187,6 @@ export class UserPublicController {
     @Response('user.resetPassword')
     @FeatureFlagProtected('changePassword.forgotAllowed')
     @ApiKeyProtected()
-    @HttpCode(HttpStatus.OK)
     @Put('/password/reset')
     async reset(
         @Body() body: UserForgotPasswordResetRequestDto,
@@ -219,4 +198,22 @@ export class UserPublicController {
             userAgent,
         });
     }
+
+    @UserPublicVerifyTwoFactorDoc()
+    @Response('user.verifyTwoFactor')
+    @ApiKeyProtected()
+    @HttpCode(HttpStatus.OK)
+    @Post('/verify/2fa')
+    async verifyLoginTwoFactor(
+        @Body() body: UserTwoFactorVerifyRequestDto,
+        @RequestIPAddress() ipAddress: string,
+        @RequestUserAgent() userAgent: RequestUserAgentDto
+    ): Promise<IResponseReturn<UserTokenResponseDto>> {
+        return this.userService.verifyTwoFactor(body, {
+            ipAddress,
+            userAgent,
+        });
+    }
+
+    // TODO: Implement required setup 2FA flow during login
 }

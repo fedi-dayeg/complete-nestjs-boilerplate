@@ -34,6 +34,7 @@ import {
     BadRequestException,
     ConflictException,
     ForbiddenException,
+    HttpException,
     Injectable,
     InternalServerErrorException,
     NotFoundException,
@@ -82,7 +83,10 @@ export class TermPolicyService implements ITermPolicyService {
                     message: 'termPolicy.error.requiredInvalid',
                 });
             }
-        } catch {
+        } catch (err: unknown) {
+            if (err instanceof HttpException) {
+                throw err;
+            }
             throw new ForbiddenException({
                 statusCode: EnumAuthStatusCodeError.jwtAccessTokenInvalid,
                 message: 'auth.error.accessTokenUnauthorized',

@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UserTwoFactorBackupCodesResponseDto {
+export class UserTwoFactorEnableResponseDto {
     @ApiProperty({
+        required: true,
         description:
             'List of newly generated backup codes. Each code can be used once.',
         type: [String],

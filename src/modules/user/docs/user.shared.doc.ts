@@ -8,22 +8,27 @@ import {
 } from '@common/doc/decorators/doc.decorator';
 import { EnumDocRequestBodyType } from '@common/doc/enums/doc.enum';
 import { FileSingleDto } from '@common/file/dtos/file.single.dto';
+import { UserDocParamsMobileNumberId } from '@modules/user/constants/user.doc.constant';
 import { UserChangePasswordRequestDto } from '@modules/user/dtos/request/user.change-password.request.dto';
+import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
 import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
-import {
-    UserUpdateProfilePhotoRequestDto,
-    UserUpdateProfileRequestDto,
-} from '@modules/user/dtos/request/user.profile.request.dto';
-import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
-import { UserTokenResponseDto } from '@modules/user/dtos/response/user.token.response.dto';
-import {HttpStatus, applyDecorators, } from '@nestjs/common';
 import {
     UserAddMobileNumberRequestDto,
     UserUpdateMobileNumberRequestDto,
 } from '@modules/user/dtos/request/user.mobile-number.request.dto';
+import {
+    UserUpdateProfilePhotoRequestDto,
+    UserUpdateProfileRequestDto,
+} from '@modules/user/dtos/request/user.profile.request.dto';
+import { UserTwoFactorDisableRequestDto } from '@modules/user/dtos/request/user.two-factor-disable.request.dto';
+import { UserTwoFactorEnableRequestDto } from '@modules/user/dtos/request/user.two-factor-enable.request.dto';
+import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
+import { UserTokenResponseDto } from '@modules/user/dtos/response/user.token.response.dto';
+import { UserTwoFactorEnableResponseDto } from '@modules/user/dtos/response/user.two-factor-enable.response.dto';
+import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
+import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
 import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
-import { UserDocParamsMobileNumberId } from '@modules/user/constants/user.doc.constant';
-import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 
 export function UserSharedRefreshDoc(): MethodDecorator {
     return applyDecorators(
@@ -213,5 +218,86 @@ export function UserSharedClaimUsernameDoc(): MethodDecorator {
             jwtAccessToken: true,
         }),
         DocResponse('user.claimUsername')
+    );
+}
+
+export function UserSharedTwoFactorSetupDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Start two-factor setup and receive secret',
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocResponse('user.twoFactor.setup', {
+            dto: UserTwoFactorSetupResponseDto,
+        })
+    );
+}
+
+export function UserSharedTwoFactorStatusDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Get current two-factor authentication status',
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocResponse('user.twoFactor.status', {
+            dto: UserTwoFactorStatusResponseDto,
+        })
+    );
+}
+
+export function UserSharedTwoFactorEnableDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Enable two-factor authentication',
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocRequest({
+            bodyType: EnumDocRequestBodyType.json,
+            dto: UserTwoFactorEnableRequestDto,
+        }),
+        DocResponse('user.twoFactor.enable', {
+            dto: UserTwoFactorEnableResponseDto,
+        })
+    );
+}
+
+export function UserSharedTwoFactorDisableDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Disable two-factor authentication',
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocRequest({
+            bodyType: EnumDocRequestBodyType.json,
+            dto: UserTwoFactorDisableRequestDto,
+        }),
+        DocResponse('user.twoFactor.disable')
+    );
+}
+
+export function UserSharedTwoFactorRegenerateBackupDoc(): MethodDecorator {
+    return applyDecorators(
+        Doc({
+            summary: 'Regenerate two-factor backup codes',
+        }),
+        DocAuth({
+            xApiKey: true,
+            jwtAccessToken: true,
+        }),
+        DocResponse('user.twoFactor.regenerate', {
+            dto: UserTwoFactorEnableResponseDto,
+        })
     );
 }

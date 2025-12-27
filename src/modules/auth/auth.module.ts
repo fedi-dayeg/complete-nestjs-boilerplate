@@ -6,7 +6,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthUtil } from '@modules/auth/utils/auth.util';
 import { SessionModule } from '@modules/session/session.module';
 import { AuthService } from '@modules/auth/services/auth.service';
-import { AuthTwoFactorService } from '@modules/auth/services/auth-two-factor.service';
+import { AuthTwoFactorUtil } from '@modules/auth/utils/auth.two-factor.util';
+import { IsTwoFactorBackupCodeConstraint } from '@modules/auth/validations/auth.two-factor-backup-code.validation';
 
 @Global()
 @Module({
@@ -14,10 +15,12 @@ import { AuthTwoFactorService } from '@modules/auth/services/auth-two-factor.ser
         AuthJwtAccessStrategy,
         AuthJwtRefreshStrategy,
         AuthUtil,
+        AuthTwoFactorUtil,
         AuthService,
-        AuthTwoFactorService,
+        IsTwoFactorBackupCodeConstraint,
+        IsTwoFactorBackupCodeConstraint,
     ],
-    exports: [AuthUtil, AuthService, AuthTwoFactorService],
+    exports: [AuthUtil, AuthTwoFactorUtil, AuthService],
     controllers: [],
     imports: [
         SessionModule,
