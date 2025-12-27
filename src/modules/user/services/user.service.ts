@@ -334,12 +334,8 @@ export class UserService implements IUserService {
             throw new BadRequestException({
                 statusCode: EnumUserStatus_CODE_ERROR.statusInvalid,
                 message: 'user.error.statusInvalid',
-                _metadata: {
-                    customProperty: {
-                        messageProperties: {
-                            status: user.status.toLowerCase(),
-                        },
-                    },
+                messageProperties: {
+                    status: user.status.toLowerCase(),
                 },
             });
         }
@@ -781,12 +777,8 @@ export class UserService implements IUserService {
             throw new BadRequestException({
                 statusCode: EnumUserStatus_CODE_ERROR.statusInvalid,
                 message: 'user.error.statusInvalid',
-                _metadata: {
-                    customProperty: {
-                        messageProperties: {
-                            status: user.status.toLowerCase(),
-                        },
-                    },
+                messageProperties: {
+                    status: user.status.toLowerCase(),
                 },
             });
         }
@@ -874,14 +866,10 @@ export class UserService implements IUserService {
             throw new BadRequestException({
                 statusCode: EnumUserStatus_CODE_ERROR.passwordMustNew,
                 message: 'auth.error.passwordMustNew',
-                _metadata: {
-                    customProperty: {
-                        messageProperties: {
-                            period: this.helperService.dateFormatToRFC2822(
-                                passwordCheck.expiredAt
-                            ),
-                        },
-                    },
+                messageProperties: {
+                    period: this.helperService.dateFormatToRFC2822(
+                        passwordCheck.expiredAt
+                    ),
                 },
             });
         }
@@ -1739,15 +1727,11 @@ export class UserService implements IUserService {
                     statusCode:
                         EnumUserStatus_CODE_ERROR.verificationEmailResendLimitExceeded,
                     message: 'user.error.verificationEmailResendLimitExceeded',
-                    _metadata: {
-                        customProperty: {
-                            messageProperties: {
-                                resendIn: this.helperService.dateDiff(
-                                    today,
-                                    canResendAt
-                                ).minutes,
-                            },
-                        },
+                    messageProperties: {
+                        resendIn: this.helperService.dateDiff(
+                            today,
+                            canResendAt
+                        ).minutes,
                     },
                 });
             }
@@ -1817,15 +1801,11 @@ export class UserService implements IUserService {
                     statusCode:
                         EnumUserStatus_CODE_ERROR.forgotPasswordRequestLimitExceeded,
                     message: 'user.error.forgotPasswordRequestLimitExceeded',
-                    _metadata: {
-                        customProperty: {
-                            messageProperties: {
-                                resendIn: this.helperService.dateDiff(
-                                    today,
-                                    canResendAt
-                                ).minutes,
-                            },
-                        },
+                    messageProperties: {
+                        resendIn: this.helperService.dateDiff(
+                            today,
+                            canResendAt
+                        ).minutes,
                     },
                 });
             }
@@ -1892,14 +1872,10 @@ export class UserService implements IUserService {
             throw new BadRequestException({
                 statusCode: EnumUserStatus_CODE_ERROR.passwordMustNew,
                 message: 'auth.error.passwordMustNew',
-                _metadata: {
-                    customProperty: {
-                        messageProperties: {
-                            period: this.helperService.dateFormatToRFC2822(
-                                passwordCheck.expiredAt
-                            ),
-                        },
-                    },
+                messageProperties: {
+                    period: this.helperService.dateFormatToRFC2822(
+                        passwordCheck.expiredAt
+                    ),
                 },
             });
         }

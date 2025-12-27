@@ -23,12 +23,8 @@ export class RequestIsValidObjectIdPipe implements PipeTransform {
             throw new BadRequestException({
                 statusCode: EnumRequestStatusCodeError.validation,
                 message: 'request.error.isMongoId',
-                metadata: {
-                    customProperty: {
-                        messageProperties: {
-                            property: metadata.data,
-                        },
-                    },
+                messageProperties: {
+                    property: metadata.data,
                 },
             });
         }
