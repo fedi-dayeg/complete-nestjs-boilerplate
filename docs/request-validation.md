@@ -452,10 +452,11 @@ When validation fails, `MessageService` processes errors through `setValidationM
 
 **Process**:
 
-1. Extract constraint keys from `ValidationError`
-2. Handle nested validation errors (e.g., `user.profile.email`)
-3. Create localized message for each constraint
-4. Format into `IMessageValidationError[]`
+1. Extract constraint keys from `ValidationError` using `extractConstraints()`
+2. Handle nested validation errors by traversing children with `processNestedValidationError()`
+3. Reconstruct full property path for nested objects (e.g., `address.street`)
+4. Create localized message for each constraint with fallback mechanism
+5. Format into `IMessageValidationError[]`
 
 **Implementation** (from `MessageService`):
 
@@ -472,20 +473,22 @@ IMessageValidationError[]
 
     for (const error of errors) {
         let property = error.property;
-        const constraints: string[] = Object.keys(error.constraints ?? []);
+      // Extract constraints from current error
+      const constraints: string[] = this.extractConstraints(error);
 
-        // Handle nested errors
+      // Handle nested errors if no direct constraints found
         if (constraints.length === 0) {
             const nestedResult = this.processNestedValidationError(error);
-            property = nestedResult.property;
+          property = nestedResult.property;  // Full path: address.street
             constraints.push(...nestedResult.constraints);
         }
 
-        // Create message for each constraint
+      // Create localized message for each constraint
         for (const constraint of constraints) {
             messages.push(
                 this.createValidationMessage(
-                    constraint,
+                    constraint, 
+                    error.constraints[constraint],
                     error.value,
                     property,
                     options
@@ -497,6 +500,11 @@ IMessageValidationError[]
     return messages;
 }
 ```
+
+**Message Resolution Strategy**:
+1. **Primary**: Tries to resolve from `request.error.{constraint}` path
+2. **Fallback**: If translation not found (message equals path), uses raw message from class-validator
+
 
 **Error structure**:
 
@@ -648,6 +656,10 @@ See [Handling Error][ref-doc-handling-error] for complete error handling flow.
 
 [ref-nestjs-swagger-types]: https://docs.nestjs.com/openapi/types-and-parameters
 
+[ref-nestjs-swagger-mapped-types]: https://docs.nestjs.com/openapi/mapped-types
+[ref-nestjs-validation-pipe]: https://docs.nestjs.com/techniques/validation
+[ref-class-validator]: https://github.com/typestack/class-validator
+
 [ref-prisma]: https://www.prisma.io
 
 [ref-prisma-mongodb]: https://www.prisma.io/docs/orm/overview/databases/mongodb#commonalities-with-other-database-provider
@@ -684,7 +696,7 @@ See [Handling Error][ref-doc-handling-error] for complete error handling flow.
 [ref-google-console]: https://console.cloud.google.com/
 
 [ref-google-client-secret]: https://developers.google.com/identity/protocols/oauth2
-
+[ref-nestjs-i18n]: https://nestjs-i18n.com
 <!-- DOCUMENTS -->
 
 [ref-doc-root]: ../readme.md
@@ -711,3 +723,4 @@ See [Handling Error][ref-doc-handling-error] for complete error handling flow.
 [ref-doc-third-party-integration]: third-party-integration.md
 [ref-doc-presign]: presign.md
 [ref-doc-term-policy]: term-policy.md
+[ref-doc-two-factor]: two-factor.md

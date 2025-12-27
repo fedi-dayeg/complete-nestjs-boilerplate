@@ -384,6 +384,11 @@ async getUser(@Param('id') id: string): Promise<IResponseReturn<UserDto>> {
   return { data: await this.userService.findById(id) };
 }
 ```
+**Cache Key:**
+
+```text
+Apis:*
+```
 
 **Custom Cache Configuration:**
 
@@ -509,3 +514,4 @@ All responses automatically include these headers (set by interceptors):
 [ref-doc-third-party-integration]: third-party-integration.md
 [ref-doc-presign]: presign.md
 [ref-doc-term-policy]: term-policy.md
+[ref-doc-two-factor]: two-factor.md
