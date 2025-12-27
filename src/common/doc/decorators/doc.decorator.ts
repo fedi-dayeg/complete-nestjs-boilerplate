@@ -535,8 +535,7 @@ export function DocResponsePaging<T>(
                 },
             },
         }),
-        DocPaginationErrorResponses.orderByNotAllowed,
-        DocPaginationErrorResponses.filterInvalidValue,
+        ...Object.values(DocPaginationErrorResponses),
     ];
 
     if (options.type === EnumPaginationType.cursor) {
