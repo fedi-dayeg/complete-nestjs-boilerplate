@@ -147,7 +147,7 @@
         "jest": "^30.2.0",
         "lint-staged": "^16.2.7",
         "prettier": "^3.7.4",
-        "prisma": "^6.19.0",
+        "prisma": "^7.2.0",
         "rimraf": "^6.1.2",
         "rxjs-marbles": "^7.0.1",
         "stop-only": "^3.4.4",
