@@ -1235,12 +1235,15 @@ export class UserService implements IUserService {
 
         try {
             const secret = this.authTwoFactorService.generateSecret();
-            const encryptedSecret =
-                this.authTwoFactorService.encryptSecret(secret);
-
+            const iv = this.authTwoFactorService.generateEncryptionIv();
+            const encryptedSecret = this.authTwoFactorService.encryptSecret(
+                secret,
+                iv
+            );
             await this.userRepository.upsertTwoFactorSecret(
                 userId,
-                encryptedSecret
+                encryptedSecret,
+                iv
             );
 
             return {
@@ -1282,15 +1285,27 @@ export class UserService implements IUserService {
                 statusCode: EnumAuthStatusCodeError.twoFactorNotEnabled,
                 message: 'auth.error.twoFactorSetupRequired',
             });
+        } else if (user.twoFactor.confirmedAt) {
+            throw new BadRequestException({
+                statusCode: EnumAuthStatusCodeError.twoFactorNotEnabled,
+                message: 'auth.error.twoFactorSetupRequired',
+            });
         } else if (user.twoFactor.enabled) {
             throw new BadRequestException({
                 statusCode: EnumAuthStatusCodeError.twoFactorAlreadyEnabled,
                 message: 'auth.error.twoFactorAlreadyEnabled',
             });
         }
+        if (!user.twoFactor.iv) {
+            throw new BadRequestException({
+                statusCode: EnumAuthStatusCodeError.twoFactorNotEnabled,
+                message: 'auth.error.twoFactorSetupRequired',
+            });
+        }
 
         const secret = this.authTwoFactorService.decryptSecret(
-            user.twoFactor.secret
+            user.twoFactor.secret,
+            user.twoFactor.iv
         );
         const isValidCode = this.authTwoFactorService.verifyCode(secret, code);
         if (!isValidCode) {
@@ -1469,8 +1484,16 @@ export class UserService implements IUserService {
             });
         }
 
+        if (!twoFactor.iv) {
+            throw new BadRequestException({
+                statusCode: EnumAuthStatusCodeError.twoFactorNotEnabled,
+                message: 'auth.error.twoFactorSetupRequired',
+            });
+        }
+
         const secret = this.authTwoFactorService.decryptSecret(
-            twoFactor.secret
+            twoFactor.secret,
+            twoFactor.iv
         );
         const normalizedCode = code?.trim();
         if (normalizedCode) {
