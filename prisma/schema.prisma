@@ -456,7 +456,6 @@ enum EnumActivityLogAction {
   userRegenerateTwoFactorBackupCodes
 
   adminSessionRevoke
-  adminSessionRevokeAll
   adminApiKeyCreate
   adminApiKeyReset
   adminApiKeyUpdate
@@ -467,6 +466,7 @@ enum EnumActivityLogAction {
   adminRoleUpdate
   adminRoleDelete
   adminTermPolicyCreate
+  adminTermPolicyDelete
   adminTermPolicyUpdateContent
   adminTermPolicyAddContent
   adminTermPolicyRemoveContent
