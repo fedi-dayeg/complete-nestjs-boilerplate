@@ -144,6 +144,7 @@ model User {
   sessions          Session[]                  @relation("UserSessions")
   acceptances       TermPolicyUserAcceptance[] @relation("TermPolicyUserAcceptanceUser")
   forgotPasswords   ForgotPassword[]           @relation("UserForgotPassword")
+  twoFactor         TwoFactor?                 @relation("UserTwoFactor")
 
   @@unique(fields: [username])
   @@unique(fields: [email])
@@ -152,6 +153,29 @@ model User {
   @@index(fields: [email, deletedAt])
   @@index(fields: [createdAt])
   @@map("Users")
+}
+
+model TwoFactor {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String    @unique @db.ObjectId
+  secret         String
+  backupCodes    String[]  @default([])
+  enabled        Boolean   @default(false)
+  confirmedAt    DateTime?
+  lastUsedAt     DateTime?
+  lastVerifiedAt DateTime?
+
+  // timestamps fields
+  createdAt DateTime @default(now())
+  createdBy String?
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+
+  user User? @relation("UserTwoFactor", fields: [userId], references: [id])
+
+  @@index(fields: [enabled])
+  @@index(fields: [createdAt])
+  @@map("TwoFactors")
 }
 
 model Verification {
@@ -423,6 +447,9 @@ enum EnumActivityLogAction {
   userAcceptTermPolicy
   userForgotPassword
   userReachMaxPasswordAttempt
+  userEnableTwoFactor
+  userDisableTwoFactor
+  userVerifyTwoFactor
 
   adminSessionRevoke
   adminApiKeyCreate
