@@ -34,6 +34,7 @@ All environment variables are validated using the `AppEnvDto` class to ensure re
     - [Database Settings](#database-settings)
     - [Authentication Settings](#authentication-settings)
     - [Social Authentication Settings](#social-authentication-settings)
+    - [Two-Factor Authentication Settings](#two-factor-authentication-settings)
     - [AWS Settings](#aws-settings)
     - [Redis Settings](#redis-settings)
     - [Debug Settings](#debug-settings)
@@ -141,6 +142,10 @@ AWS_SES_REGION=ap-southeast-3
 # Redis
 CACHE_REDIS_URL=redis://localhost:6379/0
 QUEUE_REDIS_URL=redis://localhost:6379/1
+
+# Two-Factor Authentication
+AUTH_TWO_FACTOR_ISSUER=COMPLETE
+AUTH_TWO_FACTOR_ENCRYPTION_KEY=0123456789abcdef0123456789abcdef
 
 # Debug (Optional)
 SENTRY_DSN=
@@ -396,6 +401,23 @@ Apple Sign In client ID.
 AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID=
 ```
 
+### Two-Factor Authentication Settings
+
+
+**`AUTH_TWO_FACTOR_ISSUER`** *(optional)*  
+Issuer name displayed in authenticator apps.
+```bash
+AUTH_TWO_FACTOR_ISSUER=ACK
+```
+
+
+**`AUTH_TWO_FACTOR_ENCRYPTION_KEY`** *(required for 2FA)*  
+Secret used to derive an AES-256 key for encrypting TOTP secrets (recommended 32+ chars).
+```bash
+AUTH_TWO_FACTOR_ENCRYPTION_KEY=0123456789abcdef0123456789abcdef
+```
+
+
 ### AWS Settings
 
 > **Note**: AWS settings are optional by default. However, if you want to test file uploads (S3) or email functionality (SES), these become required for those specific features to work.
@@ -575,3 +597,4 @@ SENTRY_DSN=
 [ref-doc-third-party-integration]: third-party-integration.md
 [ref-doc-presign]: presign.md
 [ref-doc-term-policy]: term-policy.md
+[ref-doc-two-factor]: two-factor.md

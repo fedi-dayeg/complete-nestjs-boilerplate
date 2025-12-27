@@ -22,9 +22,19 @@
     "loginCredential": "Logged in successfully with credentials.",
     "loginWithSocialGoogle": "Logged in successfully with Google.",
     "loginWithSocialApple": "Logged in successfully with Apple.",
+    "loginTwoFactor": "Two-factor verification completed successfully.",
     "refresh": "Token refreshed successfully.",
     "sendEmailVerification": "Verification email has been sent.",
     "verifyEmail": "Email has been successfully verified.",
+    "twoFactor": {
+        "setup": "Two-factor setup initialized. Use the provided secret to configure your authenticator.",
+        "enable": "Two-factor authentication has been enabled.",
+        "regenerateBackupCodes": "New backup codes generated successfully.",
+        "disable": "Two-factor authentication has been disabled.",
+        "resetByAdmin": "Two-factor authentication has been reset."
+    },
+    "import": "User data imported successfully.",
+    "export": "User data export initiated successfully.",
     "error": {
         "notFound": "Sorry, we couldn't find the user you requested.",
         "inactive": "This user is inactive.",
@@ -40,6 +50,7 @@
         "usernameContainBadWord": "Username contains inappropriate words.",
         "verificationTokenInvalid": "Verification token is invalid or expired.",
         "verificationEmailResendLimitExceeded": "You have exceeded the limit for resending verification emails.",
-        "forgotPasswordRequestLimitExceeded": "You have exceeded the limit for password reset requests."
+        "forgotPasswordRequestLimitExceeded": "You have exceeded the limit for password reset requests.",
+        "importEmailExist": "There are existing users with the provided email addresses. Email: {emails}"
     }
 }

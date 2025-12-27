@@ -22,27 +22,24 @@ export class FeatureFlagUtil {
             'featureFlag.cachePrefixKey'
         );
         this.cacheTtlMs = this.configService.get<number>(
-            'featureFlag.cacheTtlSeconds'
+            'featureFlag.cacheTtlMs'
         );
     }
 
     async getCacheByKey(key: string): Promise<FeatureFlag | null> {
         const cacheKey = `${this.cachePrefixKey}:${key}`;
-        const cachedFeatureFlag = await this.cacheManager.get<string>(cacheKey);
+        const cachedFeatureFlag =
+            await this.cacheManager.get<FeatureFlag>(cacheKey);
         if (cachedFeatureFlag) {
-            return JSON.parse(cachedFeatureFlag) as FeatureFlag;
+            return cachedFeatureFlag;
         }
 
         return null;
     }
 
-    async setCacheByKey(key: string, apiKey: FeatureFlag): Promise<void> {
+    async setCacheByKey(key: string, featureFlag: FeatureFlag): Promise<void> {
         const cacheKey = `${this.cachePrefixKey}:${key}`;
-        await this.cacheManager.set(
-            cacheKey,
-            JSON.stringify(apiKey),
-            this.cacheTtlMs
-        );
+        await this.cacheManager.set(cacheKey, featureFlag, this.cacheTtlMs);
 
         return;
     }

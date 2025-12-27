@@ -1,4 +1,7 @@
-import { IPaginationQueryOffsetParams } from '@common/pagination/interfaces/pagination.interface';
+import {
+    IPaginationQueryCursorParams,
+    IPaginationQueryOffsetParams,
+} from '@common/pagination/interfaces/pagination.interface';
 import { IRequestApp } from '@common/request/interfaces/request.interface';
 import {
     IResponsePagingReturn,
@@ -32,67 +35,57 @@ export class FeatureFlagService implements IFeatureFlagService {
         request: IRequestApp,
         keyPath: string
     ): Promise<void> {
-        try {
-            const keys = keyPath.split('.');
-            if (keys.length === 0) {
+        const keys = keyPath.split('.');
+        if (keys.length === 0) {
+            throw new InternalServerErrorException({
+                statusCode: EnumFeatureFlagStatusCodeError.predefinedKeyEmpty,
+                message: 'featureFlag.error.predefinedKeyEmpty',
+            });
+        } else if (keys.length > 2) {
+            throw new InternalServerErrorException({
+                statusCode:
+                    EnumFeatureFlagStatusCodeError.predefinedKeyLengthExceeded,
+                message: 'featureFlag.error.predefinedKeyLengthExceeded',
+            });
+        }
+
+        const featureFlag = await this.findOneByKeyAndCache(keys[0]);
+        if (!featureFlag || !featureFlag.isEnable) {
+            throw new ServiceUnavailableException({
+                statusCode: EnumFeatureFlagStatusCodeError.serviceUnavailable,
+                message: 'featureFlag.error.serviceUnavailable',
+            });
+        } else if (keys.length > 1) {
+            const metadata: boolean | number | string | null =
+                featureFlag.metadata[keys[1]];
+            if (typeof metadata !== 'boolean') {
                 throw new InternalServerErrorException({
                     statusCode:
                         EnumFeatureFlagStatusCodeError.predefinedKeyEmpty,
                     message: 'featureFlag.error.predefinedKeyEmpty',
                 });
-            } else if (keys.length > 2) {
-                throw new InternalServerErrorException({
-                    statusCode:
-                        EnumFeatureFlagStatusCodeError.predefinedKeyLengthExceeded,
-                    message: 'featureFlag.error.predefinedKeyLengthExceeded',
-                });
-            }
-
-            const featureFlag = await this.findOneByKeyAndCache(keys[0]);
-            if (!featureFlag || !featureFlag.isEnable) {
+            } else if (!metadata) {
                 throw new ServiceUnavailableException({
                     statusCode:
                         EnumFeatureFlagStatusCodeError.serviceUnavailable,
                     message: 'featureFlag.error.serviceUnavailable',
                 });
-            } else if (keys.length > 1) {
-                const metadata: boolean | number | string | null =
-                    featureFlag.metadata[keys[1]];
-                if (typeof metadata !== 'boolean') {
-                    throw new InternalServerErrorException({
-                        statusCode:
-                            EnumFeatureFlagStatusCodeError.predefinedKeyTypeInvalid,
-                        message: 'featureFlag.error.predefinedKeyTypeInvalid',
-                    });
-                } else if (!metadata) {
-                    throw new ServiceUnavailableException({
-                        statusCode:
-                            EnumFeatureFlagStatusCodeError.serviceUnavailable,
-                        message: 'featureFlag.error.serviceUnavailable',
-                    });
-                }
             }
+        }
 
-            const { user } = request;
-            if (user) {
-                const checkRollout =
-                    this.featureFlagUtil.checkRolloutPercentage(
-                        featureFlag.rolloutPercent,
-                        user.userId
-                    );
-                if (!checkRollout) {
-                    throw new ServiceUnavailableException({
-                        statusCode:
-                            EnumFeatureFlagStatusCodeError.serviceUnavailable,
-                        message: 'featureFlag.error.serviceUnavailable',
-                    });
-                }
+        const { user } = request;
+        if (user) {
+            const checkRollout = this.featureFlagUtil.checkRolloutPercentage(
+                featureFlag.rolloutPercent,
+                user.userId
+            );
+            if (!checkRollout) {
+                throw new ServiceUnavailableException({
+                    statusCode:
+                        EnumFeatureFlagStatusCodeError.serviceUnavailable,
+                    message: 'featureFlag.error.serviceUnavailable',
+                });
             }
-        } catch {
-            throw new ServiceUnavailableException({
-                statusCode: EnumFeatureFlagStatusCodeError.serviceUnavailable,
-                message: 'featureFlag.error.serviceUnavailable',
-            });
         }
     }
 
@@ -119,11 +112,11 @@ export class FeatureFlagService implements IFeatureFlagService {
         return null;
     }
 
-    async getList(
+    async getListByAdmin(
         pagination: IPaginationQueryOffsetParams
     ): Promise<IResponsePagingReturn<FeatureFlagResponseDto>> {
         const { data, ...others } =
-            await this.featureFlagRepository.findWithPaginationOffsetByUser(
+            await this.featureFlagRepository.findWithPaginationOffsetByAdmin(
                 pagination
             );
 
@@ -135,7 +128,23 @@ export class FeatureFlagService implements IFeatureFlagService {
         };
     }
 
-    async updateStatus(
+    async getListCursor(
+        pagination: IPaginationQueryCursorParams
+    ): Promise<IResponsePagingReturn<FeatureFlagResponseDto>> {
+        const { data, ...others } =
+            await this.featureFlagRepository.findWithPaginationCursor(
+                pagination
+            );
+
+        const featureFlags: FeatureFlagResponseDto[] =
+            this.featureFlagUtil.mapList(data);
+        return {
+            data: featureFlags,
+            ...others,
+        };
+    }
+
+    async updateStatusByAdmin(
         id: string,
         data: FeatureFlagUpdateStatusRequestDto
     ): Promise<IResponseReturn<FeatureFlagResponseDto>> {
@@ -160,7 +169,7 @@ export class FeatureFlagService implements IFeatureFlagService {
         };
     }
 
-    async updateMetadata(
+    async updateMetadataByAdmin(
         id: string,
         data: FeatureFlagUpdateMetadataRequestDto
     ): Promise<IResponseReturn<FeatureFlagResponseDto>> {

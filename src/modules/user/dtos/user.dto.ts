@@ -1,10 +1,11 @@
 import { faker } from '@faker-js/faker';
-import { ApiHideProperty, ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude, Type } from 'class-transformer';
 import { DatabaseDto } from '@common/database/dtos/database.dto';
 import {
     EnumUserGender,
     EnumUserLoginFrom,
+    EnumUserLoginWith,
     EnumUserSignUpFrom,
     EnumUserSignUpWith,
     EnumUserStatus,
@@ -12,6 +13,7 @@ import {
 import { AwsS3Dto } from '@common/aws/dtos/aws.s3.dto';
 import { RoleDto } from '@modules/role/dtos/role.dto';
 import { UserTermPolicyDto } from '@modules/user/dtos/user.term-policy.dto';
+import { UserTwoFactorDto } from '@modules/user/dtos/user.two-factor.dto';
 
 export class UserDto extends DatabaseDto {
     @ApiProperty({
@@ -56,7 +58,6 @@ export class UserDto extends DatabaseDto {
     @ApiProperty({
         required: true,
         type: RoleDto,
-        oneOf: [{ $ref: getSchemaPath(RoleDto) }],
     })
     @Type(() => RoleDto)
     role: RoleDto;
@@ -99,10 +100,6 @@ export class UserDto extends DatabaseDto {
         enum: EnumUserSignUpWith,
     })
     signUpWith: EnumUserSignUpWith;
-
-    @ApiHideProperty()
-    @Exclude()
-    salt?: string;
 
     @ApiProperty({
         required: true,
@@ -147,15 +144,14 @@ export class UserDto extends DatabaseDto {
 
     @ApiProperty({
         required: false,
-        enum: EnumUserSignUpWith,
-        example: EnumUserSignUpWith.credential,
+        enum: EnumUserLoginWith,
+        example: EnumUserLoginWith.credential,
     })
-    lastLoginWith?: EnumUserSignUpWith;
+    lastLoginWith?: EnumUserLoginWith;
 
     @ApiProperty({
         required: true,
         type: UserTermPolicyDto,
-        oneOf: [{ $ref: getSchemaPath(UserTermPolicyDto) }],
     })
     @Type(() => UserTermPolicyDto)
     termPolicy: UserTermPolicyDto;
@@ -163,8 +159,14 @@ export class UserDto extends DatabaseDto {
     @ApiProperty({
         required: false,
         type: AwsS3Dto,
-        oneOf: [{ $ref: getSchemaPath(AwsS3Dto) }],
     })
     @Type(() => AwsS3Dto)
     photo?: AwsS3Dto;
+
+    @ApiProperty({
+        required: true,
+        type: UserTwoFactorDto,
+    })
+    @Type(() => UserTwoFactorDto)
+    twoFactor: UserTwoFactorDto;
 }

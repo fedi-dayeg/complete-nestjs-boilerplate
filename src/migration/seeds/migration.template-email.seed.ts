@@ -32,6 +32,7 @@ export class MigrationTemplateEmailSeed
             tempPasswordEmail,
             verificationEmail,
             welcomeEmail,
+            resetTwoFactorByAdminEmail,
         ] = await Promise.all([
             this.emailTemplateService.getChangePassword(),
             this.emailTemplateService.getCreateByAdmin(),
@@ -41,6 +42,7 @@ export class MigrationTemplateEmailSeed
             this.emailTemplateService.getTempPassword(),
             this.emailTemplateService.getVerification(),
             this.emailTemplateService.getWelcome(),
+            this.emailTemplateService.getResetTwoFactorByAdmin(),
         ]);
 
         const promises: Promise<boolean>[] = [];
@@ -100,6 +102,15 @@ export class MigrationTemplateEmailSeed
             promises.push(this.emailTemplateService.importWelcome());
         }
 
+        if (!resetTwoFactorByAdminEmail) {
+            this.logger.log(
+                'Reset Two Factor By Admin Email template missing, importing...'
+            );
+            promises.push(
+                this.emailTemplateService.importResetTwoFactorByAdmin()
+            );
+        }
+
         if (promises.length > 0) {
             await Promise.all(promises);
         }
@@ -121,6 +132,7 @@ export class MigrationTemplateEmailSeed
             this.emailTemplateService.deleteTempPassword(),
             this.emailTemplateService.deleteVerification(),
             this.emailTemplateService.deleteWelcome(),
+            this.emailTemplateService.deleteResetTwoFactorByAdmin(),
         ]);
 
         this.logger.log('Emails removed successfully.');

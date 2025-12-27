@@ -4,9 +4,12 @@ import { UserDto } from '@modules/user/dtos/user.dto';
 import {
     EnumUserGender,
     EnumUserLoginFrom,
+    EnumUserLoginWith,
     EnumUserSignUpFrom,
     EnumUserSignUpWith,
 } from '@prisma/client';
+
+import { UserTwoFactorDto } from '@modules/user/dtos/user.two-factor.dto';
 
 export class UserListResponseDto extends UserDto {
     @ApiHideProperty()
@@ -35,10 +38,6 @@ export class UserListResponseDto extends UserDto {
 
     @ApiHideProperty()
     @Exclude()
-    salt?: string;
-
-    @ApiHideProperty()
-    @Exclude()
     gender?: EnumUserGender;
 
     @ApiHideProperty()
@@ -55,5 +54,9 @@ export class UserListResponseDto extends UserDto {
 
     @ApiHideProperty()
     @Exclude()
-    lastLoginWith?: EnumUserSignUpWith;
+    lastLoginWith?: EnumUserLoginWith;
+
+    @ApiHideProperty()
+    @Exclude()
+    twoFactor: UserTwoFactorDto;
 }

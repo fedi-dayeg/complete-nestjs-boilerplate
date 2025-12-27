@@ -64,6 +64,7 @@ import { ApiKeyDto } from '@modules/api-key/dtos/api-key.dto';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
 import { ActivityLog } from '@modules/activity-log/decorators/activity-log.decorator';
 import { ApiKeyUpdateStatusRequestDto } from '@modules/api-key/dtos/request/api-key.update-status.request.dto';
+import { TermPolicyAcceptanceProtected } from '@modules/term-policy/decorators/term-policy.decorator';
 
 @ApiTags('modules.admin.apiKey')
 @Controller({
@@ -75,6 +76,7 @@ export class ApiKeyAdminController {
 
     @ApiKeyAdminListDoc()
     @ResponsePaging('apiKey.list')
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.apiKey,
         action: [EnumPolicyAction.read],
@@ -94,12 +96,13 @@ export class ApiKeyAdminController {
         @PaginationQueryFilterInEnum<EnumApiKeyType>('type', ApiKeyDefaultType)
         type?: Record<string, IPaginationIn>
     ): Promise<IResponsePagingReturn<ApiKeyDto>> {
-        return this.apiKeyService.getList(pagination, isActive, type);
+        return this.apiKeyService.getListByAdmin(pagination, isActive, type);
     }
 
     @ApiKeyAdminCreateDoc()
     @Response('apiKey.create')
     @ActivityLog(EnumActivityLogAction.adminApiKeyCreate)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.apiKey,
         action: [EnumPolicyAction.read, EnumPolicyAction.create],
@@ -112,12 +115,13 @@ export class ApiKeyAdminController {
     async create(
         @Body() body: ApiKeyCreateRequestDto
     ): Promise<IResponseReturn<ApiKeyCreateResponseDto>> {
-        return this.apiKeyService.create(body);
+        return this.apiKeyService.createByAdmin(body);
     }
 
     @ApiKeyAdminResetDoc()
     @Response('apiKey.reset')
     @ActivityLog(EnumActivityLogAction.adminApiKeyReset)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.apiKey,
         action: [EnumPolicyAction.read, EnumPolicyAction.update],
@@ -131,12 +135,13 @@ export class ApiKeyAdminController {
         @Param('apiKeyId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
         apiKeyId: string
     ): Promise<IResponseReturn<ApiKeyCreateResponseDto>> {
-        return this.apiKeyService.reset(apiKeyId);
+        return this.apiKeyService.resetByAdmin(apiKeyId);
     }
 
     @ApiKeyAdminUpdateDoc()
     @Response('apiKey.update')
     @ActivityLog(EnumActivityLogAction.adminApiKeyUpdate)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.apiKey,
         action: [EnumPolicyAction.read, EnumPolicyAction.update],
@@ -151,12 +156,13 @@ export class ApiKeyAdminController {
         @Param('apiKeyId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
         apiKeyId: string
     ): Promise<IResponseReturn<ApiKeyDto>> {
-        return this.apiKeyService.update(apiKeyId, body);
+        return this.apiKeyService.updateByAdmin(apiKeyId, body);
     }
 
     @ApiKeyAdminUpdateDateDoc()
     @Response('apiKey.updateDate')
     @ActivityLog(EnumActivityLogAction.adminApiKeyUpdateDate)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.apiKey,
         action: [EnumPolicyAction.read, EnumPolicyAction.update],
@@ -171,12 +177,13 @@ export class ApiKeyAdminController {
         @Param('apiKeyId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
         apiKeyId: string
     ): Promise<IResponseReturn<ApiKeyDto>> {
-        return this.apiKeyService.updateDates(apiKeyId, body);
+        return this.apiKeyService.updateDatesByAdmin(apiKeyId, body);
     }
 
     @ApiKeyAdminUpdateStatusDoc()
     @Response('apiKey.updateStatus')
     @ActivityLog(EnumActivityLogAction.adminApiKeyUpdateStatus)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.apiKey,
         action: [EnumPolicyAction.read, EnumPolicyAction.update],
@@ -191,12 +198,13 @@ export class ApiKeyAdminController {
         apiKeyId: string,
         @Body() body: ApiKeyUpdateStatusRequestDto
     ): Promise<IResponseReturn<ApiKeyDto>> {
-        return this.apiKeyService.updateStatus(apiKeyId, body);
+        return this.apiKeyService.updateStatusByAdmin(apiKeyId, body);
     }
 
     @ApiKeyAdminDeleteDoc()
     @Response('apiKey.delete')
     @ActivityLog(EnumActivityLogAction.adminApiKeyDelete)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.apiKey,
         action: [EnumPolicyAction.read, EnumPolicyAction.delete],
@@ -210,6 +218,6 @@ export class ApiKeyAdminController {
         @Param('apiKeyId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
         apiKeyId: string
     ): Promise<IResponseReturn<ApiKeyDto>> {
-        return this.apiKeyService.delete(apiKeyId);
+        return this.apiKeyService.deleteByAdmin(apiKeyId);
     }
 }

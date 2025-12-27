@@ -34,6 +34,7 @@ import {
     TermPolicyDefaultStatus,
     TermPolicyDefaultType,
 } from '@modules/term-policy/constants/term-policy.list.constant';
+import { TermPolicyAcceptanceProtected } from '@modules/term-policy/decorators/term-policy.decorator';
 import {
     TermPolicyAdminAddContentDoc,
     TermPolicyAdminCreateDoc,
@@ -82,6 +83,7 @@ export class TermPolicyAdminController {
 
     @TermPolicyAdminListDoc()
     @ResponsePaging('termPolicy.list')
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.termPolicy,
         action: [EnumPolicyAction.read],
@@ -107,12 +109,13 @@ export class TermPolicyAdminController {
         )
         status?: Record<string, IPaginationIn>
     ): Promise<IResponsePagingReturn<TermPolicyResponseDto>> {
-        return this.termPolicyService.getList(pagination, type, status);
+        return this.termPolicyService.getListByAdmin(pagination, type, status);
     }
 
     @TermPolicyAdminCreateDoc()
     @Response('termPolicy.create')
     @ActivityLog(EnumActivityLogAction.adminTermPolicyCreate)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.termPolicy,
         action: [EnumPolicyAction.read, EnumPolicyAction.create],
@@ -127,11 +130,13 @@ export class TermPolicyAdminController {
         body: TermPolicyCreateRequestDto,
         @AuthJwtPayload('userId') createdBy: string
     ): Promise<IResponseReturn<TermPolicyResponseDto>> {
-        return this.termPolicyService.create(body, createdBy);
+        return this.termPolicyService.createByAdmin(body, createdBy);
     }
 
     @TermPolicyAdminDeleteDoc()
     @Response('termPolicy.delete')
+    @ActivityLog(EnumActivityLogAction.adminTermPolicyDelete)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.termPolicy,
         action: [EnumPolicyAction.read, EnumPolicyAction.delete],
@@ -145,11 +150,12 @@ export class TermPolicyAdminController {
         @Param('termPolicyId', RequestRequiredPipe)
         termPolicyId: string
     ): Promise<IResponseReturn<TermPolicyResponseDto>> {
-        return this.termPolicyService.delete(termPolicyId);
+        return this.termPolicyService.deleteByAdmin(termPolicyId);
     }
 
     @TermPolicyAdminGenerateContentPresignDoc()
     @Response('termPolicy.generateContentPresign')
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.termPolicy,
         action: [
@@ -167,12 +173,13 @@ export class TermPolicyAdminController {
     async generate(
         @Body() body: TermPolicyContentPresignRequestDto
     ): Promise<IResponseReturn<AwsS3PresignDto>> {
-        return this.termPolicyService.generateContentPresign(body);
+        return this.termPolicyService.generateContentPresignByAdmin(body);
     }
 
     @TermPolicyAdminUpdateContentDoc()
     @Response('termPolicy.updateContent')
     @ActivityLog(EnumActivityLogAction.adminTermPolicyUpdateContent)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.termPolicy,
         action: [EnumPolicyAction.read, EnumPolicyAction.update],
@@ -189,7 +196,7 @@ export class TermPolicyAdminController {
         body: TermPolicyContentRequestDto,
         @AuthJwtPayload('userId') updatedBy: string
     ): Promise<IResponseReturn<void>> {
-        return this.termPolicyService.updateContent(
+        return this.termPolicyService.updateContentByAdmin(
             termPolicyId,
             body,
             updatedBy
@@ -199,6 +206,7 @@ export class TermPolicyAdminController {
     @TermPolicyAdminAddContentDoc()
     @Response('termPolicy.addContent')
     @ActivityLog(EnumActivityLogAction.adminTermPolicyAddContent)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.termPolicy,
         action: [EnumPolicyAction.read, EnumPolicyAction.update],
@@ -215,32 +223,17 @@ export class TermPolicyAdminController {
         body: TermPolicyContentRequestDto,
         @AuthJwtPayload('userId') updatedBy: string
     ): Promise<IResponseReturn<void>> {
-        return this.termPolicyService.addContent(termPolicyId, body, updatedBy);
-    }
-
-    @TermPolicyAdminGetContentDoc()
-    @Response('termPolicy.getContent')
-    @PolicyAbilityProtected({
-        subject: EnumPolicySubject.termPolicy,
-        action: [EnumPolicyAction.read],
-    })
-    @RoleProtected(EnumRoleType.admin)
-    @UserProtected()
-    @AuthJwtAccessProtected()
-    @ApiKeyProtected()
-    @HttpCode(HttpStatus.OK)
-    @Post('/get/:termPolicyId/content/:language')
-    async getContent(
-        @Param('termPolicyId', RequestRequiredPipe)
-        termPolicyId: string,
-        @Param('language', RequestRequiredPipe) language: EnumMessageLanguage
-    ): Promise<IResponseReturn<AwsS3PresignDto>> {
-        return this.termPolicyService.getContent(termPolicyId, language);
+        return this.termPolicyService.addContentByAdmin(
+            termPolicyId,
+            body,
+            updatedBy
+        );
     }
 
     @TermPolicyAdminRemoveContentDoc()
     @Response('termPolicy.removeContent')
     @ActivityLog(EnumActivityLogAction.adminTermPolicyRemoveContent)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.termPolicy,
         action: [EnumPolicyAction.read, EnumPolicyAction.update],
@@ -257,16 +250,38 @@ export class TermPolicyAdminController {
         body: TermPolicyRemoveContentRequestDto,
         @AuthJwtPayload('userId') updatedBy: string
     ): Promise<IResponseReturn<void>> {
-        return this.termPolicyService.removeContent(
+        return this.termPolicyService.removeContentByAdmin(
             termPolicyId,
             body,
             updatedBy
         );
     }
 
+    @TermPolicyAdminGetContentDoc()
+    @Response('termPolicy.getContent')
+    @TermPolicyAcceptanceProtected()
+    @PolicyAbilityProtected({
+        subject: EnumPolicySubject.termPolicy,
+        action: [EnumPolicyAction.read],
+    })
+    @RoleProtected(EnumRoleType.admin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @HttpCode(HttpStatus.OK)
+    @Post('/get/:termPolicyId/content/:language')
+    async getContent(
+        @Param('termPolicyId', RequestRequiredPipe)
+        termPolicyId: string,
+        @Param('language', RequestRequiredPipe) language: EnumMessageLanguage
+    ): Promise<IResponseReturn<AwsS3PresignDto>> {
+        return this.termPolicyService.getContentByAdmin(termPolicyId, language);
+    }
+
     @TermPolicyAdminPublishDoc()
     @Response('termPolicy.publish')
     @ActivityLog(EnumActivityLogAction.adminTermPolicyPublish)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.termPolicy,
         action: [EnumPolicyAction.read, EnumPolicyAction.update],
@@ -281,6 +296,6 @@ export class TermPolicyAdminController {
         termPolicyId: string,
         @AuthJwtPayload('userId') updatedBy: string
     ): Promise<IResponseReturn<void>> {
-        return this.termPolicyService.publish(termPolicyId, updatedBy);
+        return this.termPolicyService.publishByAdmin(termPolicyId, updatedBy);
     }
 }

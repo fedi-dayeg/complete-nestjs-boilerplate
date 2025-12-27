@@ -1,7 +1,19 @@
-import { Body, Controller, Get, Param, Patch, Post, Put } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    HttpCode,
+    HttpStatus,
+    Param,
+    Patch,
+    Post,
+    Put,
+    UploadedFile,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
     Response,
+    ResponseFile,
     ResponsePaging,
 } from '@common/response/decorators/response.decorator';
 import { UserService } from '@modules/user/services/user.service';
@@ -37,6 +49,7 @@ import {
     IPaginationQueryOffsetParams,
 } from '@common/pagination/interfaces/pagination.interface';
 import {
+    IResponseFileReturn,
     IResponsePagingReturn,
     IResponseReturn,
 } from '@common/response/interfaces/response.interface';
@@ -46,8 +59,11 @@ import { RequestRequiredPipe } from '@common/request/pipes/request.required.pipe
 import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
 import {
     UserAdminCreateDoc,
+    UserAdminExportDoc,
     UserAdminGetDoc,
+    UserAdminImportDoc,
     UserAdminListDoc,
+    UserAdminResetTwoFactorDoc,
     UserAdminUpdatePasswordDoc,
     UserAdminUpdateStatusDoc,
 } from '@modules/user/docs/user.admin.doc';
@@ -55,11 +71,19 @@ import { UserCreateRequestDto } from '@modules/user/dtos/request/user.create.req
 import { DatabaseIdDto } from '@common/database/dtos/database.id.dto';
 import {
     RequestIPAddress,
+    RequestTimeout,
     RequestUserAgent,
 } from '@common/request/decorators/request.decorator';
 import { UserUpdateStatusRequestDto } from '@modules/user/dtos/request/user.update-status.request.dto';
 import { RequestUserAgentDto } from '@common/request/dtos/request.user-agent.dto';
 import { ActivityLog } from '@modules/activity-log/decorators/activity-log.decorator';
+import { TermPolicyAcceptanceProtected } from '@modules/term-policy/decorators/term-policy.decorator';
+import { FileUploadSingle } from '@common/file/decorators/file.decorator';
+import { FileExtensionPipe } from '@common/file/pipes/file.extension.pipe';
+import { EnumFileExtensionDocument } from '@common/file/enums/file.enum';
+import { FileCsvParsePipe } from '@common/file/pipes/file.csv-parse.pipe';
+import { FilCsvValidationPipe } from '@common/file/pipes/file.csv-validation.pipe';
+import { UserImportRequestDto } from '@modules/user/dtos/request/user.import.request.dto';
 
 @ApiTags('modules.admin.user')
 @Controller({
@@ -71,6 +95,7 @@ export class UserAdminController {
 
     @UserAdminListDoc()
     @ResponsePaging('user.list')
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.user,
         action: [EnumPolicyAction.read],
@@ -95,7 +120,7 @@ export class UserAdminController {
         @PaginationQueryFilterEqualString('country')
         country?: Record<string, IPaginationEqual>
     ): Promise<IResponsePagingReturn<UserListResponseDto>> {
-        return this.userService.getListOffset(
+        return this.userService.getListOffsetByAdmin(
             pagination,
             status,
             role,
@@ -105,6 +130,7 @@ export class UserAdminController {
 
     @UserAdminGetDoc()
     @Response('user.get')
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.user,
         action: [EnumPolicyAction.read],
@@ -124,6 +150,7 @@ export class UserAdminController {
     @UserAdminCreateDoc()
     @Response('user.create')
     @ActivityLog(EnumActivityLogAction.adminUserCreate)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.user,
         action: [EnumPolicyAction.read, EnumPolicyAction.create],
@@ -152,6 +179,7 @@ export class UserAdminController {
     @UserAdminUpdateStatusDoc()
     @Response('user.updateStatus')
     @ActivityLog(EnumActivityLogAction.adminUserUpdateStatus)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.user,
         action: [EnumPolicyAction.read, EnumPolicyAction.update],
@@ -162,7 +190,7 @@ export class UserAdminController {
     @ApiKeyProtected()
     @Patch('/update/:userId/status')
     async updateStatus(
-        @Param('userId', RequestRequiredPipe)
+        @Param('userId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
         userId: string,
         @AuthJwtPayload('userId') updatedBy: string,
         @Body() body: UserUpdateStatusRequestDto,
@@ -183,6 +211,7 @@ export class UserAdminController {
     @UserAdminUpdatePasswordDoc()
     @Response('user.updatePassword')
     @ActivityLog(EnumActivityLogAction.adminUserUpdatePassword)
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.user,
         action: [EnumPolicyAction.read, EnumPolicyAction.update],
@@ -193,7 +222,7 @@ export class UserAdminController {
     @ApiKeyProtected()
     @Put('/update/:userId/password')
     async updatePassword(
-        @Param('userId', RequestRequiredPipe)
+        @Param('userId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
         userId: string,
         @AuthJwtPayload('userId') updatedBy: string,
         @RequestIPAddress() ipAddress: string,
@@ -208,8 +237,91 @@ export class UserAdminController {
             updatedBy
         );
     }
-    // TODO-1: Create example import and export endpoints use CSV file
-    // import can be used to create multiple users at once
-    // export can be used to export user list to CSV file
-    // import using 2 methods: file upload and presigned URL upload
+
+    @UserAdminResetTwoFactorDoc()
+    @Response('user.twoFactor.resetByAdmin')
+    @ActivityLog(EnumActivityLogAction.adminUserResetTwoFactor)
+    @TermPolicyAcceptanceProtected()
+    @PolicyAbilityProtected({
+        subject: EnumPolicySubject.user,
+        action: [EnumPolicyAction.read, EnumPolicyAction.update],
+    })
+    @RoleProtected(EnumRoleType.admin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Patch('/update/:userId/2fa/reset')
+    async resetTwoFactorByAdmin(
+        @Param('userId', RequestRequiredPipe, RequestIsValidObjectIdPipe)
+        userId: string,
+        @AuthJwtPayload('userId') updatedBy: string,
+        @RequestIPAddress() ipAddress: string,
+        @RequestUserAgent() userAgent: RequestUserAgentDto
+    ): Promise<IResponseReturn<void>> {
+        return this.userService.resetTwoFactorByAdmin(userId, updatedBy, {
+            ipAddress,
+            userAgent,
+        });
+    }
+
+    @UserAdminImportDoc()
+    @Response('user.import')
+    @TermPolicyAcceptanceProtected()
+    @PolicyAbilityProtected({
+        subject: EnumPolicySubject.user,
+        action: [EnumPolicyAction.read, EnumPolicyAction.create],
+    })
+    @RoleProtected(EnumRoleType.admin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @FileUploadSingle()
+    @RequestTimeout('1m')
+    @HttpCode(HttpStatus.OK)
+    @Post('/import')
+    async import(
+        @AuthJwtPayload('userId')
+        createdBy: string,
+        @UploadedFile(
+            RequestRequiredPipe,
+            FileExtensionPipe([EnumFileExtensionDocument.csv]),
+            FileCsvParsePipe,
+            new FilCsvValidationPipe(UserImportRequestDto)
+        )
+        data: UserImportRequestDto[],
+        @RequestIPAddress() ipAddress: string,
+        @RequestUserAgent() userAgent: RequestUserAgentDto
+    ): Promise<IResponseReturn<void>> {
+        return this.userService.importByAdmin(data, createdBy, {
+            ipAddress,
+            userAgent,
+        });
+    }
+
+    @UserAdminExportDoc()
+    @ResponseFile()
+    @TermPolicyAcceptanceProtected()
+    @PolicyAbilityProtected({
+        subject: EnumPolicySubject.user,
+        action: [EnumPolicyAction.read],
+    })
+    @RoleProtected(EnumRoleType.admin)
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @HttpCode(HttpStatus.OK)
+    @Post('/export')
+    async export(
+        @PaginationQueryFilterInEnum<EnumUserStatus>(
+            'status',
+            UserDefaultStatus
+        )
+        status?: Record<string, IPaginationIn>,
+        @PaginationQueryFilterEqualString('role')
+        role?: Record<string, IPaginationEqual>,
+        @PaginationQueryFilterEqualString('country')
+        country?: Record<string, IPaginationEqual>
+    ): Promise<IResponseFileReturn> {
+        return this.userService.exportByAdmin(status, role, country);
+    }
 }

@@ -24,12 +24,8 @@ export class RequestRequiredPipe implements PipeTransform {
             throw new BadRequestException({
                 statusCode: EnumRequestStatusCodeError.paramRequired,
                 message: 'request.error.paramRequired',
-                metadata: {
-                    customProperty: {
-                        messageProperties: {
-                            property: metadata.data,
-                        },
-                    },
+                messageProperties: {
+                    property: metadata.data,
                 },
             });
         }

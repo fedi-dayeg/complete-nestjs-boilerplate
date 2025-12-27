@@ -27,6 +27,7 @@ import {
     EnumPolicySubject,
 } from '@modules/policy/enums/policy.enum';
 import { RoleProtected } from '@modules/role/decorators/role.decorator';
+import { TermPolicyAcceptanceProtected } from '@modules/term-policy/decorators/term-policy.decorator';
 import { UserProtected } from '@modules/user/decorators/user.decorator';
 import { Body, Controller, Get, Param, Patch, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -42,6 +43,7 @@ export class FeatureFlagAdminController {
 
     @FeatureFlagAdminListDoc()
     @ResponsePaging('featureFlag.list')
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.featureFlag,
         action: [EnumPolicyAction.read],
@@ -57,11 +59,12 @@ export class FeatureFlagAdminController {
         })
         pagination: IPaginationQueryOffsetParams
     ): Promise<IResponsePagingReturn<FeatureFlagResponseDto>> {
-        return this.featureFlagService.getList(pagination);
+        return this.featureFlagService.getListByAdmin(pagination);
     }
 
     @FeatureFlagAdminUpdateStatusDoc()
     @Response('featureFlag.updateStatus')
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.featureFlag,
         action: [EnumPolicyAction.read, EnumPolicyAction.update],
@@ -76,11 +79,12 @@ export class FeatureFlagAdminController {
         featureFlagId: string,
         @Body() body: FeatureFlagUpdateStatusRequestDto
     ): Promise<IResponseReturn<FeatureFlagResponseDto>> {
-        return this.featureFlagService.updateStatus(featureFlagId, body);
+        return this.featureFlagService.updateStatusByAdmin(featureFlagId, body);
     }
 
     @FeatureFlagAdminUpdateMetadataDoc()
     @Response('featureFlag.updateMetadata')
+    @TermPolicyAcceptanceProtected()
     @PolicyAbilityProtected({
         subject: EnumPolicySubject.featureFlag,
         action: [EnumPolicyAction.read, EnumPolicyAction.update],
@@ -95,6 +99,9 @@ export class FeatureFlagAdminController {
         featureFlagId: string,
         @Body() body: FeatureFlagUpdateMetadataRequestDto
     ): Promise<IResponseReturn<FeatureFlagResponseDto>> {
-        return this.featureFlagService.updateMetadata(featureFlagId, body);
+        return this.featureFlagService.updateMetadataByAdmin(
+            featureFlagId,
+            body
+        );
     }
 }
