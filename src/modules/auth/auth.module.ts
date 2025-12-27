@@ -8,6 +8,7 @@ import { SessionModule } from '@modules/session/session.module';
 import { AuthService } from '@modules/auth/services/auth.service';
 import { AuthTwoFactorUtil } from '@modules/auth/utils/auth.two-factor.util';
 import { IsTwoFactorBackupCodeConstraint } from '@modules/auth/validations/auth.two-factor-backup-code.validation';
+import { IsTwoFactorCodeConstraint } from '@modules/auth/validations/auth.two-factor-code.validation';
 
 @Global()
 @Module({
@@ -17,7 +18,7 @@ import { IsTwoFactorBackupCodeConstraint } from '@modules/auth/validations/auth.
         AuthUtil,
         AuthTwoFactorUtil,
         AuthService,
-        IsTwoFactorBackupCodeConstraint,
+        IsTwoFactorCodeConstraint,
         IsTwoFactorBackupCodeConstraint,
     ],
     exports: [AuthUtil, AuthTwoFactorUtil, AuthService],
