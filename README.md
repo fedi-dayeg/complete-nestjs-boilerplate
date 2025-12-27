@@ -88,7 +88,7 @@ This boilerplate is perfect for:
 - [ ] Add import and export
 - [-] Add import and export endpoint with presign upload
 - [x] Add TOTP Authentication Protected to reset password, change password, and regenerate backup codes endpoints
-- [ ] Add import and export endpoint with presign upload
+- [x] Add import and export endpoint with presign upload
 - [ ] Add migration script to migrate AWS S3 Policy for public and private, include config for presign expiration
 - [ ] Export Module for background export processing
 - [ ] Activity Log support bidirectional logging

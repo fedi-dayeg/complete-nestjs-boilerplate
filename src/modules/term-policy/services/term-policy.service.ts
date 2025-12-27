@@ -57,6 +57,7 @@ export class TermPolicyService implements ITermPolicyService {
         requiredTermPolicies: EnumTermPolicyType[]
     ): Promise<void> {
         const { __user, user } = request;
+
         if (!__user || !user) {
             throw new ForbiddenException({
                 statusCode: EnumAuthStatusCodeError.jwtAccessTokenInvalid,
@@ -83,7 +84,7 @@ export class TermPolicyService implements ITermPolicyService {
         }
     }
 
-    async getList(
+    async getListByAdmin(
         pagination: IPaginationQueryOffsetParams,
         type?: Record<string, IPaginationIn>,
         status?: Record<string, IPaginationIn>
@@ -182,7 +183,7 @@ export class TermPolicyService implements ITermPolicyService {
         }
     }
 
-    async create(
+    async createByAdmin(
         { contents, type, version }: TermPolicyCreateRequestDto,
         createdBy: string
     ): Promise<IResponseReturn<TermPolicyResponseDto>> {
@@ -242,7 +243,7 @@ export class TermPolicyService implements ITermPolicyService {
         }
     }
 
-    async delete(
+    async deleteByAdmin(
         termPolicyId: string
     ): Promise<IResponseReturn<TermPolicyResponseDto>> {
         const termPolicy: TermPolicy =
@@ -284,7 +285,7 @@ export class TermPolicyService implements ITermPolicyService {
         }
     }
 
-    async generateContentPresign({
+    async generateContentPresignByAdmin({
         language,
         size,
         type,
@@ -331,7 +332,7 @@ export class TermPolicyService implements ITermPolicyService {
         return { data: aws };
     }
 
-    async updateContent(
+    async updateContentByAdmin(
         termPolicyId: string,
         { key, size, language }: TermPolicyContentRequestDto,
         updatedBy: string
@@ -380,7 +381,7 @@ export class TermPolicyService implements ITermPolicyService {
         }
     }
 
-    async addContent(
+    async addContentByAdmin(
         termPolicyId: string,
         { key, size, language }: TermPolicyContentRequestDto,
         updatedBy: string
@@ -439,7 +440,7 @@ export class TermPolicyService implements ITermPolicyService {
         }
     }
 
-    async removeContent(
+    async removeContentByAdmin(
         termPolicyId: string,
         { language }: TermPolicyRemoveContentRequestDto,
         updatedBy: string
@@ -490,7 +491,7 @@ export class TermPolicyService implements ITermPolicyService {
         }
     }
 
-    async getContent(
+    async getContentByAdmin(
         termPolicyId: string,
         language: EnumMessageLanguage
     ): Promise<IResponseReturn<AwsS3PresignDto>> {
@@ -524,7 +525,7 @@ export class TermPolicyService implements ITermPolicyService {
         return { data: awsPresign };
     }
 
-    async publish(
+    async publishByAdmin(
         termPolicyId: string,
         updatedBy: string
     ): Promise<IResponseReturn<void>> {
