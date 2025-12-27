@@ -64,24 +64,23 @@ This boilerplate is perfect for:
 - When using multiple protection decorators, they must be applied in the correct order:
     ```typescript
     @ExampleDoc()
+    @ActivityLog(...)
     @PolicyAbilityProtected({...})
     @RoleProtected(...)
     @TermPolicyAcceptanceProtected(...)
     @UserProtected()
-    @ActivityLog(...) 
     @AuthJwtAccessProtected()
     @FeatureFlagProtected(...)
     @ApiKeyProtected()
+    @HttpCode(HttpStatus.OK)
     @Get('/some-endpoint')
     ```
 - Since version `2.0.0`, the project uses the `ES256` algorithm for Access Token, and `ES512` for Refresh Token.
-- Since version `2.0.0`, the project uses prisma for handle database.
+- Since version `2.0.0`, the project uses prisma `6.19` for handle database.
 - Since version `2.0.0`, the project uses pnpm for package manager.
 
 ## TODO
 
-
-### Next Features
 - [x] Change enum name to use PascalCase
 - [x] 2FA with TOTP Authentication (eg: Google Authenticator)
 - [x] Recovery Codes Method
@@ -90,15 +89,18 @@ This boilerplate is perfect for:
 - [x] Add TOTP Authentication Protected to reset password, change password, and regenerate backup codes endpoints
 - [x] Add import and export endpoint with presign upload
 - [ ] Add migration script to migrate AWS S3 Policy for public and private, include config for presign expiration
-- [ ] Export Module for background export processing
+
+
+### Next Features
 - [ ] Activity Log support bidirectional logging
 - [ ] Migrate to PNPM and update document installation before release v2
 - [ ] Login with biometrics (fingerprint or face detection)
 - [ ] Login with passkey
 - [ ] Login with Github SSO
-- [ ] Implement mobile number verification
-- [ ] Device awareness
-- [ ] Verification Mobile Number
+- [ ] Device awareness, Geo Location
+- [ ] Sliding session (Example: 7d expires for a refresh token, can be extends until x day. if not action in 7d then need to re-login)
+- [ ] Anomaly detection when refresh token
+- [ ] Verification Mobile Number, whatsapp or/and sms
 - [ ] Simple Notification System or Enchant Activity Log to be able act as notification
 - [ ] Versioning System (Force frontend to update, especially mobile)
 
@@ -106,7 +108,8 @@ This boilerplate is perfect for:
 - [ ] Unit test
 - [ ] Integration Test
 - [ ] E2E Test
-- [ ] Stress Test and Load Test For Benchmark
+- [ ] Stress Test For Benchmark/Performance
+- [ ] Load Test For Benchmark/Performance
 
 ## Prerequisites
 
@@ -248,11 +251,13 @@ Prisma supports multiple databases out of the box:
 
 - 🐘 **PostgreSQL** - Recommended for production
 - 🐬 **MySQL** - Popular relational database
+- There are more many database
 
 **Migration typically requires:**
 - Updating `prisma/schema.prisma` provider
 - Adjusting ID strategy (ObjectId → UUID)
-- Running `pnpm prisma:migrate`
+- Running `npx prisma migrate dev`
+- Running `pnpm migration:seed`
 
 **Business logic stays unchanged** - services, controllers, and authentication work as-is.
 
