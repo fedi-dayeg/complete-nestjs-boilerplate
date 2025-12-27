@@ -89,6 +89,9 @@ import {
     UnauthorizedException,
 } from '@nestjs/common';
 import {
+    EnumActivityLogAction,
+    EnumPasswordHistoryType,
+    EnumRoleType,
     EnumUserLoginFrom,
     EnumUserLoginWith,
     EnumUserStatus,
@@ -1446,8 +1449,9 @@ export class UserService implements IUserService {
             const password = this.authUtil.createPassword(newPassword);
 
             await Promise.all([
-                this.userRepository.changePassword(
+                this.userRepository.resetPassword(
                     resetPassword.userId,
+                    resetPassword.id,
                     password,
                     requestLog
                 ),
