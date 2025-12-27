@@ -243,7 +243,7 @@ sequenceDiagram
         Database-->>API: Session created
     and Store in Redis
         API->>Redis: Store session with TTL
-        Note over Redis: Key: user:{userId}:session:{sessionId}<br/>Value: {userId, sessionId, jti, expiredAt}<br/>TTL: follows AUTH_JWT_REFRESH_TOKEN_EXPIRED
+        Note over Redis: Key: User:{userId}:Session:{sessionId}<br/>Value: {userId, sessionId, jti, expiredAt}<br/>TTL: follows AUTH_JWT_REFRESH_TOKEN_EXPIRED
         Redis-->>API: Session cached
     end
 
@@ -589,7 +589,7 @@ sequenceDiagram
             Database-->>API: Session created
         and Store in Redis
             API->>Redis: Store session with jti and TTL
-            Note over Redis: Key: user:{userId}:session:{sessionId}<br/>Value: {userId, sessionId, jti, expiredAt}<br/>TTL: follows AUTH_JWT_REFRESH_TOKEN_EXPIRED
+            Note over Redis: Key: User:{userId}:Session:{sessionId}<br/>Value: {userId, sessionId, jti, expiredAt}<br/>TTL: follows AUTH_JWT_REFRESH_TOKEN_EXPIRED
             Redis-->>API: Session cached
         end
 
@@ -719,37 +719,7 @@ async loginApple(@AuthJwtPayload() payload: IAuthSocialPayload) {
 
 TOTP-based 2FA adds a second verification step to login. Tokens are only issued after the user passes 2FA.
 
-### Configuration
-
-Two Factor authentication is configured in `auth.config.ts`:
-
-```typescript
-export default registerAs(
-    'auth',
-    (): IConfigAuth => ({
-        twoFactor: {
-            issuer: 'ACKNestJsTwoFactor',     // App name shown in authenticator apps (TOTP issuer)
-            digits: 6,                        // Number of TOTP code digits (usually 6)
-            step: 30,                         // Code validity interval (seconds)
-            window: 1,                        // Time skew tolerance (in steps, ±30 seconds)
-            secretLength: 32,                 // TOTP secret length (base32 characters)
-            challengeTtlInMs: 300000,         // Challenge token validity (milliseconds, default 5 minutes)
-            cachePrefixKey: 'TwoFactor',      // Redis cache prefix for 2FA challenge
-            backupCodes: {
-                count: 8,                     // Number of backup codes generated per user
-                length: 10                    // Length of each backup code (characters)
-            },
-            encryption: {
-                key: 'qwerty1234567890'       // Encryption key for 2FA secret (must be 32 characters)
-            },
-        }
-});
-```
-
-**Environment Variables:**
-- `AUTH_TWO_FACTOR_ISSUER`:YourAppName
-- `AUTH_TWO_FACTOR_ENCRYPTION_KEY`:your-32-character-encryption-key
-
+### Flow
 
 ```mermaid
 sequenceDiagram
@@ -1024,7 +994,7 @@ Used for high-speed session validation for **both access and refresh tokens**.
 
 **Redis Key Pattern:**
 ```
-user:{userId}:session:{sessionId}
+User:{userId}:Session:{sessionId}
 ```
 
 **TTL Behavior:**
@@ -1150,8 +1120,8 @@ sequenceDiagram
         JWT->>API: Signature valid
         
         API->>API: Extract sessionId & jti from payload
-        
-        API->>Redis: GET user:{userId}:session:{sessionId}
+
+        API->>Redis: GET User:{userId}:Session:{sessionId}
         
         alt Session Not Found
             Redis-->>API: null

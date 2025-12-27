@@ -384,6 +384,11 @@ async getUser(@Param('id') id: string): Promise<IResponseReturn<UserDto>> {
   return { data: await this.userService.findById(id) };
 }
 ```
+**Cache Key:**
+
+```text
+Apis:*
+```
 
 **Custom Cache Configuration:**
 

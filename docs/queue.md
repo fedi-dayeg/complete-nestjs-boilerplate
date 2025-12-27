@@ -325,7 +325,7 @@ redis-bullboard:
     environment:
         - REDIS_HOST=redis
         - REDIS_PORT=6379
-        - BULL_PREFIX=queue
+        - BULL_PREFIX=Queue
         - USER_LOGIN=admin
         - USER_PASSWORD=admin123
 ```
