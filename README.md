@@ -61,12 +61,14 @@ _You can [request feature][ref-ack-issues] or [report bug][ref-ack-issues] with 
 
 ### Next Features
 - [x] Change enum name to use PascalCase
+- [x] 2FA with TOTP Authentication (eg: Google Authenticator)
+- [x] Recovery Codes Method
+- [ ] Add import and export
+- [ ] Add TOTP Authentication Protected to reset password, change password, and regenerate backup codes endpoints
 - [ ] Add import and export endpoint (includes: direct upload and presign upload)
 - [ ] Make sure github action works
 - [ ] Activity Log support bidirectional logging
 - [ ] Migrate to PNPM and update document installation before release v2
-- [ ] 2FA with TOTP Authentication (eg: Google Authenticator)
-- [ ] Recovery Codes Method
 - [ ] Login with biometrics (fingerprint or face detection)
 - [ ] Login with passkey
 - [ ] Login with Github SSO
