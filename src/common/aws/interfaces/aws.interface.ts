@@ -1,5 +1,4 @@
 import { EnumAwsS3Accessibility } from '@common/aws/enums/aws.enum';
-import { ObjectCannedACL } from '@aws-sdk/client-s3';
 
 export interface IAwsS3Options {
     access?: EnumAwsS3Accessibility;
@@ -15,11 +14,11 @@ export interface IAwsS3GetItemsOptions extends IAwsS3Options {
 
 export type IAwsS3DeleteDirOptions = IAwsS3GetItemsOptions;
 
-export interface IAwsS3PutItemWithAclOptions extends IAwsS3PutItemOptions {
-    acl?: ObjectCannedACL;
+export interface IAwsS3PresignGetItemOptions extends IAwsS3Options {
+    expired?: number;
 }
 
-export interface IAwsS3PresignGetItemOptions extends IAwsS3Options {
+export interface IAwsS3PresignPutItemPartOptions extends IAwsS3Options {
     expired?: number;
 }
 
