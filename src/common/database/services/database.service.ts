@@ -72,7 +72,7 @@ export class DatabaseService
             await this.setupLogging();
             await this.connect();
         } catch (error: unknown) {
-            this.logger.error('Failed to initialize database service', error);
+            this.logger.error(error, 'Failed to initialize database service');
             throw error;
         }
     }
@@ -92,7 +92,7 @@ export class DatabaseService
             await this.$connect();
             this.logger.log('Successfully connected to the database');
         } catch (error: unknown) {
-            this.logger.error('Failed to connect to the database', error);
+            this.logger.error(error, 'Failed to connect to the database');
             throw error;
         }
     }
@@ -102,7 +102,7 @@ export class DatabaseService
             await this.$disconnect();
             this.logger.log('Successfully disconnected from the database');
         } catch (error: unknown) {
-            this.logger.error('Failed to disconnect from the database', error);
+            this.logger.error(error, 'Failed to disconnect from the database');
             throw error;
         }
     }
