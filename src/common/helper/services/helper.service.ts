@@ -11,6 +11,7 @@ import {
 } from '@common/helper/interfaces/helper.interface';
 import _ from 'lodash';
 import { EnumHelperDateDayOf } from '@common/helper/enums/helper.enum';
+import { hostname } from 'os';
 
 /**
  * Comprehensive utility service providing helper functions for common operations.
@@ -808,5 +809,14 @@ export class HelperService implements IHelperService {
         const dTwo = DateTime.fromJSDate(dateTwo).setZone(this.defTz);
 
         return dOne.diff(dTwo);
+    }
+
+    /**
+     * Retrieves the current machine's hostname.
+     *
+     * @returns {string} Hostname of the server or environment where the application is running
+     */
+    getHostname(): string {
+        return hostname();
     }
 }

@@ -24,18 +24,18 @@ model ApiKey {
   updatedAt DateTime @updatedAt
   updatedBy String?  @db.ObjectId
 
-  @@unique([key])
+  @@unique(fields: [key])
   @@index(fields: [name, isActive, type, createdAt])
   @@index(fields: [createdAt])
-  @@map("Apikeys")
+  @@map("ApiKeys")
 }
 
 model Role {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
-  type        EnumRoleType @default(user)
-  abilities   Json[]       @default([])
+  type        EnumRoleType  @default(user)
+  abilities   RoleAbility[]
 
   // timestamps fields
   createdAt DateTime @default(now())
@@ -99,6 +99,7 @@ model UserMobileNumber {
   @@index(fields: [userId])
   @@index(fields: [isVerified])
   @@index(fields: [createdAt])
+  @@map("UserMobiles")
 }
 
 model User {
@@ -108,7 +109,7 @@ model User {
   isVerified      Boolean            @default(false)
   verifiedAt      DateTime?
   email           String
-  roleId          String
+  roleId          String             @db.ObjectId
   password        String?
   passwordExpired DateTime?
   passwordCreated DateTime?
@@ -123,8 +124,8 @@ model User {
   lastIPAddress   String?
   lastLoginFrom   EnumUserLoginFrom?
   lastLoginWith   EnumUserLoginWith?
-  termPolicy      Json
-  photo           Json?
+  termPolicy      UserTermPolicy
+  photo           UserPhoto?
 
   // timestamps fields
   createdAt DateTime  @default(now())
@@ -152,32 +153,6 @@ model User {
   @@index(fields: [email, deletedAt])
   @@index(fields: [createdAt])
   @@map("Users")
-}
-
-model TwoFactor {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String    @db.ObjectId
-  secret        String?
-  iv            String?
-  backupCodes   String[]  @default([])
-  enabled       Boolean   @default(false)
-  requiredSetup Boolean   @default(false)
-  confirmedAt   DateTime?
-  lastUsedAt    DateTime?
-  attempt       Int       @default(0)
-
-  // timestamps fields
-  createdAt DateTime @default(now())
-  createdBy String?  @db.ObjectId
-  updatedAt DateTime @updatedAt
-  updatedBy String?  @db.ObjectId
-
-  user User? @relation("UserTwoFactor", fields: [userId], references: [id])
-
-  @@unique(fields: [userId])
-  @@index(fields: [createdAt])
-  @@index(fields: [updatedAt])
-  @@map("TwoFactors")
 }
 
 model Verification {
@@ -226,7 +201,7 @@ model ActivityLog {
   userId    String                @db.ObjectId
   action    EnumActivityLogAction
   ipAddress String
-  userAgent Json
+  userAgent UserAgent
   metadata  Json?
 
   user User? @relation("UserActivityLogs", fields: [userId], references: [id])
@@ -245,7 +220,7 @@ model Session {
   userId    String    @db.ObjectId
   jti       String
   ipAddress String
-  userAgent Json
+  userAgent UserAgent
   expiredAt DateTime
   revokedAt DateTime?
   isRevoked Boolean   @default(false)
@@ -265,10 +240,36 @@ model Session {
   @@map("Sessions")
 }
 
+model TwoFactor {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String    @db.ObjectId
+  secret        String?
+  iv            String?
+  backupCodes   String[]  @default([])
+  enabled       Boolean   @default(false)
+  requiredSetup Boolean   @default(false)
+  confirmedAt   DateTime?
+  lastUsedAt    DateTime?
+  attempt       Int       @default(0)
+
+  // timestamps fields
+  createdAt DateTime @default(now())
+  createdBy String?  @db.ObjectId
+  updatedAt DateTime @updatedAt
+  updatedBy String?  @db.ObjectId
+
+  user User? @relation("UserTwoFactor", fields: [userId], references: [id])
+
+  @@unique(fields: [userId])
+  @@index(fields: [createdAt])
+  @@index(fields: [updatedAt])
+  @@map("TwoFactors")
+}
+
 model TermPolicy {
   id          String               @id @default(auto()) @map("_id") @db.ObjectId
   type        EnumTermPolicyType
-  contents    Json[]               @default([])
+  contents    TermPolicyContent[]
   version     Int                  @default(1)
   status      EnumTermPolicyStatus @default(draft)
   publishedAt DateTime?
@@ -351,6 +352,76 @@ model ForgotPassword {
   @@index(fields: [token, expiredAt, isUsed])
   @@index(fields: [token])
   @@map("ForgotPasswords")
+}
+
+type UserTermPolicy {
+  termsOfService Boolean
+  privacy        Boolean
+  marketing      Boolean
+  cookies        Boolean
+}
+
+type RoleAbility {
+  action  String[]
+  subject String
+}
+
+type UserPhoto {
+  bucket       String
+  key          String
+  cdnUrl       String?
+  completedUrl String
+  mime         String
+  extension    String
+  access       String
+}
+
+type TermPolicyContent {
+  language     String
+  bucket       String
+  key          String
+  cdnUrl       String?
+  completedUrl String
+  mime         String
+  extension    String
+  access       String
+  size         Int
+}
+
+type UserAgentBrowser {
+  name    String?
+  version String?
+  major   String?
+  type    String?
+}
+
+type UserAgentCpu {
+  architecture String?
+}
+
+type UserAgentDevice {
+  type   String?
+  vendor String?
+  model  String?
+}
+
+type UserAgentEngine {
+  name    String?
+  version String?
+}
+
+type UserAgentOs {
+  name    String?
+  version String?
+}
+
+type UserAgent {
+  ua      String?
+  browser UserAgentBrowser?
+  cpu     UserAgentCpu?
+  device  UserAgentDevice?
+  engine  UserAgentEngine?
+  os      UserAgentOs?
 }
 
 enum EnumUserGender {

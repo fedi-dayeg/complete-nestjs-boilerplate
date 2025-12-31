@@ -128,6 +128,54 @@ Every time you run the term policy template seed, the policy documents will be l
 - Remove: `pnpm migration template-termPolicy --type remove`
 
 
+### AWS S3 Configuration Seed
+
+The migration script is a special seed command that configures AWS S3 bucket policies and settings for both public and private buckets. Unlike other seed commands, this migration doesn't populate database data but instead configures your AWS infrastructure.
+
+**What It Does:**
+
+This script automatically configures essential S3 bucket settings in the correct order:
+
+1. **Block Public Access Configuration** - Controls public access restrictions
+2. **Disable ACL Configuration** - Enforces bucket owner ownership controls
+3. **Bucket Policy** - Sets read/write permissions based on bucket accessibility
+4. **CORS Configuration** - Configures Cross-Origin Resource Sharing rules
+5. **Lifecycle Configuration** - Automatically deletes incomplete multipart uploads
+
+**Why Sequential Configuration Matters:**
+
+The configuration must be applied in a specific order because AWS S3 policies have dependencies.
+For example, you must configure public access blocks before setting bucket policies.
+
+**How to Run:**
+
+```bash
+# Configure both public and private buckets
+pnpm migration aws-s3-config --type seed
+```
+
+**Important Notes:**
+
+- This migration runs configurations for **both public and private buckets** simultaneously
+- The `--type remove` option is intentionally skipped (no removal operation)
+- Requires valid AWS credentials and appropriate IAM permissions
+- Bucket names and ARNs must be properly configured in your environment variables
+
+**Configuration Applied:**
+
+For **Public Buckets**:
+- Public read access (`s3:GetObject`) for all objects
+- Full IAM user access for management operations
+- CORS rules allowing GET/HEAD from any origin
+- CORS rules allowing PUT/POST/DELETE from whitelisted origins
+
+For **Private Buckets**:
+- Blocks all public access
+- CORS rules only allow whitelisted origins for all methods
+- Full IAM user access required for all operations
+
+
+
 ## Initial Seeded Data
 
 When you run `pnpm migration:seed`, the following initial data will be created in your database. This data is essential for testing and development purposes.
@@ -282,8 +330,8 @@ datasource db {
 
 // Update ID fields in all models
 model User {
-  id String @id @default(uuid())  // was: @default(auto()) @map("_id") @db.ObjectId
-  // Remove @db.ObjectId from all foreign keys
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid  // was: @default(auto()) @map("_id") @db.ObjectId
+  // Replace @db.ObjectId with @db.Uuid from all foreign keys
 }
 ```
 
@@ -302,7 +350,7 @@ pnpm prisma migrate dev --name init  # PostgreSQL
 pnpm db:generate                      # Regenerate client
 ```
 
-**4. Update Database-Specific Code:**
+**4. Update DatabaseService Code:**
 
 - **DatabaseService** (`src/common/database/services/database.service.ts`) - May require updates for connection management, health checks, and database-specific features
 - **DatabaseUtil** (`src/common/database/utils/database.util.ts`) - Replace MongoDB `ObjectId` helpers with UUID validators

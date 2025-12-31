@@ -22,16 +22,16 @@ importers:
                 specifier: ^3.2.0
                 version: 3.2.0
             '@aws-sdk/client-s3':
-                specifier: ^3.952.0
+                specifier: ^3.958.0
                 version: 3.958.0
             '@aws-sdk/client-ses':
-                specifier: ^3.952.0
+                specifier: ^3.958.0
                 version: 3.958.0
             '@aws-sdk/s3-request-presigner':
-                specifier: ^3.952.0
+                specifier: ^3.958.0
                 version: 3.958.0
             '@casl/ability':
-                specifier: ^6.7.3
+                specifier: ^6.7.5
                 version: 6.7.5
             '@faker-js/faker':
                 specifier: ^10.1.0
@@ -44,18 +44,18 @@ importers:
                 version: 4.0.1(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(axios@1.13.2)(rxjs@7.8.2)
             '@nestjs/bullmq':
                 specifier: ^11.0.4
-                version: 11.0.4(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(bullmq@5.66.2)
+                version: 11.0.4(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(bullmq@5.66.4)
             '@nestjs/cache-manager':
-                specifier: ^3.0.1
+                specifier: ^3.1.0
                 version: 3.1.0(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(cache-manager@7.2.7)(keyv@5.5.5)(rxjs@7.8.2)
             '@nestjs/common':
-                specifier: ^11.1.9
+                specifier: ^11.1.10
                 version: 11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
             '@nestjs/config':
                 specifier: ^4.0.2
                 version: 4.0.2(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(rxjs@7.8.2)
             '@nestjs/core':
-                specifier: ^11.1.9
+                specifier: ^11.1.10
                 version: 11.1.10(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)
             '@nestjs/jwt':
                 specifier: ^11.0.2
@@ -64,7 +64,7 @@ importers:
                 specifier: ^11.0.5
                 version: 11.0.5(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(passport@0.7.0)
             '@nestjs/platform-express':
-                specifier: ^11.1.9
+                specifier: ^11.1.10
                 version: 11.1.10(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)
             '@nestjs/swagger':
                 specifier: ^11.2.3
@@ -79,13 +79,13 @@ importers:
                 specifier: ^6.19.0
                 version: 6.19.1(prisma@6.19.1(typescript@5.9.3))(typescript@5.9.3)
             '@sentry/nestjs':
-                specifier: ^10.30.0
+                specifier: ^10.32.1
                 version: 10.32.1(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)
             '@sentry/profiling-node':
-                specifier: ^10.30.0
+                specifier: ^10.32.1
                 version: 10.32.1
             '@smithy/types':
-                specifier: ^4.10.0
+                specifier: ^4.11.0
                 version: 4.11.0
             '@supercharge/request-ip':
                 specifier: ^1.2.0
@@ -103,8 +103,8 @@ importers:
                 specifier: ^2.0.4
                 version: 2.0.4
             bullmq:
-                specifier: ^5.66.0
-                version: 5.66.2
+                specifier: ^5.66.4
+                version: 5.66.4
             bytes:
                 specifier: ^3.1.2
                 version: 3.1.2
@@ -189,15 +189,15 @@ importers:
             pino-pretty:
                 specifier: ^13.1.3
                 version: 13.1.3
+            pino-roll:
+                specifier: ^4.0.0
+                version: 4.0.0
             reflect-metadata:
                 specifier: ^0.2.2
                 version: 0.2.2
             response-time:
                 specifier: ^2.3.4
                 version: 2.3.4
-            rotating-file-stream:
-                specifier: ^3.2.7
-                version: 3.2.7
             rxjs:
                 specifier: ^7.8.2
                 version: 7.8.2
@@ -227,8 +227,8 @@ importers:
                 specifier: ^9.39.2
                 version: 9.39.2
             '@golevelup/ts-jest':
-                specifier: ^0.7.0
-                version: 0.7.0
+                specifier: ^1.1.1
+                version: 1.1.1
             '@nestjs/cli':
                 specifier: ^11.0.14
                 version: 11.0.14(@swc/cli@0.7.9(@swc/core@1.15.7)(chokidar@4.0.3))(@swc/core@1.15.7)(@types/node@25.0.3)
@@ -236,13 +236,13 @@ importers:
                 specifier: ^11.0.9
                 version: 11.0.9(chokidar@4.0.3)(typescript@5.9.3)
             '@nestjs/testing':
-                specifier: ^11.1.9
+                specifier: ^11.1.10
                 version: 11.1.10(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(@nestjs/platform-express@11.1.10)
             '@swc/cli':
                 specifier: ^0.7.9
                 version: 0.7.9(@swc/core@1.15.7)(chokidar@4.0.3)
             '@swc/core':
-                specifier: ^1.15.5
+                specifier: ^1.15.7
                 version: 1.15.7
             '@swc/jest':
                 specifier: ^0.2.39
@@ -284,7 +284,7 @@ importers:
                 specifier: ^2.0.0
                 version: 2.0.0
             '@types/node':
-                specifier: ^25.0.2
+                specifier: ^25.0.3
                 version: 25.0.3
             '@types/papaparse':
                 specifier: ^5.5.2
@@ -299,10 +299,10 @@ importers:
                 specifier: ^6.0.3
                 version: 6.0.3
             '@typescript-eslint/eslint-plugin':
-                specifier: ^8.50.0
+                specifier: ^8.50.1
                 version: 8.50.1(@typescript-eslint/parser@8.50.1(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
             '@typescript-eslint/parser':
-                specifier: ^8.50.0
+                specifier: ^8.50.1
                 version: 8.50.1(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
             cspell:
                 specifier: ^9.4.0
@@ -356,7 +356,7 @@ importers:
                 specifier: ^5.9.3
                 version: 5.9.3
             typescript-eslint:
-                specifier: ^8.50.0
+                specifier: ^8.50.1
                 version: 8.50.1(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
 
 packages:
@@ -1716,10 +1716,10 @@ packages:
             '@nestjs/common': ^11.0.20
             '@nestjs/core': ^11.0.20
 
-    '@golevelup/ts-jest@0.7.0':
+    '@golevelup/ts-jest@1.1.1':
         resolution:
             {
-                integrity: sha512-b5Kf+NiEfWuMGUD5bl/Gm/RqojS4Sr/4Q0ySXN4xn3xlkhgPYG6nGLBeNjk3MiM2I3ztVVFfI7SB8ajqDy6Idw==,
+                integrity: sha512-F5MKhEoNWDHK3YBTKnViBjWijHeDMS/5d4Pug/DCI5UWSqfCg5oGCve2W+/WM0x/hhUM9GedDT3ztHHwbIYjQA==,
             }
 
     '@humanfs/core@0.19.1':
@@ -5028,10 +5028,10 @@ packages:
                 integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==,
             }
 
-    bullmq@5.66.2:
+    bullmq@5.66.4:
         resolution:
             {
-                integrity: sha512-0PrkpIakIntkBcPLltPIRWdLC1FTLUa/VhJkmEfobb5YUQjoUwJdmmf7HX+o/vMonS5048JpP+abf9lVRUFEjA==,
+                integrity: sha512-y2VRk2z7d1YNI2JQDD7iThoD0X/0iZZ3VEp8lqT5s5U0XDl9CIjXp1LQgmE9EKy6ReHtzmYXS1f328PnUbZGtQ==,
             }
 
     busboy@1.6.0:
@@ -5711,6 +5711,12 @@ packages:
                 integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==,
             }
         engines: { node: '>= 12' }
+
+    date-fns@4.1.0:
+        resolution:
+            {
+                integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==,
+            }
 
     dateformat@4.6.3:
         resolution:
@@ -8535,6 +8541,12 @@ packages:
             }
         hasBin: true
 
+    pino-roll@4.0.0:
+        resolution:
+            {
+                integrity: sha512-axI1aQaIxXdw1F4OFFli1EDxIrdYNGLowkw/ZoZogX8oCSLHUghzwVVXUS8U+xD/Savwa5IXpiXmsSGKFX/7Sg==,
+            }
+
     pino-std-serializers@7.0.0:
         resolution:
             {
@@ -8904,13 +8916,6 @@ packages:
             }
         engines: { node: 20 || >=22 }
         hasBin: true
-
-    rotating-file-stream@3.2.7:
-        resolution:
-            {
-                integrity: sha512-SVquhBEVvRFY+nWLUc791Y0MIlyZrEClRZwZFLLRgJKldHyV1z4e2e/dp9LPqCS3AM//uq/c3PnOFgjqnm5P+A==,
-            }
-        engines: { node: '>=14.0' }
 
     router@2.2.0:
         resolution:
@@ -11338,7 +11343,7 @@ snapshots:
             '@nestjs/core': 11.1.10(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)
             lodash: 4.17.21
 
-    '@golevelup/ts-jest@0.7.0': {}
+    '@golevelup/ts-jest@1.1.1': {}
 
     '@humanfs/core@0.19.1': {}
 
@@ -11843,12 +11848,12 @@ snapshots:
             '@nestjs/core': 11.1.10(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)
             tslib: 2.8.1
 
-    '@nestjs/bullmq@11.0.4(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(bullmq@5.66.2)':
+    '@nestjs/bullmq@11.0.4(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(bullmq@5.66.4)':
         dependencies:
             '@nestjs/bull-shared': 11.0.4(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)
             '@nestjs/common': 11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
             '@nestjs/core': 11.1.10(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.10)(reflect-metadata@0.2.2)(rxjs@7.8.2)
-            bullmq: 5.66.2
+            bullmq: 5.66.4
             tslib: 2.8.1
 
     '@nestjs/cache-manager@3.1.0(@nestjs/common@11.1.10(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.10)(cache-manager@7.2.7)(keyv@5.5.5)(rxjs@7.8.2)':
@@ -13756,7 +13761,7 @@ snapshots:
             base64-js: 1.5.1
             ieee754: 1.2.1
 
-    bullmq@5.66.2:
+    bullmq@5.66.4:
         dependencies:
             cron-parser: 4.9.0
             ioredis: 5.8.2
@@ -14191,6 +14196,8 @@ snapshots:
     dargs@8.1.0: {}
 
     data-uri-to-buffer@4.0.1: {}
+
+    date-fns@4.1.0: {}
 
     dateformat@4.6.3: {}
 
@@ -15966,6 +15973,11 @@ snapshots:
             sonic-boom: 4.2.0
             strip-json-comments: 5.0.3
 
+    pino-roll@4.0.0:
+        dependencies:
+            date-fns: 4.1.0
+            sonic-boom: 4.2.0
+
     pino-std-serializers@7.0.0: {}
 
     pino@10.1.0:
@@ -16158,8 +16170,6 @@ snapshots:
         dependencies:
             glob: 13.0.0
             package-json-from-dist: 1.0.1
-
-    rotating-file-stream@3.2.7: {}
 
     router@2.2.0:
         dependencies:

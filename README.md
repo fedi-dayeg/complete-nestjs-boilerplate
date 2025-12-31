@@ -34,7 +34,7 @@ This boilerplate is perfect for:
 - 💼 **Startup MVPs** - Production-ready foundation to ship faster
 
 
-## Table of contents
+## Table of Contents
 
 - [Important](#important)
 - [TODO](#todo)
@@ -42,15 +42,15 @@ This boilerplate is perfect for:
 - [Build with](#build-with)
 - [Objective](#objective)
 - [Features](#features)
-  - [Authentication & Security](#authentication--security)
-  - [Database & Storage](#database--storage)
-  - [Performance & Optimization](#performance--optimization)
-  - [Development Experience](#development-experience)
-  - [Integrations & Monitoring](#integrations--monitoring)
-  - [Testing & Documentation](#testing--documentation)
-  - [Architecture Highlights](#architecture-highlights)
-  - [Quick Start](#quick-start)
-  - [Change DB with Minimal Effort](#change-db-with-minimal-effort)
+  - [🎯 Architecture Highlights](#-architecture-highlights)
+  - [🔐 Authentication & Security](#-authentication--security)
+  - [📊 Database & Storage](#-database--storage)
+  - [⚡ Performance & Optimization](#-performance--optimization)
+  - [🛠 Development Experience](#-development-experience)
+  - [📡 Integrations & Monitoring](#-integrations--monitoring)
+  - [📝 Testing & Documentation](#-testing--documentation)
+- [Quick Start](#quick-start)
+- [Change DB with Minimal Effort](#change-db-with-minimal-effort)
 - [Installation](#installation)
 - [License](#license)
 - [Contribute](#contribute)
@@ -155,14 +155,23 @@ For more information see [package.json][ref-package-json]
 
 ## Features
 
+### 🎯 Architecture Highlights
+
+- **Repository Pattern** - Clean data access abstraction
+- **SOLID Principles** - Maintainable and testable codebase
+- **Modular Structure** - Component-based folder organization
+- **12-Factor App** - Cloud-native best practices
+- **Production Ready** - Enterprise-grade security and scalability
+
+
 ### 🔐 Authentication & Security
 Production-ready authentication system with multiple strategies and security layers.
 
 - **JWT Authentication** - ES256 for Access Token, ES512 for Refresh Token with automatic rotation
 - **Stateful Sessions** - Redis-backed sessions with token revocation support
-- **Social Login** - Google OAuth and Apple Sign In integration ([docs][ref-doc-authentication])
-- **Two-Factor Authentication** - TOTP-based 2FA with backup recovery codes ([docs][ref-doc-two-factor])
-- **RBAC & Policies** - Fine-grained role and permission system ([docs][ref-doc-authorization])
+- **Social Login** - Google OAuth and Apple Sign In integration
+- **Two-Factor Authentication** - TOTP-based 2FA with backup recovery codes
+- **RBAC & Policies** - Fine-grained role and permission system
 - **API Key Protection** - Secure external API access control
 - **Rate Limiting** - DDoS protection with configurable throttling
 - **Security Headers** - Helmet integration for HTTP security
@@ -170,29 +179,29 @@ Production-ready authentication system with multiple strategies and security lay
 ### 📊 Database & Storage
 Modern ORM with NoSQL database and file storage capabilities.
 
-- **Prisma ORM** - Type-safe database toolkit with migrations ([docs][ref-doc-database])
+- **Prisma ORM** - Type-safe database toolkit with migrations
 - **MongoDB** - NoSQL database with transaction support (replica set required)
-- **Redis Caching** - Multi-level caching strategies for performance ([docs][ref-doc-cache])
-- **AWS S3 Integration** - File storage with presigned URLs ([docs][ref-doc-file-upload])
+- **Redis Caching** - Multi-level caching strategies for performance
+- **AWS S3 Integration** - File storage with presigned URLs
 - **Repository Pattern** - Clean separation of data access layer
 
 ### ⚡ Performance & Optimization
 Built for speed and scalability from day one.
 
-- **Background Jobs** - BullMQ queue system for async processing ([docs][ref-doc-queue])
+- **Background Jobs** - BullMQ queue system for async processing
 - **Response Compression** - Automatic gzip/deflate compression
 - **SWC Compiler** - 20x faster than TypeScript compiler
-- **Pagination** - Server-side pagination with cursor support ([docs][ref-doc-pagination])
-- **Feature Flags** - Dynamic feature rollout with A/B testing ([docs][ref-doc-feature-flag])
+- **Pagination** - Server-side pagination with cursor support
+- **Feature Flags** - Dynamic feature rollout with A/B testing
 
 ### 🛠 Development Experience
 Developer-friendly tooling and best practices.
 
 - **NestJS 11.x** - Latest framework version with full TypeScript support
-- **Swagger/OpenAPI 3** - Interactive API documentation ([docs][ref-doc-doc])
+- **Swagger/OpenAPI 3** - Interactive API documentation
 
-- **Request Validation** - Automatic validation with class-validator ([docs][ref-doc-request-validation])
-- **Error Handling** - Standardized error responses with i18n ([docs][ref-doc-handling-error])
+- **Request Validation** - Automatic validation with class-validator
+- **Error Handling** - Standardized error responses with i18n
 - **Hot Reload** - Fast development with SWC
 - **Code Quality** - ESLint, Prettier, Husky pre-commit hooks
 - 
@@ -200,11 +209,11 @@ Developer-friendly tooling and best practices.
 ### 📡 Integrations & Monitoring
 Enterprise-grade integrations for production readiness.
 
-- **Sentry** - Error tracking and performance monitoring ([docs][ref-doc-third-party-integration])
+- **Sentry** - Error tracking and performance monitoring
 - **AWS SES** - Transactional email delivery
-- **Activity Logging** - Comprehensive audit trail ([docs][ref-doc-activity-log])
+- **Activity Logging** - Comprehensive audit trail
 - **Health Checks** - System monitoring endpoints
-- **Multi-language Support** - i18n with `x-custom-lang` header ([docs][ref-doc-message])
+- **Multi-language Support** - i18n with `x-custom-lang` header
 
 ### 📝 Testing & Documentation
 Comprehensive testing framework and documentation.
@@ -213,14 +222,6 @@ Comprehensive testing framework and documentation.
 - **Swagger UI** - Auto-generated API documentation
 - **Detailed Docs** - 20+ documentation files covering all features
 - **Docker Support** - Complete containerization with docker-compose
-
-### 🎯 Architecture Highlights
-
-- **Repository Pattern** - Clean data access abstraction
-- **SOLID Principles** - Maintainable and testable codebase
-- **Modular Structure** - Component-based folder organization
-- **12-Factor App** - Cloud-native best practices
-- **Production Ready** - Enterprise-grade security and scalability
 
 ## Quick Start
 
@@ -247,15 +248,16 @@ Thanks to **Repository Pattern** and **Prisma ORM**, switching databases require
 
 ### Supported Databases
 
-Prisma supports multiple databases out of the box:
+| Database | Best For | Transaction Support |
+|----------|----------|---------------------|
+| **MongoDB** | Document-based, flexible schema | ✅ Yes (replica set) |
+| **PostgreSQL** | Production apps, complex queries | ✅ Yes |
 
-- 🐘 **PostgreSQL** - Recommended for production
-- 🐬 **MySQL** - Popular relational database
-- There are more many database
+**Other supported databases:** MySQL, SQLite, SQL Server, CockroachDB
 
 **Migration typically requires:**
 - Updating `prisma/schema.prisma` provider
-- Adjusting ID strategy (ObjectId → UUID)
+- Adjusting ID strategy (ObjectId → UUID). Update DatabaseService Code.
 - Running `npx prisma migrate dev`
 - Running `pnpm migration:seed`
 
@@ -408,3 +410,4 @@ If you find this project helpful and would like to support its development, plea
 [ref-doc-third-party-integration]: docs/third-party-integration.md
 [ref-doc-presign]: docs/presign.md
 [ref-doc-term-policy]: docs/term-policy.md
+[ref-doc-two-factor]: two-factor.md
