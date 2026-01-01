@@ -119,7 +119,7 @@
         "@nestjs/schematics": "^11.0.9",
         "@nestjs/testing": "^11.1.10",
         "@swc/cli": "^0.7.9",
-        "@swc/core": "^1.15.7",
+        "@swc/core": "^1.15.8",
         "@swc/jest": "^0.2.39",
         "@types/body-parser": "^1.19.6",
         "@types/bytes": "^3.1.5",
