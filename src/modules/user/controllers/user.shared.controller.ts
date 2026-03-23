@@ -39,10 +39,12 @@ import {
     UserSharedTwoFactorSetupDoc,
     UserSharedTwoFactorStatusDoc,
     UserSharedUpdateMobileNumberDoc,
+    UserSharedUpdateNotificationSettingDoc,
     UserSharedUpdatePhotoProfileDoc,
     UserSharedUpdateProfileDoc,
     UserSharedUploadPhotoProfileDoc,
 } from '@modules/user/docs/user.shared.doc';
+import { UserUpdateNotificationSettingRequestDto } from '@modules/user/dtos/request/user.notification-setting.request.dto';
 import { UserTwoFactorDisableRequestDto } from '@modules/user/dtos/request/user.two-factor-disable.request.dto';
 import { UserTwoFactorEnableRequestDto } from '@modules/user/dtos/request/user.two-factor-enable.request.dto';
 import { UserChangePasswordRequestDto } from '@modules/user/dtos/request/user.change-password.request.dto';
@@ -137,6 +139,27 @@ export class UserSharedController {
         @RequestUserAgent() userAgent: RequestUserAgentDto
     ): Promise<IResponseReturn<void>> {
         return this.userService.updateProfile(userId, body, {
+            ipAddress,
+            userAgent,
+        });
+    }
+
+    @UserSharedUpdateNotificationSettingDoc()
+    @Response('user.updateNotificationSetting')
+    @TermPolicyAcceptanceProtected()
+    @UserProtected()
+    @AuthJwtAccessProtected()
+    @ApiKeyProtected()
+    @Put('/notification-setting/update')
+    async updateNotificationSetting(
+        @AuthJwtPayload('userId')
+        userId: string,
+        @Body()
+        body: UserUpdateNotificationSettingRequestDto,
+        @RequestIPAddress() ipAddress: string,
+        @RequestUserAgent() userAgent: RequestUserAgentDto
+    ): Promise<IResponseReturn<void>> {
+        return this.userService.updateNotificationSetting(userId, body, {
             ipAddress,
             userAgent,
         });
