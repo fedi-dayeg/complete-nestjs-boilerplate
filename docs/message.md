@@ -162,7 +162,7 @@ Exception filters automatically translate message paths.
 
 ```typescript
 throw new BadRequestException({
-    statusCode: EnumUserStatus_CODE_ERROR.emailExist,
+    statusCode: EnumUserStatusCodeError.emailExist,
     message: 'user.error.emailExists', // Will be translated
 });
 ```
@@ -171,7 +171,7 @@ With variables:
 
 ```typescript
 throw new NotFoundException({
-    statusCode: EnumUserStatus_CODE_ERROR.notFound,
+    statusCode: EnumUserStatusCodeError.notFound,
     message: 'user.error.notFoundWithId',
     _metadata: {
         customProperty: {
