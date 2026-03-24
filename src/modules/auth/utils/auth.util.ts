@@ -477,6 +477,9 @@ export class AuthUtil {
      * @returns True if the password has expired (current date > expiration date), false otherwise
      */
     checkPasswordExpired(passwordExpired: Date): boolean {
+        if (!passwordExpired) {
+            return false;
+        }
         const today: Date = this.helperService.dateCreate();
         return today > passwordExpired;
     }
