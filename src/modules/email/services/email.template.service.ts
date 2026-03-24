@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EnumSendEmailProcess } from '@modules/email/enums/email.enum';
+import { EnumEmailProcess } from '@modules/email/enums/email.enum';
 import { readFileSync } from 'fs';
 import { GetTemplateCommandOutput } from '@aws-sdk/client-ses';
 import { join } from 'path';
@@ -32,7 +32,7 @@ export class EmailTemplateService implements IEmailTemplateService {
             );
 
             await this.awsSESService.createTemplate({
-                name: EnumSendEmailProcess.changePassword,
+                name: EnumEmailProcess.changePassword,
                 subject: `Change Password`,
                 htmlBody: readFileSync(templatePath, 'utf8'),
             });
@@ -47,12 +47,12 @@ export class EmailTemplateService implements IEmailTemplateService {
 
     /**
      * Get change password email template from AWS SES
-     * * @returns {Promise<GetTemplateCommandOutput | null>} Template data from AWS SES
+     * @returns {Promise<GetTemplateCommandOutput | null>} Template data from AWS SES
      */
     async getChangePassword(): Promise<GetTemplateCommandOutput | null> {
         try {
             const template = await this.awsSESService.getTemplate({
-                name: EnumSendEmailProcess.changePassword,
+                name: EnumEmailProcess.changePassword,
             });
             return template;
         } catch (err: unknown) {
@@ -69,7 +69,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async deleteChangePassword(): Promise<boolean> {
         try {
             await this.awsSESService.deleteTemplate({
-                name: EnumSendEmailProcess.changePassword,
+                name: EnumEmailProcess.changePassword,
             });
 
             return true;
@@ -92,7 +92,7 @@ export class EmailTemplateService implements IEmailTemplateService {
             );
 
             await this.awsSESService.createTemplate({
-                name: EnumSendEmailProcess.welcome,
+                name: EnumEmailProcess.welcome,
                 subject: `Welcome`,
                 htmlBody: readFileSync(templatePath, 'utf8'),
             });
@@ -107,12 +107,12 @@ export class EmailTemplateService implements IEmailTemplateService {
 
     /**
      * Get welcome email template from AWS SES
-     * * @returns {Promise<GetTemplateCommandOutput | null>} Template data from AWS SES
+     * @returns {Promise<GetTemplateCommandOutput | null>} Template data from AWS SES
      */
     async getWelcome(): Promise<GetTemplateCommandOutput | null> {
         try {
             const template = await this.awsSESService.getTemplate({
-                name: EnumSendEmailProcess.welcome,
+                name: EnumEmailProcess.welcome,
             });
             return template;
         } catch (err: unknown) {
@@ -129,7 +129,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async deleteWelcome(): Promise<boolean> {
         try {
             await this.awsSESService.deleteTemplate({
-                name: EnumSendEmailProcess.welcome,
+                name: EnumEmailProcess.welcome,
             });
 
             return true;
@@ -152,7 +152,7 @@ export class EmailTemplateService implements IEmailTemplateService {
             );
 
             await this.awsSESService.createTemplate({
-                name: EnumSendEmailProcess.createByAdmin,
+                name: EnumEmailProcess.createByAdmin,
                 subject: `Created By Admin`,
                 htmlBody: readFileSync(templatePath, 'utf8'),
             });
@@ -172,8 +172,9 @@ export class EmailTemplateService implements IEmailTemplateService {
     async getCreateByAdmin(): Promise<GetTemplateCommandOutput | null> {
         try {
             const template = await this.awsSESService.getTemplate({
-                name: EnumSendEmailProcess.createByAdmin,
+                name: EnumEmailProcess.createByAdmin,
             });
+            return template;
         } catch (err: unknown) {
             this.logger.warn(err);
 
@@ -188,7 +189,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async deleteCreateByAdmin(): Promise<boolean> {
         try {
             await this.awsSESService.deleteTemplate({
-                name: EnumSendEmailProcess.createByAdmin,
+                name: EnumEmailProcess.createByAdmin,
             });
 
             return true;
@@ -211,7 +212,7 @@ export class EmailTemplateService implements IEmailTemplateService {
             );
 
             await this.awsSESService.createTemplate({
-                name: EnumSendEmailProcess.temporaryPassword,
+                name: EnumEmailProcess.temporaryPassword,
                 subject: `Temporary Password`,
                 htmlBody: readFileSync(templatePath, 'utf8'),
             });
@@ -231,8 +232,9 @@ export class EmailTemplateService implements IEmailTemplateService {
     async getTempPassword(): Promise<GetTemplateCommandOutput | null> {
         try {
             const template = await this.awsSESService.getTemplate({
-                name: EnumSendEmailProcess.temporaryPassword,
+                name: EnumEmailProcess.temporaryPassword,
             });
+            return template;
         } catch (err: unknown) {
             this.logger.warn(err);
 
@@ -247,7 +249,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async deleteTempPassword(): Promise<boolean> {
         try {
             await this.awsSESService.deleteTemplate({
-                name: EnumSendEmailProcess.temporaryPassword,
+                name: EnumEmailProcess.temporaryPassword,
             });
 
             return true;
@@ -270,7 +272,7 @@ export class EmailTemplateService implements IEmailTemplateService {
             );
 
             await this.awsSESService.createTemplate({
-                name: EnumSendEmailProcess.forgotPassword,
+                name: EnumEmailProcess.forgotPassword,
                 subject: `Forgot Password`,
                 htmlBody: readFileSync(templatePath, 'utf8'),
             });
@@ -290,7 +292,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async getForgotPassword(): Promise<GetTemplateCommandOutput | null> {
         try {
             const template = await this.awsSESService.getTemplate({
-                name: EnumSendEmailProcess.forgotPassword,
+                name: EnumEmailProcess.forgotPassword,
             });
             return template;
         } catch (err: unknown) {
@@ -307,7 +309,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async deleteForgotPassword(): Promise<boolean> {
         try {
             await this.awsSESService.deleteTemplate({
-                name: EnumSendEmailProcess.forgotPassword,
+                name: EnumEmailProcess.forgotPassword,
             });
 
             return true;
@@ -330,7 +332,7 @@ export class EmailTemplateService implements IEmailTemplateService {
             );
 
             await this.awsSESService.createTemplate({
-                name: EnumSendEmailProcess.verification,
+                name: EnumEmailProcess.verification,
                 subject: `Email Verification`,
                 htmlBody: readFileSync(templatePath, 'utf8'),
             });
@@ -350,7 +352,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async getVerification(): Promise<GetTemplateCommandOutput | null> {
         try {
             const template = await this.awsSESService.getTemplate({
-                name: EnumSendEmailProcess.verification,
+                name: EnumEmailProcess.verification,
             });
             return template;
         } catch (err: unknown) {
@@ -367,7 +369,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async deleteVerification(): Promise<boolean> {
         try {
             await this.awsSESService.deleteTemplate({
-                name: EnumSendEmailProcess.verification,
+                name: EnumEmailProcess.verification,
             });
 
             return true;
@@ -390,7 +392,7 @@ export class EmailTemplateService implements IEmailTemplateService {
             );
 
             await this.awsSESService.createTemplate({
-                name: EnumSendEmailProcess.emailVerified,
+                name: EnumEmailProcess.emailVerified,
                 subject: `Email Verified`,
                 htmlBody: readFileSync(templatePath, 'utf8'),
             });
@@ -410,7 +412,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async getEmailVerified(): Promise<GetTemplateCommandOutput | null> {
         try {
             const template = await this.awsSESService.getTemplate({
-                name: EnumSendEmailProcess.emailVerified,
+                name: EnumEmailProcess.emailVerified,
             });
             return template;
         } catch (err: unknown) {
@@ -427,7 +429,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async deleteEmailVerified(): Promise<boolean> {
         try {
             await this.awsSESService.deleteTemplate({
-                name: EnumSendEmailProcess.emailVerified,
+                name: EnumEmailProcess.emailVerified,
             });
 
             return true;
@@ -450,7 +452,7 @@ export class EmailTemplateService implements IEmailTemplateService {
             );
 
             await this.awsSESService.createTemplate({
-                name: EnumSendEmailProcess.mobileNumberVerified,
+                name: EnumEmailProcess.mobileNumberVerified,
                 subject: `MobileNumber Verified`,
                 htmlBody: readFileSync(templatePath, 'utf8'),
             });
@@ -470,7 +472,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async getMobileNumberVerified(): Promise<GetTemplateCommandOutput | null> {
         try {
             const template = await this.awsSESService.getTemplate({
-                name: EnumSendEmailProcess.mobileNumberVerified,
+                name: EnumEmailProcess.mobileNumberVerified,
             });
             return template;
         } catch (err: unknown) {
@@ -487,7 +489,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async deleteMobileNumberVerified(): Promise<boolean> {
         try {
             await this.awsSESService.deleteTemplate({
-                name: EnumSendEmailProcess.mobileNumberVerified,
+                name: EnumEmailProcess.mobileNumberVerified,
             });
 
             return true;
@@ -510,7 +512,7 @@ export class EmailTemplateService implements IEmailTemplateService {
             );
 
             await this.awsSESService.createTemplate({
-                name: EnumSendEmailProcess.resetTwoFactorByAdmin,
+                name: EnumEmailProcess.resetTwoFactorByAdmin,
                 subject: `Reset Two Factor By Admin`,
                 htmlBody: readFileSync(templatePath, 'utf8'),
             });
@@ -530,7 +532,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async getResetTwoFactorByAdmin(): Promise<GetTemplateCommandOutput | null> {
         try {
             const template = await this.awsSESService.getTemplate({
-                name: EnumSendEmailProcess.resetTwoFactorByAdmin,
+                name: EnumEmailProcess.resetTwoFactorByAdmin,
             });
             return template;
         } catch (err: unknown) {
@@ -547,7 +549,7 @@ export class EmailTemplateService implements IEmailTemplateService {
     async deleteResetTwoFactorByAdmin(): Promise<boolean> {
         try {
             await this.awsSESService.deleteTemplate({
-                name: EnumSendEmailProcess.resetTwoFactorByAdmin,
+                name: EnumEmailProcess.resetTwoFactorByAdmin,
             });
 
             return true;
@@ -558,16 +560,20 @@ export class EmailTemplateService implements IEmailTemplateService {
         }
     }
 
-    async importLogin(): Promise<boolean> {
+    /**
+     * Import new login email template to AWS SES
+     * @returns {Promise<boolean>} True if template imported successfully, false otherwise
+     */
+    async importNewLogin(): Promise<boolean> {
         try {
             const templatePath = join(
                 this.templatesDir,
-                'email.login.template.hbs'
+                'email.new-login.template.hbs'
             );
 
             await this.awsSESService.createTemplate({
-                name: EnumSendEmailProcess.login,
-                subject: `Login Notification`,
+                name: EnumEmailProcess.newLogin,
+                subject: `Login`,
                 htmlBody: readFileSync(templatePath, 'utf8'),
             });
 
@@ -579,10 +585,14 @@ export class EmailTemplateService implements IEmailTemplateService {
         }
     }
 
-    async getLogin(): Promise<GetTemplateCommandOutput | null> {
+    /**
+     * Get new login email template from AWS SES
+     * @returns {Promise<GetTemplateCommandOutput | null>} Template data from AWS SES
+     */
+    async getNewLogin(): Promise<GetTemplateCommandOutput | null> {
         try {
             const template = await this.awsSESService.getTemplate({
-                name: EnumSendEmailProcess.login,
+                name: EnumEmailProcess.newLogin,
             });
             return template;
         } catch (err: unknown) {
@@ -592,10 +602,14 @@ export class EmailTemplateService implements IEmailTemplateService {
         }
     }
 
-    async deleteLogin(): Promise<boolean> {
+    /**
+     * Delete new login email template from AWS SES
+     * @returns {Promise<boolean>} True if template deleted successfully, false otherwise
+     */
+    async deleteNewLogin(): Promise<boolean> {
         try {
             await this.awsSESService.deleteTemplate({
-                name: EnumSendEmailProcess.login,
+                name: EnumEmailProcess.newLogin,
             });
 
             return true;

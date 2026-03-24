@@ -20,6 +20,7 @@ import {
     AuthJwtToken,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { AuthTokenResponseDto } from '@modules/auth/dtos/response/auth.token.response.dto';
+import { FeatureFlagProtected } from '@modules/feature-flag/decorators/feature-flag.decorator';
 import { TermPolicyAcceptanceProtected } from '@modules/term-policy/decorators/term-policy.decorator';
 import {
     UserCurrent,
@@ -39,24 +40,28 @@ import {
     UserSharedTwoFactorSetupDoc,
     UserSharedTwoFactorStatusDoc,
     UserSharedUpdateMobileNumberDoc,
-    UserSharedUpdateNotificationSettingDoc,
     UserSharedUpdatePhotoProfileDoc,
     UserSharedUpdateProfileDoc,
     UserSharedUploadPhotoProfileDoc,
 } from '@modules/user/docs/user.shared.doc';
-import { UserUpdateNotificationSettingRequestDto } from '@modules/user/dtos/request/user.notification-setting.request.dto';
-import { UserTwoFactorDisableRequestDto } from '@modules/user/dtos/request/user.two-factor-disable.request.dto';
-import { UserTwoFactorEnableRequestDto } from '@modules/user/dtos/request/user.two-factor-enable.request.dto';
 import { UserChangePasswordRequestDto } from '@modules/user/dtos/request/user.change-password.request.dto';
-import { UserTwoFactorEnableResponseDto } from '@modules/user/dtos/response/user.two-factor-enable.response.dto';
-import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
-import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
+import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
 import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
+import {
+    UserAddMobileNumberRequestDto,
+    UserUpdateMobileNumberRequestDto,
+} from '@modules/user/dtos/request/user.mobile-number.request.dto';
 import {
     UserUpdateProfilePhotoRequestDto,
     UserUpdateProfileRequestDto,
 } from '@modules/user/dtos/request/user.profile.request.dto';
+import { UserTwoFactorDisableRequestDto } from '@modules/user/dtos/request/user.two-factor-disable.request.dto';
+import { UserTwoFactorEnableRequestDto } from '@modules/user/dtos/request/user.two-factor-enable.request.dto';
 import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
+import { UserTwoFactorEnableResponseDto } from '@modules/user/dtos/response/user.two-factor-enable.response.dto';
+import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
+import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
+import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import { IUser } from '@modules/user/interfaces/user.interface';
 import { UserService } from '@modules/user/services/user.service';
 import {
@@ -73,13 +78,6 @@ import {
     UploadedFile,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import {
-    UserAddMobileNumberRequestDto,
-    UserUpdateMobileNumberRequestDto,
-} from '../dtos/request/user.mobile-number.request.dto';
-import { UserMobileNumberResponseDto } from '../dtos/user.mobile-number.dto';
-import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
-import { FeatureFlagProtected } from '@modules/feature-flag/decorators/feature-flag.decorator';
 
 @ApiTags('modules.shared.user')
 @Controller({
@@ -139,27 +137,6 @@ export class UserSharedController {
         @RequestUserAgent() userAgent: RequestUserAgentDto
     ): Promise<IResponseReturn<void>> {
         return this.userService.updateProfile(userId, body, {
-            ipAddress,
-            userAgent,
-        });
-    }
-
-    @UserSharedUpdateNotificationSettingDoc()
-    @Response('user.updateNotificationSetting')
-    @TermPolicyAcceptanceProtected()
-    @UserProtected()
-    @AuthJwtAccessProtected()
-    @ApiKeyProtected()
-    @Put('/notification-setting/update')
-    async updateNotificationSetting(
-        @AuthJwtPayload('userId')
-        userId: string,
-        @Body()
-        body: UserUpdateNotificationSettingRequestDto,
-        @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
-    ): Promise<IResponseReturn<void>> {
-        return this.userService.updateNotificationSetting(userId, body, {
             ipAddress,
             userAgent,
         });
@@ -427,6 +404,8 @@ export class UserSharedController {
             userAgent,
         });
     }
+
+    // TODO: Implement logout api
 
     // TODO: Verify number implementation, but which provider?
 }

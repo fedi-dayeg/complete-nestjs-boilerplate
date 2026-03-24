@@ -67,7 +67,7 @@ export class UserUtil {
             'user.uploadPhotoProfilePath'
         );
 
-        this.homeUrl = this.configService.get('app.homeUrl');
+        this.homeUrl = this.configService.get('home.url');
 
         this.forgotPasswordReferencePrefix = this.configService.get(
             'forgotPassword.reference.prefix'
@@ -224,7 +224,7 @@ export class UserUtil {
     }
 
     forgotPasswordSetExpiredDate(): Date {
-        const now = new Date();
+        const now = this.helperService.dateCreate();
 
         return this.helperService.dateForward(
             now,
@@ -262,7 +262,7 @@ export class UserUtil {
     }
 
     verificationSetExpiredDate(): Date {
-        const now = new Date();
+        const now = this.helperService.dateCreate();
 
         return this.helperService.dateForward(
             now,
