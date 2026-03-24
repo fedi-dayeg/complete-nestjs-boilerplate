@@ -23,9 +23,6 @@ import { IPaginationQueryCursorParams } from '@common/pagination/interfaces/pagi
  * @param {string} [defaultCursorField=PaginationDefaultCursorField] - Default field to use as the cursor for pagination.
  * @returns {Type<PipeTransform>} A NestJS pipe class that parses and validates cursor pagination query parameters.
  *
- * @example
- *   @Query(new PaginationCursorPipe())
- *   async findAll(@Query() query: IPaginationQueryCursorParams) { ... }
  *
  * @constraint
  * - PerPage: minimum 1, maximum PaginationDefaultMaxPerPage
