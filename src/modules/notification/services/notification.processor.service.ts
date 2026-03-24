@@ -1,21 +1,25 @@
-import { EnumUserLoginFrom, EnumUserLoginWith } from '@generated/prisma-client';
-import { EnumNotificationProcess } from '@modules/notification/enums/notification.enum';
-import {
-    INotificationSendPayload,
-    INotificationWorkerPayload,
-} from '@modules/notification/interfaces/notification.interface';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Injectable, Logger } from '@nestjs/common';
-import { Queue } from 'bullmq';
-import { EnumQueue, EnumQueuePriority } from 'src/queues/enums/queue.enum';
+import { FirebaseService } from '@common/firebase/services/firebase.service';
+import { Injectable } from '@nestjs/common';
+import { IQueueResponse } from 'src/queues/interfaces/queue.interface';
 
 @Injectable()
-export class NotificationSendService {
-    private readonly logger = new Logger(NotificationSendService.name);
+export class NotificationProcessorService {
+    constructor(private readonly firebaseService: FirebaseService) {}
 
-    //         private readonly notificationPushTokenRepository: NotificationPushTokenRepository,
-    //         private readonly notificationDeliveryRepository: NotificationDeliveryRepository,
-    //         private readonly firebaseService: FirebaseService
+    async processNewLogin(): Promise<IQueueResponse> {
+        if (!this.firebaseService.isInitializedFlag) {
+            return {
+                message:
+                    'Firebase not initialized, skipping new login notification',
+            };
+        }
+
+        // TODO: Implement new login notification logic here
+
+        return {
+            message: 'New login notification processed',
+        };
+    }
 
     //     async processLogin(job: NotificationPushJobDto): Promise<void> {
     //         const tokens =
