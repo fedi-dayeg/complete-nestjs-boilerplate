@@ -323,7 +323,7 @@ export class UserController {
     @AuthJwtPayload('userId') userId: string,
     @Body() body: UserUpdateProfilePhotoRequestDto,
     @RequestIPAddress() ipAddress: string,
-    @RequestUserAgent() userAgent: RequestUserAgentDto
+    @RequestUserAgent() userAgent: RequestUserAgentResponseDto
   ): Promise<IResponseReturn<void>> {
     return this.userService.updatePhotoProfile(userId, body, {
       ipAddress,

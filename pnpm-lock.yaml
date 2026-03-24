@@ -138,6 +138,9 @@ importers:
             flat:
                 specifier: ^6.0.1
                 version: 6.0.1
+            geoip-lite:
+                specifier: ^1.4.10
+                version: 1.4.10
             google-auth-library:
                 specifier: ^10.5.0
                 version: 10.5.0
@@ -271,6 +274,9 @@ importers:
             '@types/express':
                 specifier: ^5.0.6
                 version: 5.0.6
+            '@types/geoip-lite':
+                specifier: ^1.4.4
+                version: 1.4.4
             '@types/jest':
                 specifier: ^30.0.0
                 version: 30.0.0
@@ -4106,6 +4112,12 @@ packages:
                 integrity: sha512-sKYVuV7Sv9fbPIt/442koC7+IIwK5olP1KWeD88e/idgoJqDm3JV/YUiPwkoKK92ylff2MGxSz1CSjsXelx0YA==,
             }
 
+    '@types/geoip-lite@1.4.4':
+        resolution:
+            {
+                integrity: sha512-2uVfn+C6bX/H356H6mjxsWUA5u8LO8dJgSBIRO/NFlpMe4DESzacutD/rKYrTDKm1Ugv78b4Wz1KvpHrlv3jSw==,
+            }
+
     '@types/http-cache-semantics@4.0.4':
         resolution:
             {
@@ -5061,6 +5073,12 @@ packages:
         resolution:
             {
                 integrity: sha512-wfr/jstw9xNi/0teMHrRW7dsz3Lt5ARhYNZ2ewpadnhaIp5mbALhOAP+EAdsC7t4Z6wqsDVv9+W6gm1Dk9mEyw==,
+            }
+
+    async@2.6.4:
+        resolution:
+            {
+                integrity: sha512-mzo5dfJYwAn29PeiJ0zvwTo04zj8HDJj0Mn8TD7sno7q12prdbnasKJHhkm2c1LgrhlJ0teaea8860oxi51mGA==,
             }
 
     asynckit@0.4.0:
@@ -6646,6 +6664,12 @@ packages:
                 integrity: sha512-p5161BqbuCaSnB8jIbzQHOlpgsPmK5rJVDfDKO91Axs5NC1uu3HRQm6wt9cd9/+GtQQIO53JdGXXoyDpTAsgYA==,
             }
 
+    fd-slicer@1.1.0:
+        resolution:
+            {
+                integrity: sha512-cE1qsB/VwyQozZ+q1dGxR8LBYNZeofhEdUNGSMbQD3Gw2lAzX9Zb3uIU6Ebc/Fmyjo9AWWfnn0AUCHqtevs/8g==,
+            }
+
     fdir@6.5.0:
         resolution:
             {
@@ -6934,6 +6958,13 @@ packages:
                 integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==,
             }
         engines: { node: '>=6.9.0' }
+
+    geoip-lite@1.4.10:
+        resolution:
+            {
+                integrity: sha512-4N69uhpS3KFd97m00wiFEefwa+L+HT5xZbzPhwu+sDawStg6UN/dPwWtUfkQuZkGIY1Cj7wDVp80IsqNtGMi2w==,
+            }
+        engines: { node: '>=10.3.0' }
 
     get-caller-file@2.0.5:
         resolution:
@@ -7252,6 +7283,13 @@ packages:
         engines: { node: '>=18' }
         hasBin: true
 
+    iconv-lite@0.6.3:
+        resolution:
+            {
+                integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==,
+            }
+        engines: { node: '>=0.10.0' }
+
     iconv-lite@0.7.1:
         resolution:
             {
@@ -7345,6 +7383,13 @@ packages:
                 integrity: sha512-C6uC+kleiIMmjViJINWk80sOQw5lEzse1ZmvD+S/s8p8CWapftSaC+kocGTx6xrbrJ4WmYQGC08ffHLr6ToR6Q==,
             }
         engines: { node: '>=12.22.0' }
+
+    ip-address@5.9.4:
+        resolution:
+            {
+                integrity: sha512-dHkI3/YNJq4b/qQaz+c8LuarD3pY24JqZWfjB8aZx1gtpc2MDILu9L9jpZe1sHpzo/yWFweQVn+U//FhazUxmw==,
+            }
+        engines: { node: '>= 0.10' }
 
     ipaddr.js@1.9.1:
         resolution:
@@ -7760,6 +7805,12 @@ packages:
             }
         hasBin: true
 
+    jsbn@1.1.0:
+        resolution:
+            {
+                integrity: sha512-4bYVV3aAMtDTTu4+xsDYa6sy9GyJ69/amsu9sYF2zqjiEoZA5xJi3BrfX3uY+/IekIu7MwdObdbDWpoZdBv3/A==,
+            }
+
     jsesc@3.1.0:
         resolution:
             {
@@ -7882,6 +7933,13 @@ packages:
                 integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==,
             }
         engines: { node: '>=6' }
+
+    lazy@1.0.11:
+        resolution:
+            {
+                integrity: sha512-Y+CjUfLmIpoUCCRl0ub4smrYtGGr5AOa2AKOaWelGHOGz33X/Y/KizefGqbkwfz44+cnq/+9habclf8vOmu2LA==,
+            }
+        engines: { node: '>=0.2.0' }
 
     leven@3.1.0:
         resolution:
@@ -9373,6 +9431,14 @@ packages:
                 integrity: sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==,
             }
 
+    rimraf@2.7.1:
+        resolution:
+            {
+                integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==,
+            }
+        deprecated: Rimraf versions prior to v4 are no longer supported
+        hasBin: true
+
     rimraf@5.0.10:
         resolution:
             {
@@ -9698,6 +9764,12 @@ packages:
                 integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==,
             }
         engines: { node: '>= 10.x' }
+
+    sprintf-js@1.1.2:
+        resolution:
+            {
+                integrity: sha512-VE0SOVEHCk7Qc8ulkWw3ntAzXuqf7S2lvwQaDLRnUeIEaKNQJzV6BwmLKhOqT61aGhfUMrXeaBk+oDGCzvhcug==,
+            }
 
     stack-utils@2.0.6:
         resolution:
@@ -10634,6 +10706,12 @@ packages:
                 integrity: sha512-4UEqdc2RYGHZc7Doyqkrqiln3p9X2DZVxaGbwhn2pi7MrRagKaOcIKe8L3OxYcbhXLgLFUS3zAYuQjKBQgmuNg==,
             }
         engines: { node: ^20.19.0 || ^22.12.0 || >=23 }
+
+    yauzl@2.10.0:
+        resolution:
+            {
+                integrity: sha512-p4a9I6X6nu6IhoGmBqAcbJy1mlC4j27vEPZX9F4L4/vZT3Lyq1VkFHw/V/PUcB9Buo+DG3iHkT0x3Qya58zc3g==,
+            }
 
     yauzl@3.2.0:
         resolution:
@@ -13710,6 +13788,8 @@ snapshots:
             '@types/express-serve-static-core': 5.1.0
             '@types/serve-static': 2.2.0
 
+    '@types/geoip-lite@1.4.4': {}
+
     '@types/http-cache-semantics@4.0.4': {}
 
     '@types/http-errors@2.0.5': {}
@@ -14338,6 +14418,10 @@ snapshots:
         dependencies:
             retry: 0.13.1
         optional: true
+
+    async@2.6.4:
+        dependencies:
+            lodash: 4.17.21
 
     asynckit@0.4.0: {}
 
@@ -15323,6 +15407,10 @@ snapshots:
         dependencies:
             bser: 2.1.1
 
+    fd-slicer@1.1.0:
+        dependencies:
+            pend: 1.2.0
+
     fdir@6.5.0(picomatch@4.0.3):
         optionalDependencies:
             picomatch: 4.0.3
@@ -15540,6 +15628,16 @@ snapshots:
     gensequence@8.0.8: {}
 
     gensync@1.0.0-beta.2: {}
+
+    geoip-lite@1.4.10:
+        dependencies:
+            async: 2.6.4
+            chalk: 4.1.2
+            iconv-lite: 0.6.3
+            ip-address: 5.9.4
+            lazy: 1.0.11
+            rimraf: 2.7.1
+            yauzl: 2.10.0
 
     get-caller-file@2.0.5: {}
 
@@ -15783,6 +15881,10 @@ snapshots:
 
     husky@9.1.7: {}
 
+    iconv-lite@0.6.3:
+        dependencies:
+            safer-buffer: 2.1.2
+
     iconv-lite@0.7.1:
         dependencies:
             safer-buffer: 2.1.2
@@ -15855,6 +15957,12 @@ snapshots:
             standard-as-callback: 2.1.0
         transitivePeerDependencies:
             - supports-color
+
+    ip-address@5.9.4:
+        dependencies:
+            jsbn: 1.1.0
+            lodash: 4.17.21
+            sprintf-js: 1.1.2
 
     ipaddr.js@1.9.1: {}
 
@@ -16265,6 +16373,8 @@ snapshots:
         dependencies:
             argparse: 2.0.1
 
+    jsbn@1.1.0: {}
+
     jsesc@3.1.0: {}
 
     json-bigint@1.0.0:
@@ -16339,6 +16449,8 @@ snapshots:
     kind-of@6.0.3: {}
 
     kleur@3.0.3: {}
+
+    lazy@1.0.11: {}
 
     leven@3.1.0: {}
 
@@ -17114,6 +17226,10 @@ snapshots:
 
     rfdc@1.4.1: {}
 
+    rimraf@2.7.1:
+        dependencies:
+            glob: 13.0.0
+
     rimraf@5.0.10:
         dependencies:
             glob: 13.0.0
@@ -17319,6 +17435,8 @@ snapshots:
     source-map@0.7.6: {}
 
     split2@4.2.0: {}
+
+    sprintf-js@1.1.2: {}
 
     stack-utils@2.0.6:
         dependencies:
@@ -17907,6 +18025,11 @@ snapshots:
             string-width: 7.2.0
             y18n: 5.0.8
             yargs-parser: 22.0.0
+
+    yauzl@2.10.0:
+        dependencies:
+            buffer-crc32: 0.2.13
+            fd-slicer: 1.1.0
 
     yauzl@3.2.0:
         dependencies:
