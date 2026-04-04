@@ -4,6 +4,7 @@ export interface IConfigEmail {
     noreply: string;
     support: string;
     admin: string;
+    batchSize: number;
 }
 
 export default registerAs(
@@ -12,5 +13,6 @@ export default registerAs(
         noreply: 'contact@fedidayeg.fr',
         support: 'contact@fedidayeg.fr',
         admin: 'contact@fedidayeg.fr',
+        batchSize: 100,
     })
 );
