@@ -1,4 +1,4 @@
-name: ack-nestjs-boilerplate
+name: complete-nestjs-boilerplate
 
 services:
   apis:
@@ -106,6 +106,7 @@ services:
       - REDIS_PORT=6379
       - BULL_PREFIX=Queue
       - USER_LOGIN=admin
+      - USER_PASSWORD=admin123
       - REDIS_DB=1
     depends_on:
       redis:
@@ -142,7 +143,7 @@ services:
 
   mongo-init:
     image: mongo:latest
-    restart:  "no"
+    restart: "no"
     depends_on:
       mongo:
         condition: service_healthy

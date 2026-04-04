@@ -19,6 +19,7 @@ The system is built using NestJS guards and decorators, making it easy to apply 
 - [Authentication Documentation][ref-doc-authentication] - For understand authentication system
 - [Activity Log Documentation][ref-doc-activity-log] - For tracking authorization-related user activities
 - [Term Policy Document][ref-doc-term-policy] - For managing user acceptance of terms and policies
+- [Device Documentation][ref-doc-device] - For device management and session invalidation
 
 ## Table of Contents
 
@@ -303,7 +304,8 @@ flowchart TD
 - `EnumPolicySubject.activityLog` - Activity logs
 - `EnumPolicySubject.passwordHistory` - Password history
 - `EnumPolicySubject.termPolicy` - Terms and policies
-- `EnumPolicySubject.futureFlag` - Feature flags
+- `EnumPolicySubject.featureFlag` - Feature flags
+- `EnumPolicySubject.device` - Device management
 
 **Usage:**
 
@@ -585,7 +587,7 @@ Each ability consists of:
 - **action**: Array of allowed actions (manage, read, create, update, delete)
 
 **Available subjects and actions are defined in:**
-- `EnumPolicySubject`: all, apiKey, role, user, session, activityLog, passwordHistory, termPolicy, futureFlag
+- `EnumPolicySubject`: all, apiKey, role, user, session, activityLog, passwordHistory, termPolicy, featureFlag, device
 - `EnumPolicyAction`: manage, read, create, update, delete
 
 ### Assigning Roles to Users
@@ -744,5 +746,6 @@ flowchart LR
 [ref-doc-doc]: doc.md
 [ref-doc-third-party-integration]: third-party-integration.md
 [ref-doc-presign]: presign.md
+[ref-doc-device]: device.md
 [ref-doc-term-policy]: term-policy.md
 [ref-doc-two-factor]: two-factor.md

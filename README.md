@@ -65,9 +65,9 @@ This boilerplate is perfect for:
     ```typescript
     @ExampleDoc()
     @ActivityLog(...)
+    @TermPolicyAcceptanceProtected(...)
     @PolicyAbilityProtected({...})
     @RoleProtected(...)
-    @TermPolicyAcceptanceProtected(...)
     @UserProtected()
     @AuthJwtAccessProtected()
     @FeatureFlagProtected(...)
@@ -97,12 +97,16 @@ This boilerplate is perfect for:
 - [ ] Login with biometrics (fingerprint or face detection)
 - [ ] Login with passkey
 - [ ] Login with Github SSO
-- [ ] Device awareness, Geo Location
-- [ ] Sliding session (Example: 7d expires for a refresh token, can be extends until x day. if not action in 7d then need to re-login)
+- [x] Device awareness, Geo Location
 - [ ] Anomaly detection when refresh token
 - [ ] Verification Mobile Number, whatsapp or/and sms
-- [ ] Simple Notification System or Enchant Activity Log to be able act as notification
+- [x] Simple Notification System
 - [ ] Versioning System (Force frontend to update, especially mobile)
+
+### Drop Features
+
+- Sliding session (Example: 7d expires for a refresh token, can be extends until x day. if not action in 7d then need to re-login)
+
 
 ### Test
 - [ ] Unit test
@@ -410,4 +414,4 @@ If you find this project helpful and would like to support its development, plea
 [ref-doc-third-party-integration]: docs/third-party-integration.md
 [ref-doc-presign]: docs/presign.md
 [ref-doc-term-policy]: docs/term-policy.md
-[ref-doc-two-factor]: two-factor.md
+[ref-doc-two-factor]: docs/two-factor.md

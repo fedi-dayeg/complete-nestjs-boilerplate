@@ -231,13 +231,13 @@ The Docker setup includes a JWKS server that automatically hosts the generated k
 
 Now you're ready to start the complete Docker environment with all services.
 
-> **Note**: By default, Docker installation only sets up dependencies (MongoDB, Redis, JWKS server, BullMQ dashboard). The API container is not included. To also run the API container, use the `full` profile.
+> **Note**: By default, Docker installation only sets up dependencies (MongoDB, Redis, JWKS server, BullMQ dashboard). The API container is not included. To also run the API container, use the `apis` profile.
 
 **Start only dependencies:**
 
 ```bash
 # Start MongoDB, Redis, JWKS, and BullMQ dashboard
-docker-compose up -d
+docker-compose --profile apis up -d
 ```
 **Start with API container (recommended for full development setup):**
 ```bash
@@ -301,7 +301,7 @@ pnpm migration:seed
 Use this to seed email data for testing email sending features.
 
 ```bash
-pnpm migration template-email --type seed
+pnpm migration template-email-notification --type seed
 ```
 
 **Seed term policies:**
