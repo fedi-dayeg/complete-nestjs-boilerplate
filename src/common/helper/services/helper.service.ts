@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { IHelperService } from '@common/helper/interfaces/helper.service.interface';
-import { ConfigService } from '@nestjs/config';
-import { AES, MD5, SHA256, enc, lib, mode, pad } from 'crypto-js';
-import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
-import { DateObjectUnits, DateTime, Duration, DurationLikeObject } from 'luxon';
 import {
     IHelperDateCreateOptions,
     IHelperEmailValidation,
     IHelperPasswordOptions,
 } from '@common/helper/interfaces/helper.interface';
+import { IHelperService } from '@common/helper/interfaces/helper.service.interface';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
+import { AES, MD5, SHA256, enc, lib, mode, pad } from 'crypto-js';
+import { DateObjectUnits, DateTime, Duration, DurationLikeObject } from 'luxon';
 import _ from 'lodash';
 import { EnumHelperDateDayOf } from '@common/helper/enums/helper.enum';
 import { hostname } from 'os';
@@ -21,9 +21,13 @@ import { hostname } from 'os';
 @Injectable()
 export class HelperService implements IHelperService {
     private readonly defTz: string;
+    private readonly encryptionSecretKey: string;
 
     constructor(private readonly configService: ConfigService) {
         this.defTz = this.configService.get<string>('app.timezone');
+        this.encryptionSecretKey = this.configService.get<string>(
+            'app.encryptionSecretKey'
+        );
     }
 
     /**
@@ -66,6 +70,40 @@ export class HelperService implements IHelperService {
      */
     arrayIntersection<T>(a: T[], b: T[]): T[] {
         return _.intersection(a, b);
+    }
+
+    /**
+     * Encrypts data using AES-256-CBC with a random IV and returns combined string.
+     * Format of returned string is "iv:encryptedData".
+     * @param {string} data - String data to encrypt
+     * @return {string} Encrypted string with IV prefix
+     * @throws {Error} If encryption fails
+     */
+    simpleEncrypt(data: string): string {
+        const randomIv = this.randomString(16);
+        const encrypted = this.aes256Encrypt(
+            data,
+            this.encryptionSecretKey,
+            randomIv
+        );
+
+        return `${randomIv}:${encrypted}`;
+    }
+
+    /**
+     * Decrypts data encrypted with simpleEncrypt method.
+     * Expects input format of "iv:encryptedData".
+     * @param {string} encryptedData - Encrypted string with IV prefix
+     * @return {string} Decrypted original string
+     * @throws {Error} If input format is invalid or decryption fails
+     */
+    simpleDecrypt(encryptedData: string): string {
+        const [iv, encrypted] = encryptedData.split(':');
+        if (!iv || !encrypted) {
+            throw new Error('Invalid encrypted data format');
+        }
+
+        return this.aes256Decrypt(encrypted, this.encryptionSecretKey, iv);
     }
 
     /**
@@ -525,6 +563,7 @@ export class HelperService implements IHelperService {
                 if (normalizedPattern === '*') {
                     return true;
                 }
+
                 if (normalizedPattern.endsWith('*')) {
                     const basePattern = normalizedPattern.slice(0, -1);
 
