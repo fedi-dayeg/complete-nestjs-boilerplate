@@ -147,7 +147,7 @@ On `onModuleInit`, `NotificationPushProcessorService` automatically dispatches a
 
 ### Push Token Management
 
-Push tokens (FCM device tokens) are part of the **Device module** (`src/modules/device`), not stored in the notification module directly. `NotificationPushProcessorService` retrieves active tokens from `DeviceRepository` before dispatching FCM calls.
+Push tokens (FCM device tokens) are part of the **Device module** (`src/modules/device`), not stored in the notification module directly. `NotificationPushProcessorService` retrieves active tokens from `DeviceOwnershipRepository` before dispatching FCM calls.
 
 For push token registration, revocation, and session-linking details, see the [Device documentation][ref-doc-device].
 
@@ -165,7 +165,7 @@ graph TD
     A[FCM Multicast Send] --> B{Any failureTokens?}
     B -->|Yes| C[Store failureTokens <br/> on delivery record]
     C --> D[Enqueue cleanupTokens job]
-    D --> E[DeviceRepository removes <br/> invalid tokens]
+    D --> E[DeviceOwnershipRepository removes <br/> invalid tokens]
     B -->|No| F[Record sentAt only]
     
     G[Module Init] --> H[Enqueue <br/> cleanupStaleTokens]

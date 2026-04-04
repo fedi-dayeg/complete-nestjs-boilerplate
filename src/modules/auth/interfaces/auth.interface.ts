@@ -1,11 +1,12 @@
+import { AuthTokenResponseDto } from '@modules/auth/dtos/response/auth.token.response.dto';
 import { EnumAuthTwoFactorMethod } from '@modules/auth/enums/auth.enum';
 import { EnumUserLoginFrom, EnumUserLoginWith } from '@prisma/client';
-import { AuthTokenResponseDto } from '@modules/auth/dtos/response/auth.token.response.dto';
 
 export interface IAuthPassword {
     passwordHash: string;
     passwordExpired: Date;
     passwordCreated: Date;
+    passwordEncrypted: string;
     passwordPeriodExpired: Date;
 }
 
@@ -21,6 +22,7 @@ export interface IAuthJwtAccessTokenPayload {
     username: string;
     userId: string;
     sessionId: string;
+    deviceOwnershipId: string;
     roleId: string;
 
     // standard JWT claims
