@@ -10,6 +10,9 @@ export interface INotificationTemplateService {
     emailImportWelcomeByAdmin(): Promise<boolean>;
     emailGetWelcomeByAdmin(): Promise<GetTemplateCommandOutput | null>;
     emailDeleteWelcomeByAdmin(): Promise<boolean>;
+    emailImportWelcomeSocial(): Promise<boolean>;
+    emailGetWelcomeSocial(): Promise<GetTemplateCommandOutput | null>;
+    emailDeleteWelcomeSocial(): Promise<boolean>;
     emailImportTemporaryPasswordByAdmin(): Promise<boolean>;
     emailGetTemporaryPasswordByAdmin(): Promise<GetTemplateCommandOutput | null>;
     emailDeleteTemporaryPasswordByAdmin(): Promise<boolean>;
