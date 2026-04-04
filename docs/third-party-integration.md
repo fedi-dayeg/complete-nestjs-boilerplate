@@ -19,14 +19,15 @@ Complete NestJS Boilerplate integrates with various third-party services and pro
 - [Overview](#overview)
 - [Related Documents](#related-documents)
 - [AWS Services](#aws-services)
-    - [S3 Storage](#s3-storage)
-    - [SES Email](#ses-email)
+  - [S3 Storage](#s3-storage)
+  - [SES Email](#ses-email)
+- [Firebase](#firebase)
 - [Sentry](#sentry)
 - [Redis](#redis)
 - [MongoDB](#mongodb)
 - [Social Authentication](#social-authentication)
-    - [Google OAuth](#google-oauth)
-    - [Apple Sign In](#apple-sign-in)
+  - [Google OAuth](#google-oauth)
+  - [Apple Sign In](#apple-sign-in)
 
 ## AWS Services
 
@@ -40,8 +41,9 @@ Complete NestJS Boilerplate integrates with various third-party services and pro
 
 **Environment Variables:**
 ```dotenv
-AWS_S3_PUBLIC_CREDENTIAL_KEY=your_access_key
-AWS_S3_PUBLIC_CREDENTIAL_SECRET=your_secret_key
+AWS_S3_IAM_CREDENTIAL_KEY=your_access_key
+AWS_S3_IAM_CREDENTIAL_SECRET=your_secret_key
+AWS_S3_IAM_ARN=your_iam_arn
 AWS_S3_REGION=ap-southeast-3
 AWS_S3_PUBLIC_BUCKET=your_public_bucket
 AWS_S3_PUBLIC_CDN=https://your-cdn.cloudfront.net
@@ -65,8 +67,9 @@ For detailed implementation, see [File Upload][ref-doc-file-upload].
 
 **Environment Variables:**
 ```dotenv
-AWS_SES_CREDENTIAL_KEY=your_access_key
-AWS_SES_CREDENTIAL_SECRET=your_secret_key
+AWS_SES_IAM_CREDENTIAL_KEY=your_access_key
+AWS_SES_IAM_CREDENTIAL_SECRET=your_secret_key
+AWS_SES_IAM_ARN=your_iam_arn
 AWS_SES_REGION=ap-southeast-3
 ```
 
@@ -76,7 +79,48 @@ AWS_SES_REGION=ap-southeast-3
 - Email verification
 - Notification emails
 
+**Bulk Email (`AwsSESSendBulkDto<T>`):**
+
+For sending the same template to multiple recipients, use `AwsSESSendBulkDto`. Each recipient can carry its own `templateData`, and the optional `defaultTemplateData` field provides fallback values applied to all recipients that do not supply their own data:
+
+```typescript
+await this.awsSesService.sendBulk({
+    templateName: 'welcome',
+    sender: 'no-reply@mail.com',
+    defaultTemplateData: { appName: 'CompleteNestJs' },   // fallback for all recipients
+    recipients: [
+        { to: 'a@mail.com', templateData: { name: 'Alice' } },
+        { to: 'b@mail.com', templateData: { name: 'Bob' } },
+    ],
+});
+```
+
+`defaultTemplateData` is serialized as `DefaultTemplateData` in the SES `SendBulkTemplatedEmail` command. If omitted, it defaults to `{}`.
+
 Email processing is handled through the queue system. See [Queue][ref-doc-queue] for details.
+
+## Firebase
+
+[Firebase Admin SDK][ref-firebase] is used for sending push notifications to mobile devices.
+
+**Packages:**
+- `firebase-admin`
+
+**Environment Variables:**
+```dotenv
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_CLIENT_EMAIL=your_client_email
+FIREBASE_PRIVATE_KEY=your_base64_encoded_private_key
+```
+
+**Features:**
+- Push notification delivery via FCM
+- Batch send support
+- Invalid token detection and cleanup
+
+Leave `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, and `FIREBASE_PRIVATE_KEY` empty to disable Firebase in development.
+
+For notification details, see [Notification Documentation][ref-doc-notification].
 
 ## Sentry
 
@@ -133,7 +177,7 @@ For cache implementation, see [Cache][ref-doc-cache]. For queue details, see [Qu
 
 **Environment Variables:**
 ```dotenv
-DATABASE_URL=mongodb://localhost:27017/CompleteNestJsBoilerplate?retryWrites=true&w=majority&replicaSet=rs0
+DATABASE_URL=mongodb://localhost:27017/CompleteNestJs?retryWrites=true&w=majority&replicaSet=rs0
 DATABASE_DEBUG=true
 ```
 
@@ -175,6 +219,9 @@ AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID=your_app_bundle_id
 ```
 
 For authentication flow details, see [Authentication][ref-doc-authentication].
+
+
+
 
 <!-- REFERENCES -->
 

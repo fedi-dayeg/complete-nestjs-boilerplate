@@ -6,7 +6,6 @@ This documentation explains the features and usage of **Request Middleware Modul
 
 Complete NestJS Boilerplate implements a comprehensive security and middleware layer for HTTP request/response processing. All middleware is centrally managed through `RequestMiddlewareModule` and applied globally to all routes using the wildcard pattern `{*wildcard}`.
 
-
 ```typescript
 consumer
   .apply(
@@ -49,6 +48,7 @@ consumer
   - [@RequestTimeout](#requesttimeout)
   - [@RequestEnvProtected](#requestenvprotected)
   - [@RequestIPAddress](#requestipaddress)
+  - [@RequestGeoLocation](#requestgeolocation)
   - [@RequestUserAgent](#requestuseragent)
 
 
@@ -282,6 +282,25 @@ async checkIP(@RequestIPAddress() ip: string) {
 }
 ```
 
+### @RequestGeoLocation
+
+Extracts geolocation information from the client's IP address using `geoip-lite`.
+
+**Signature:**
+```typescript
+RequestGeoLocation(): ParameterDecorator
+```
+
+**Example:**
+```typescript
+@Get('/geo-info')
+async getGeoInfo(@RequestGeoLocation() geoLocation: GeoLocation | null) {
+  return { geoLocation };
+}
+```
+
+**Return Type:** `GeoLocation | null` — returns `null` when IP cannot be resolved or geolocation data is unavailable.
+
 ### @RequestUserAgent
 
 Parses User-Agent information using [ua-parser-js][ref-ua-parser-js].
@@ -314,10 +333,13 @@ interface IResult {
 }
 ```
 
+
+
+
+
 <!-- REFERENCES -->
 
 <!-- BADGE LINKS -->
-
 [ack-contributors-shield]: https://img.shields.io/github/contributors/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
 [ack-forks-shield]: https://img.shields.io/github/forks/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
 [ack-stars-shield]: https://img.shields.io/github/stars/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge

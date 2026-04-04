@@ -19,8 +19,8 @@ Complete NestJS Boilerplate is a comprehensive NestJS application designed for s
 - [Migration](#migration-file)
 - [Modules](#modules)
 - [Other Modules](#other-modules)
-    - [Folders](#folders)
-    - [Files](#files)
+  - [Folders](#folders)
+  - [Files](#files)
 
 ## Structure
 
@@ -36,7 +36,6 @@ src
   ├── modules
   ├── router
   ├── queues
-  ├── templates
   ├── instrument.ts
   ├── main.ts
   ├── migration.ts
@@ -49,11 +48,8 @@ Each folder serves a specific purpose, supporting modularity and maintainability
 
 **Location:** `src/app/app.module.ts`
 
-The App Module is the root module and entry point for the Complete NestJS Boilerplate application. It orchestrates the
-core setup by:
-
-- Importing essential modules: `CommonModule` (shared utilities), `RouterModule` (API routing), and `QueueModule` (
-  background jobs).
+The App Module is the root module and entry point for the Complete NestJS Boilerplate application. It orchestrates the core setup by:
+- Importing essential modules: `CommonModule` (shared utilities), `RouterModule` (API routing), and `QueueModule` (background jobs).
 - Registering four global exception filters for handling general, HTTP, validation, and import validation errors.
 - Following NestJS best practices for modular architecture and separation of concerns.
 
@@ -61,28 +57,22 @@ core setup by:
 
 **Location:** `src/common/common.module.ts`
 
-The Common Module provides shared functionality and global services across the Complete NestJS Boilerplate application.
-It configures:
-
+The Common Module provides shared functionality and global services across the Complete NestJS Boilerplate application. It configures:
 - Global configuration management (using `ConfigModule` and custom configs)
 - Caching and queueing (Redis, BullMQ)
 - Logging (LoggerModule)
 - Database access (DatabaseModule)
-- Authentication and authorization (AuthModule, PolicyModule, RoleModule, ApiKeyModule, FeatureFlagModule,
-  TermPolicyModule, SessionModule)
-- Utilities for messaging, requests, helpers, files, and pagination
+- Authentication and authorization (AuthModule, PolicyModule, RoleModule, ApiKeyModule, FeatureFlagModule, TermPolicyModule, SessionModule, ActivityLogModule, NotificationModule)
+- Utilities for messaging, requests, helpers, files, pagination, and Firebase
 - Registers all these modules as global or shared imports for use throughout the application
 
 ## Configs
 
 **Location:** `src/configs/`
 
-The configs folder contains strongly-typed configuration files for all major application features and integrations,
-including:
-
-- Database, Redis, Logger, Auth, AWS, Email, Feature Flags, User, Session, Request/Response, and more
-- Each config file (e.g., `database.config.ts`, `auth.config.ts`) centralizes environment variables, settings, and
-  validation logic for its domain
+The configs folder contains strongly-typed configuration files for all major application features and integrations, including:
+- Database, Redis, Logger, Auth, AWS, Email, Firebase, Feature Flags, User, Session, Request/Response, and more
+- Each config file (e.g., `database.config.ts`, `auth.config.ts`) centralizes environment variables, settings, and validation logic for its domain
 - The `index.ts` file aggregates and exports all configs for use in global configuration management
 
 ## Languages
@@ -90,10 +80,8 @@ including:
 **Location:** `src/languages/`
 
 The languages folder provides internationalization (i18n) resources for multi-language support. It contains:
-
 - Subfolders for each supported language (e.g., `en/` for English)
-- JSON files for each domain or feature (e.g., `user.json`, `auth.json`, `policy.json`) containing translation strings
-  and messages
+- JSON files for each domain or feature (e.g., `user.json`, `auth.json`, `policy.json`) containing translation strings and messages
 - Enables dynamic and scalable localization for all application features
 
 ## Migration
@@ -101,7 +89,6 @@ The languages folder provides internationalization (i18n) resources for multi-la
 **Location:** `src/migration/`
 
 The migration folder manages database migrations, initialization, and data seeding. It includes:
-
 - `migration.module.ts`: Main migration module for orchestrating migration logic
 - Subfolders for migration bases, data, enums, interfaces, and seeds
 - Ensures the database schema is up-to-date and supports initial and ongoing data population
@@ -111,10 +98,9 @@ The migration folder manages database migrations, initialization, and data seedi
 **Location:** `src/queues/`
 
 The queues folder implements background job processing using BullMQ and Redis. It includes:
-
 - `queue.module.ts`: Main queue module for job orchestration
 - `queue.register.module.ts`: Registers and manages queue processors
-- Subfolders for queue bases, constants, decorators, enums, exceptions
+- Subfolders for queue bases, constants, decorators, enums, exceptions, interfaces
 - Supports immediate, delayed, and recurring jobs for tasks like email sending, data processing, etc.
 
 ## Router
@@ -122,7 +108,6 @@ The queues folder implements background job processing using BullMQ and Redis. I
 **Location:** `src/router/`
 
 The router folder defines API routing by access level. It includes:
-
 - `router.module.ts`: Main router module for API route orchestration
 - `routes/`: Subfolder organizing endpoints by access level (admin, public, user, system, shared)
 - Ensures clear separation of concerns and robust access control for all API endpoints
@@ -149,14 +134,11 @@ The migration file is the entry point for the migration CLI tool using **nest-co
 - Running migration commands (e.g., database seeding, data population) and gracefully closing the application after completion
 - Can be invoked via the `pnpm migration` command followed by the specific migration command
 
-
 ## Modules
 
 **Location:** `src/modules/`
 
-The modules folder contains all feature modules, each representing a distinct domain or functionality in the
-application. Every module is self-contained and follows the repository design pattern, ensuring clear separation of
-concerns and scalability.
+The modules folder contains all feature modules, each representing a distinct domain or functionality in the application. Every module is self-contained and follows the repository design pattern, ensuring clear separation of concerns and scalability.
 
 ```
 module
@@ -189,94 +171,68 @@ This structure ensures each feature is isolated, testable, and easy to maintain.
 Below are explanations for each section in a typical module:
 
 ### Bases
-
 Base classes or abstract classes that provide shared functionality for other components in the module.
 
 ### Constants
-
-Defines static values and configuration constants used throughout the module to ensure consistency and avoid magic
-numbers or strings.
+Defines static values and configuration constants used throughout the module to ensure consistency and avoid magic numbers or strings.
 
 ### Controllers
-
-Handle incoming HTTP requests, delegate to services, and return responses. Controllers define the API endpoints for the
-module.
+Handle incoming HTTP requests, delegate to services, and return responses. Controllers define the API endpoints for the module.
 
 ### Decorators
-
 Custom decorators to add metadata or modify behavior of classes, methods, or properties within the module.
 
 ### Docs
-
 Documentation files or Swagger decorators for API documentation and reference.
 
 ### DTOs (Data Transfer Objects)
-
 Classes that define the shape of data sent and received via API endpoints, ensuring validation and type safety.
 
 ### Enums
-
 Type-safe enumerations for status codes, types, or other fixed sets of values relevant to the module's domain.
 
 ### Exceptions
-
 Custom error classes for handling domain-specific exceptions and providing meaningful error messages.
 
 ### Factories
-
 Factory classes or functions for creating instances of complex objects or aggregating dependencies.
 
 ### Filters
-
 Exception and validation filters to handle errors and transform responses for specific scenarios within the module.
 
 ### Guards
-
 Authorization and access control logic, protecting routes and resources based on user roles or permissions.
 
 ### Interfaces
-
-TypeScript interfaces for contracts between services, repositories, and other components, promoting loose coupling and
-testability.
+TypeScript interfaces for contracts between services, repositories, and other components, promoting loose coupling and testability.
 
 ### Interceptors
-
 Logic to intercept and modify requests or responses, such as logging, caching, or response transformation.
 
 ### Middlewares
-
-Functions that process requests before they reach controllers, such as logging, authentication, or request
-transformation.
+Functions that process requests before they reach controllers, such as logging, authentication, or request transformation.
 
 ### Pipes
-
 Transform and validate incoming request data before it reaches controllers, ensuring data integrity and type safety.
 
 ### Processors
-
 Background job handlers, such as BullMQ processors, for asynchronous tasks related to the module.
 
 ### Repositories
-
-Implements the Repository design pattern for data access, abstracting database operations and providing a clean API for
-services.
+Implements the Repository design pattern for data access, abstracting database operations and providing a clean API for services.
 
 ### Services
-
-Business logic and core functionality of the module. Services interact with repositories, perform computations, and
-orchestrate workflows.
+Business logic and core functionality of the module. Services interact with repositories, perform computations, and orchestrate workflows.
 
 ### Templates
-
 Reusable templates, such as email templates or message formats, used by the module.
 
 ### Utils
-
 Utility functions and helpers specific to the module, such as formatting, calculations, or domain-specific operations.
 
 ### Validations
-
 Validation logic for DTOs and other data structures, often using class-validator or custom validation rules.
+
 
 ## Other Modules
 
@@ -284,8 +240,11 @@ Below are explanations for the root folders and files outside `src/` (excluding 
 
 ### Folders
 
+- **.github/**: GitHub-specific configuration including Actions workflows, issue templates, and Copilot instructions.
+- **.husky/**: Git hooks for enforcing code quality checks (e.g., commit message linting) before commits.
 - **ci/**: Contains CI/CD configuration files.
 - **docs/**: Project documentation, including architecture, features, and usage guides.
+- **generated/**: Auto-generated files including the Prisma client and Swagger JSON output.
 - **keys/**: Stores public/private keys and JWKS files for authentication and security.
 - **logs/**: Directory for application logs.
 - **prisma/**: Contains Prisma ORM schema and migration files for database management.
@@ -303,13 +262,18 @@ Below are explanations for the root folders and files outside `src/` (excluding 
 - **.prettierrc**: Configuration for Prettier code formatter.
 - **.swcrc**: Configuration for SWC JavaScript/TypeScript compiler.
 - **cspell.json**: Configuration for code spell checking to maintain code quality and consistency.
-- **docker-compose.yml**: Docker Compose configuration for orchestrating multi-container Docker applications, such as
-  local development environments.
+- **docker-compose.yml**: Docker Compose configuration for orchestrating multi-container Docker applications, such as local development environments.
 - **dockerfile**: Docker build instructions for containerizing the application.
 - **eslint.config.mjs**: ESLint configuration for code linting and style enforcement.
 - **nest-cli.json**: Configuration for NestJS CLI, defining project structure and build options.
 - **package.json**: Node.js project manifest, listing dependencies, scripts, and metadata.
+- **pnpm-lock.yaml**: pnpm lockfile ensuring deterministic dependency installation.
+- **pnpm-workspace.yaml**: pnpm workspace configuration for monorepo support.
 - **tsconfig.json**: TypeScript configuration file, specifying compiler options and project structure.
+
+
+
+
 
 <!-- REFERENCES -->
 

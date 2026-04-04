@@ -4,7 +4,7 @@ This documentation explains the features and usage of **Database Module**: Locat
 
 ## Overview
 
-This documentation explains the database architecture and features in the Complete NestJS Boilerplate project:
+This documentation explains the database architecture and features in Complete NestJS Boilerplate:
 
 ## Related Documents
 
@@ -20,17 +20,26 @@ This documentation explains the database architecture and features in the Comple
 - [Migration](#migration)
 - [Generate Database Client](#generate-database-client)
 - [Seeding](#seeding)
-    - [Database Seeds](#database-seeds)
-    - [Template Seeds](#template-seeds)
+  - [Database Seeds](#database-seeds)
+  - [Template Seeds](#template-seeds)
+  - [AWS S3 Configuration Seed](#aws-s3-configuration-seed)
 - [Initial Seeded Data](#initial-seeded-data)
   - [API Keys](#api-keys)
   - [Roles](#roles)
   - [Users](#users)
   - [Feature Flags](#feature-flags)
   - [Term Policies](#term-policies)
+- [Composite Types](#composite-types)
+  - [GeoLocation](#geolocation)
+  - [UserAgent](#useragent)
+  - [UserTermPolicy](#usertermpolicy)
+  - [UserPhoto](#userphoto)
+  - [RoleAbility](#roleability)
+  - [TermPolicyContent](#termpolicycontent)
+- [Docker](#docker)
 - [Database Tools](#database-tools)
-    - [Prisma ORM](#prisma-orm)
-    - [Why Prisma for Repository Design Pattern?](#why-prisma-for-repository-design-pattern)
+  - [Prisma ORM](#prisma-orm)
+  - [Why Prisma for Repository Design Pattern?](#why-prisma-for-repository-design-pattern)
   - [Change DB with Minimal Effort](#change-db-with-minimal-effort)
 
 
@@ -40,7 +49,6 @@ This documentation explains the database architecture and features in the Comple
 
 **MongoDB 8.0.x** running as a **replica set** (required for transactions)
 
-
 ## Migration
 
 Prisma does not support migrations for MongoDB. Instead, use `prisma db push` to sync your Prisma schema with the MongoDB database.
@@ -48,7 +56,6 @@ Prisma does not support migrations for MongoDB. Instead, use `prisma db push` to
 In Complete NestJS Boilerplate, you can use the `pnpm db:migrate` script to quickly sync your schema to MongoDB.
 
 For details, see the official Prisma documentation: [Prisma for MongoDB][ref-prisma-mongodb]
-
 
 
 ## Generate Database Client
@@ -70,8 +77,8 @@ This command will read your Prisma schema and generate the client code in `gener
 ## Seeding
 
 Seeding in Complete NestJS Boilerplate is handled using [Commander.js][ref-commander]. All seed commands are implemented in `src/migration/seeds/*`.
-### Database Seeds
 
+### Database Seeds
 
 Complete NestJS Boilerplate provides ready-to-use seed scripts to help you quickly initialize or remove data for development and testing. Database seeding is used to populate the database with initial or test data, making development and testing easier.
 
@@ -81,6 +88,7 @@ Complete NestJS Boilerplate provides ready-to-use seed scripts to help you quick
 **How to Run All Seeds:**
 - `pnpm migration:seed` — runs all seed commands to populate initial data.
 - `pnpm migration:remove` — removes all seeded data from the database.
+- `pnpm migration:fresh` — force-resets the database schema (`prisma db push --force-reset`) then immediately re-seeds all data. Useful during development when you need a clean slate.
 
 **How to Seed/Remove a Specific Module:**
 Run the command:
@@ -103,7 +111,6 @@ Run the command:
 
 ### Template Seeds
 
-
 Template seeding uses the same script and commands as Database Seeds, but is specifically for template files like email and term policies.
 
 **Available Types:**
@@ -111,7 +118,6 @@ Template seeding uses the same script and commands as Database Seeds, but is spe
 - `remove` (delete template data)
 
 #### Email Templates
-
 
 Every time you run the email template seed, the templates will be inserted into AWS SES automatically.
 
@@ -175,7 +181,6 @@ For **Private Buckets**:
 - Full IAM user access required for all operations
 
 
-
 ## Initial Seeded Data
 
 When you run `pnpm migration:seed`, the following initial data will be created in your database. This data is essential for testing and development purposes.
@@ -183,7 +188,6 @@ When you run `pnpm migration:seed`, the following initial data will be created i
 ### API Keys
 
 > ⚠️ These are development keys. Always regenerate API keys for production environments.
-
 
 Two API keys are created for authentication and service access:
 
@@ -224,13 +228,22 @@ Three user roles are created with different permission levels:
 
 > ⚠️ These are test accounts with default passwords. Change or remove these accounts in production environments.
 
+The seeded users differ per environment. This is controlled by `migrationUserData` in `src/migration/data/migration.user.data.ts`:
 
-| Email | Name | Role | Password | Country |
-|-------|------|------|----------|---------|
-| superadmin@mail.com | Super Admin | superadmin | `aaAA@123` | ID (Indonesia) |
-| admin@mail.com | Admin | admin | `aaAA@123` | ID (Indonesia) |
-| user@mail.com | User | user | `aaAA@123` | ID (Indonesia) |
+| Environment | Seeded Users |
+|---|---|
+| `local` | superadmin + admin + user |
+| `development` | superadmin + admin only |
+| `staging` | superadmin + admin only |
+| `production` | superadmin + admin only |
 
+**User accounts:**
+
+| Email | Name | Role | Password | Country | Environments |
+|-------|------|------|----------|---------|-------------|
+| superadmin@mail.com | Super Admin | superadmin | `aaAA@123` | ID (Indonesia) | all |
+| admin@mail.com | Admin | admin | `aaAA@123` | ID (Indonesia) | all |
+| user@mail.com | User | user | `aaAA@123` | ID (Indonesia) | `local` only |
 
 ### Feature Flags
 
@@ -250,16 +263,224 @@ All features are enabled by default with 100% rollout for development convenienc
 
 Four term policy documents are created:
 
-| Type             | Version | Language | Description |
-|------------------|---------|----------|-------------|
-| `cookies`        | 1 | EN | Cookie policy document |
-| `marketing`      | 1 | EN | Marketing terms document |
-| `privacy`        | 1 | EN | Privacy policy document |
+| Type | Version | Language | Description |
+|------|---------|----------|-------------|
+| `cookies` | 1 | EN | Cookie policy document |
+| `marketing` | 1 | EN | Marketing terms document |
+| `privacy` | 1 | EN | Privacy policy document |
 | `termsOfService` | 1 | EN | Terms of Service document |
 
 The actual content for these policies is stored as file references in `src/migration/data/term-policy/*`. The files are not automatically linked to the database records. You must run the term policy migration script to link the files and update the content keys in the database.
 
 For more details on how seeding works, see: [Template Seeds](#template-seeds)
+
+
+## Composite Types
+
+Prisma composite types are embedded sub-documents in MongoDB (not separate collections). They are defined with the `type` keyword in `prisma/schema.prisma` and stored inline within the parent document rather than in separate collections.
+
+### GeoLocation
+
+Represents the geographic location derived from a client's IP address using `geoip-lite`.
+
+```prisma
+type GeoLocation {
+  latitude  Float
+  longitude Float
+  country   String
+  region    String
+  city      String
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `latitude` | `Float` | Latitude coordinate |
+| `longitude` | `Float` | Longitude coordinate |
+| `country` | `String` | ISO country code (e.g. `"ID"`) |
+| `region` | `String` | Region/state code (e.g. `"JK"`) |
+| `city` | `String` | City name (e.g. `"Jakarta"`) |
+
+**Used in:**
+- `Session.geoLocation` — location at login time
+- `ActivityLog.geoLocation` — location when the action was performed
+
+Resolved automatically via the `@RequestGeoLocation()` parameter decorator. See [Security and Middleware Documentation][ref-doc-security-and-middleware] for details.
+
+---
+
+### UserAgent
+
+Represents parsed user-agent information from the client's `User-Agent` HTTP header using `ua-parser-js`. `UserAgent` is the top-level type that embeds four sub-types.
+
+```prisma
+type UserAgent {
+  ua      String?
+  browser UserAgentBrowser?
+  cpu     UserAgentCpu?
+  device  UserAgentDevice?
+  engine  UserAgentEngine?
+  os      UserAgentOs?
+}
+
+type UserAgentBrowser {
+  name    String?
+  version String?
+  major   String?
+  type    String?
+}
+
+type UserAgentCpu {
+  architecture String?
+}
+
+type UserAgentDevice {
+  type   String?
+  vendor String?
+  model  String?
+}
+
+type UserAgentEngine {
+  name    String?
+  version String?
+}
+
+type UserAgentOs {
+  name    String?
+  version String?
+}
+```
+
+**`UserAgent` fields:**
+
+| Field | Type | Description |
+|---|---|---|
+| `ua` | `String?` | Raw user-agent string |
+| `browser` | `UserAgentBrowser?` | Browser details |
+| `cpu` | `UserAgentCpu?` | CPU architecture |
+| `device` | `UserAgentDevice?` | Device details |
+| `engine` | `UserAgentEngine?` | Rendering engine details |
+| `os` | `UserAgentOs?` | Operating system details |
+
+**Used in:**
+- `Session.userAgent` — client info at login time
+- `ActivityLog.userAgent` — client info when the action was performed
+
+Resolved automatically via the `@RequestUserAgent()` parameter decorator. See [Security and Middleware Documentation][ref-doc-security-and-middleware] for details.
+
+---
+
+### UserTermPolicy
+
+Represents the user's acceptance flags for each term policy type. Stored inline on the `User` document.
+
+```prisma
+type UserTermPolicy {
+  termsOfService Boolean
+  privacy        Boolean
+  marketing      Boolean
+  cookies        Boolean
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `termsOfService` | `Boolean` | Has accepted Terms of Service |
+| `privacy` | `Boolean` | Has accepted Privacy Policy |
+| `marketing` | `Boolean` | Has accepted Marketing terms |
+| `cookies` | `Boolean` | Has accepted Cookie policy |
+
+**Used in:**
+- `User.termPolicy`
+
+---
+
+### UserPhoto
+
+Represents the user's profile photo stored in AWS S3.
+
+```prisma
+type UserPhoto {
+  bucket       String
+  key          String
+  cdnUrl       String?
+  completedUrl String
+  mime         String
+  extension    String
+  access       String
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `bucket` | `String` | S3 bucket name |
+| `key` | `String` | S3 object key |
+| `cdnUrl` | `String?` | Optional CDN base URL |
+| `completedUrl` | `String` | Full resolved URL (CDN or S3 direct) |
+| `mime` | `String` | MIME type (e.g. `image/jpeg`) |
+| `extension` | `String` | File extension (e.g. `jpg`) |
+| `access` | `String` | Access level (`public` or `private`) |
+
+**Used in:**
+- `User.photo`
+
+---
+
+### RoleAbility
+
+Represents a single CASL ability entry embedded in a `Role`. Each entry defines which actions are allowed on a given policy subject.
+
+```prisma
+type RoleAbility {
+  action  String[]
+  subject String
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `action` | `String[]` | List of allowed actions (e.g. `["read", "create"]`) |
+| `subject` | `String` | Policy subject (e.g. `"user"`, `"apiKey"`) |
+
+**Used in:**
+- `Role.abilities`
+
+See [Authorization Documentation][ref-doc-authorization] for how abilities are evaluated at runtime.
+
+---
+
+### TermPolicyContent
+
+Represents a localized content file for a term policy document, stored in AWS S3.
+
+```prisma
+type TermPolicyContent {
+  language     String
+  bucket       String
+  key          String
+  cdnUrl       String?
+  completedUrl String
+  mime         String
+  extension    String
+  access       String
+  size         Int
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `language` | `String` | Language code (e.g. `"en"`) |
+| `bucket` | `String` | S3 bucket name |
+| `key` | `String` | S3 object key |
+| `cdnUrl` | `String?` | Optional CDN base URL |
+| `completedUrl` | `String` | Full resolved URL |
+| `mime` | `String` | MIME type (e.g. `application/pdf`) |
+| `extension` | `String` | File extension (e.g. `pdf`) |
+| `access` | `String` | Access level (`public` or `private`) |
+| `size` | `Int` | File size in bytes |
+
+**Used in:**
+- `TermPolicy.contents`
 
 
 ## Docker
@@ -288,22 +509,20 @@ docker-compose exec apis pnpm migration:remove
 
 These commands execute directly in the running Docker container without needing to enter the container shell. Ensure Docker Compose is running with `docker-compose up -d` before executing these commands.
 
-
 ## Database Tools
 
 ### **Prisma ORM**
 
 Complete NestJS Boilerplate uses **[Prisma][ref-prisma] v6.19.x** as the primary database toolkit. Prisma is not just an ORM - it's a complete database toolkit that provides the foundation for implementing clean architecture patterns.
 
-
 ### **Why Prisma for Repository Design Pattern?**
 
-Prisma perfectly enables Complete NestJS Boilerplate's **Repository Design Pattern** implementation:
+Prisma perfectly enables **Repository Design Pattern** implementation:
 
 - **Type-Safe Repository Layer**: Auto-generated TypeScript types ensure compile-time validation throughout repositories
 - **Clean Architecture**: PrismaClient provides foundation for clean separation between database and business logic
 - **Easy Implementation**: Consistent query API and transaction support simplify repository development
-- **Database Agnostic**: Switch between MongoDB, PostgreSQL, MySQL, SQLite without changing repository code
+- **Database Agnostic**: Switch between MongoDB, PostgreSQL without changing repository code
 
 ### Change DB with Minimal Effort
 
@@ -338,7 +557,7 @@ model User {
 **2. Update Environment** (`.env`):
 ```bash
 # From:
-DATABASE_URL=mongodb://localhost:27017/CompleteNestJsBoilerplate?replicaSet=rs0
+DATABASE_URL=mongodb://localhost:27017/CompleteNestJs?replicaSet=rs0
 
 # To:
 DATABASE_URL=postgresql://user:password@localhost:5432/CompleteNestJs
@@ -370,6 +589,7 @@ pnpm migration:seed
 <!-- REFERENCES -->
 
 <!-- BADGE LINKS -->
+
 
 [ack-contributors-shield]: https://img.shields.io/github/contributors/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
 [ack-forks-shield]: https://img.shields.io/github/forks/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge

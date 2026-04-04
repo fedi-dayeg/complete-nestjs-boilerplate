@@ -4,12 +4,9 @@ This documentation explains the features and usage of **Message Module**: Locate
 
 ## Overview
 
-Message Service provides internationalization (i18n) support using [nestjs-i18n][ref-nestjs-i18n] to manage
-multi-language messages. All message files are stored in `src/languages/{language}` directory in JSON format. Currently,
-only English (`en`) is available.
+Message Service provides internationalization (i18n) support using [nestjs-i18n][ref-nestjs-i18n] to manage multi-language messages. All message files are stored in `src/languages/{language}` directory in JSON format. Currently, only English (`en`) is available.
 
-The `MessageModule` is imported globally via `CommonModule` in `src/common/common.module.ts`, making `MessageService`
-available throughout the application without additional imports.
+The `MessageModule` is imported globally via `CommonModule` in `src/common/common.module.ts`, making `MessageService` available throughout the application without additional imports.
 
 ## Related Documents
 
@@ -25,13 +22,13 @@ available throughout the application without additional imports.
 - [Configuration](#configuration)
 - [Message Files](#message-files)
 - [Usage](#usage)
-    - [Basic Translation](#basic-translation)
-    - [Translation with Variables](#translation-with-variables)
-    - [Custom Language](#custom-language)
+  - [Basic Translation](#basic-translation)
+  - [Translation with Variables](#translation-with-variables)
+  - [Custom Language](#custom-language)
 - [Integration](#integration)
-    - [Exception Filters](#exception-filters)
-    - [Response Decorator](#response-decorator)
-    - [Validation Pipe](#validation-pipe)
+  - [Exception Filters](#exception-filters)
+  - [Response Decorator](#response-decorator)
+  - [Validation Pipe](#validation-pipe)
 - [Adding New Language](#adding-new-language)
 
 ## Configuration
@@ -49,8 +46,8 @@ Configuration structure:
 export default registerAs(
     'message',
     (): IConfigMessage => ({
-      availableLanguage: Object.values(EnumMessageLanguage),
-      language: process.env.APP_LANGUAGE ?? EnumMessageLanguage.EN,
+        availableLanguage: Object.values(EnumMessageLanguage),
+        language: process.env.APP_LANGUAGE ?? EnumMessageLanguage.EN,
     })
 );
 ```
@@ -59,26 +56,49 @@ Language options are defined in the enum:
 
 ```typescript
 export enum EnumMessageLanguage {
-    EN = 'en',
+    en = 'en',
 }
 ```
 
 ## Message Files
 
-Message files use JSON format with nested structure. Key paths follow the pattern: `filename.field.nested`.
+Message files use JSON format with nested structure. Key paths follow the pattern: `filename.field.nested`. Files are located in `src/languages/en/`:
+
+| File | Description |
+|------|-------------|
+| `activityLog.json` | Activity log messages |
+| `apiKey.json` | API key messages |
+| `app.json` | General application messages |
+| `auth.json` | Authentication messages |
+| `country.json` | Country-related messages |
+| `device.json` | Device management messages |
+| `featureFlag.json` | Feature flag messages |
+| `file.json` | File upload messages |
+| `health.json` | Health check messages |
+| `hello.json` | Hello endpoint messages |
+| `http.json` | HTTP error messages |
+| `notification.json` | Notification messages |
+| `pagination.json` | Pagination messages |
+| `passwordHistory.json` | Password history messages |
+| `policy.json` | Policy messages |
+| `request.json` | Request validation messages |
+| `role.json` | Role messages |
+| `session.json` | Session messages |
+| `termPolicy.json` | Terms & policy messages |
+| `user.json` | User messages |
 
 Example structure:
 
 ```json
 // src/languages/en/auth.json
 {
-  "login": {
-    "success": "Login successful",
-    "error": {
-      "notFound": "Email not found",
-      "passwordNotMatch": "Password does not match"
+    "login": {
+        "success": "Login successful",
+        "error": {
+            "notFound": "Email not found",
+            "passwordNotMatch": "Password does not match"
+        }
     }
-  }
 }
 ```
 
@@ -101,13 +121,32 @@ Inject `MessageService` and use `setMessage` method:
 ```typescript
 @Injectable()
 export class UserService {
-    constructor(private readonly messageService: MessageService) {
-    }
+    constructor(private readonly messageService: MessageService) {}
 
     getWelcomeMessage(): string {
         return this.messageService.setMessage('user.welcome');
     }
 }
+```
+
+### Filter Language
+
+Use `filterLanguage` to validate if a language is supported before using it:
+
+```typescript
+const validLang = this.messageService.filterLanguage('id');
+// Returns 'id' if supported, undefined if not
+```
+
+### Bulk Import Validation Messages
+
+Use `setValidationImportMessage` to format validation errors for bulk/import operations:
+
+```typescript
+const errors = this.messageService.setValidationImportMessage([
+    { row: 1, errors: validationErrors }
+]);
+// Returns: [{ row: 1, errors: [{ key, property, message }] }]
 ```
 
 ### Translation with Variables
@@ -117,8 +156,8 @@ Pass variables through the `properties` option:
 ```json
 // src/languages/en/user.json
 {
-  "greeting": "Hello, {name}!",
-  "itemCount": "You have {count} items"
+    "greeting": "Hello, {name}!",
+    "itemCount": "You have {count} items"
 }
 ```
 
@@ -158,7 +197,7 @@ await axios.get('http://localhost:3000/api/users', {
 
 ### Exception Filters
 
-Exception filters automatically translate message paths.
+Exception filters automatically translate message paths. The exception body follows the `IAppException` interface.
 
 ```typescript
 throw new BadRequestException({
@@ -167,17 +206,13 @@ throw new BadRequestException({
 });
 ```
 
-With variables:
+With variables, pass `messageProperties` directly in the exception body:
 
 ```typescript
 throw new NotFoundException({
     statusCode: EnumUserStatusCodeError.notFound,
     message: 'user.error.notFoundWithId',
-    _metadata: {
-        customProperty: {
-            messageProperties: { id: userId }
-        }
-    }
+    messageProperties: { id: userId },
 });
 ```
 
@@ -188,37 +223,27 @@ The `@Response` decorator translates success message paths. See [Response Docume
 ```typescript
 @Response('user.create')
 @Post('/')
-async
-create(@Body()
-dto: CreateUserDto
-):
-Promise < IResponse > {
+async create(@Body() dto: CreateUserRequestDto): Promise<IResponseReturn<UserResponseDto>> {
     const user = await this.userService.create(dto);
     return { data: user };
 }
 ```
 
-With variables:
+With variables, pass `messageProperties` via the `metadata` field on `IResponseReturn`:
 
 ```typescript
 @Response('user.update')
 @Patch('/:id')
-async
-update(
-    @Param('id')
-id: string,
-@Body()
-dto: UpdateUserDto
-):
-Promise < IResponse > {
+async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto
+): Promise<IResponseReturn<UserResponseDto>> {
     const user = await this.userService.update(id, dto);
     return {
         data: user,
-        _metadata: {
-            customProperty: {
-                messageProperties: { name: user.name }
-            }
-        }
+        metadata: {
+            messageProperties: { name: user.name },
+        },
     };
 }
 ```
@@ -237,11 +262,11 @@ Validation errors are automatically translated by `MessageService`. The service 
 ```json
 // src/languages/en/request.json
 {
-  "error": {
-    "isNotEmpty": "{property} should not be empty",
-    "isEmail": "{property} must be a valid email",
-    "minLength": "{property} must be at least {min} characters"
-  }
+    "error": {
+        "isNotEmpty": "{property} should not be empty",
+        "isEmail": "{property} must be a valid email",
+        "minLength": "{property} must be at least {min} characters"
+    }
 }
 ```
 
@@ -271,19 +296,12 @@ class UserDto {
 
 **Standard validation response:**
 
-
 ```typescript
 // Automatic transformation
 {
-    "statusCode"
-:
-    400,
-        "message"
-:
-    "Validation error",
-        "errors"
-:
-    [
+    "statusCode": 400,
+    "message": "Validation error",
+    "errors": [
         {
             "key": "isNotEmpty",
             "property": "email",
@@ -316,12 +334,14 @@ cp src/languages/en/*.json src/languages/id/
 
 ```typescript
 export enum EnumMessageLanguage {
-    EN = 'en',
-    ID = 'id', // Add new language
+    en = 'en',
+    id = 'id', // Add new language
 }
 ```
 
 4. Restart the application to load new language files.
+
+
 
 <!-- REFERENCES -->
 

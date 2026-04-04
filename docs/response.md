@@ -8,11 +8,12 @@ Complete NestJS Boilerplate standardizes API responses through decorators that a
 
 ## Table of Contents
 
+- [Overview](#overview)
 - [Related Documents](#related-documents)
 - [Response Decorators](#response-decorators)
-    - [@Response](#response)
-    - [@ResponsePaging](#responsepaging)
-    - [@ResponseFile](#responsefile)
+  - [@Response](#response)
+  - [@ResponsePaging](#responsepaging)
+  - [@ResponseFile](#responsefile)
 - [Response Structure](#response-structure)
   - [Standard](#standard)
   - [Paginated](#paginated)
@@ -36,7 +37,7 @@ Standard API response decorator with optional caching.
 **Parameters:**
 - `messagePath` (string): Path to response message for localization
 - `options` (optional): Configuration options
-    - `cache` (boolean | object): Enable caching
+  - `cache` (boolean | object): Enable caching
 
 **Interceptor:** `ResponseInterceptor` - transforms responses into standard format with metadata and localized messages via [MessageService][ref-doc-message]
 
@@ -60,7 +61,7 @@ async getUser(@Param('id') id: string): Promise<IResponseReturn<UserDto>> {
 async createUser(@Body() dto: CreateUserDto): Promise<IResponseReturn<UserDto>> {
   try {
     const data = await this.userService.create(dto);
-
+    
     // Response: { statusCode: 201, message: "...", data: {...}, metadata: {...} }
     return {
       data,
@@ -107,7 +108,7 @@ Paginated API response decorator with optional caching. Supports both offset-bas
 **Parameters:**
 - `messagePath` (string): Path to response message for localization
 - `options` (optional): Configuration options
-    - `cache` (boolean | object): Enable caching
+  - `cache` (boolean | object): Enable caching
 
 **Requirements:**
 - Request must include pagination parameters (see [Pagination Documentation][ref-doc-pagination])
@@ -122,25 +123,21 @@ Paginated API response decorator with optional caching. Supports both offset-bas
 @ResponsePaging('user.list')
 @Get('/list')
 async listUsers(
-  @PaginationQuery() { page, perPage, orderBy, orderDirection }: PaginationListDto
+  @PaginationOffsetQuery() query: IPaginationQuery
 ): Promise<IResponsePagingReturn<UserDto>> {
-  const { data, totalPage, count } = await this.userService.findAll({
-    page,
-    perPage,
-    orderBy,
-    orderDirection
-  });
+  const { data, totalPage, count } = await this.userService.findAll(query);
   
   return {
     type: 'offset',
     data,
     totalPage,
-    page,
-    perPage,
+    page: query.page,
+    perPage: query.perPage,
     count,
-    hasNext: page < totalPage,
-    nextPage: page < totalPage ? page + 1 : undefined,
-    previousPage: page > 1 ? page - 1 : undefined
+    hasNext: query.page < totalPage,
+    hasPrevious: query.page > 1,
+    nextPage: query.page < totalPage ? query.page + 1 : undefined,
+    previousPage: query.page > 1 ? query.page - 1 : undefined
   };
 }
 ```
@@ -151,7 +148,7 @@ async listUsers(
 @ResponsePaging('user.list')
 @Get('/list')
 async listUsers(
-  @PaginationQuery() query: PaginationListDto
+  @PaginationCursorQuery() query: IPaginationQuery
 ): Promise<IResponsePagingReturn<UserDto>> {
   const { data, cursor, count, hasNext } = await this.userService.findAllCursor(query);
   
@@ -179,7 +176,6 @@ File download response decorator that handles CSV and PDF file downloads with pr
 - PDF data must be a Buffer
 - Optional `filename` - if not provided, generates timestamped filename: `export-{timestamp}.{extension}`
 
-
 **Interceptor:** `ResponseFileInterceptor` - validates data based on extension type, converts to Buffer, sets content headers (Content-Type, Content-Disposition, Content-Length), returns StreamableFile
 
 **CSV Export (Auto-generated Filename):**
@@ -188,6 +184,7 @@ File download response decorator that handles CSV and PDF file downloads with pr
 @ResponseFile()
 @Get('/export/csv')
 async exportUsersCsv(): Promise<IResponseCsvReturn> {
+  const users = await this.userService.findAll();
   const csvData = this.fileService.writeCsv(users);
   
   return {
@@ -222,14 +219,14 @@ async exportUsersCustom(): Promise<IResponseCsvReturn> {
 @Get('/export/report')
 async exportUsersReport(): Promise<IResponseCsvReturn> {
   const users = await this.userService.findAll();
-
+  
   const formattedData = users.map(user => ({
     Name: user.name,
     Email: user.email,
     'Created At': new Date(user.createdAt).toLocaleDateString(),
     Status: user.isActive ? 'Active' : 'Inactive'
   }));
-
+  
   const csvData = this.fileService.writeCsv(formattedData);
   
   return {
@@ -328,29 +325,26 @@ async exportUsers(@Query('format') format: 'csv' | 'pdf'): Promise<IResponseFile
     correlationId: string;
     
     // Pagination metadata
-    type: 'offset' | 'cursor'; // Pagination type
+    type: 'offset' | 'cursor';
     search?: string;
     filters?: Record<string, any>;
     perPage: number;
-
-    // Offset-specific fields (when type = 'offset')
-    page?: number;
-    totalPage?: number;
-    count?: number;
-    nextPage?: number;
-    previousPage?: number;
-
-    // Cursor-specific fields (when type = 'cursor')
-    nextCursor?: string;
-    previousCursor?: string;
-    count?: number; // Optional, included if requested
-
-    // Common fields
+    count: number;
     hasNext: boolean;
     orderBy: string;
     orderDirection: 'asc' | 'desc';
     availableSearch: string[];
     availableOrderBy: string[];
+    
+    // Offset-specific fields (when type = 'offset')
+    page?: number;
+    totalPage?: number;
+    nextPage?: number;
+    previousPage?: number;
+    hasPrevious?: boolean;
+    
+    // Cursor-specific fields (when type = 'cursor')
+    nextCursor?: string;
   };
   data: T[];
 }
@@ -384,6 +378,7 @@ async getUser(@Param('id') id: string): Promise<IResponseReturn<UserDto>> {
   return { data: await this.userService.findById(id) };
 }
 ```
+
 **Cache Key:**
 
 ```text
@@ -419,8 +414,11 @@ All responses automatically include these headers (set by interceptors):
 - `x-request-id`: Unique request identifier
 - `x-correlation-id`: Request correlation identifier
 
-<!-- BADGE LINKS -->
 
+
+<!-- REFERENCES -->
+
+<!-- BADGE LINKS -->
 [ack-contributors-shield]: https://img.shields.io/github/contributors/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
 [ack-forks-shield]: https://img.shields.io/github/forks/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
 [ack-stars-shield]: https://img.shields.io/github/stars/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
