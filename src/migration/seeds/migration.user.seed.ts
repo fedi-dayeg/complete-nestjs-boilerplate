@@ -12,6 +12,8 @@ import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
     EnumActivityLogAction,
+    EnumNotificationChannel,
+    EnumNotificationType,
     EnumPasswordHistoryType,
     EnumTermPolicyStatus,
     EnumTermPolicyType,
@@ -19,7 +21,7 @@ import {
     EnumUserSignUpWith,
     EnumUserStatus,
     EnumVerificationType,
-} from '@prisma/client';
+} from '@generated/prisma-client';
 import { Command } from 'nest-commander';
 import { UAParser } from 'ua-parser-js';
 
@@ -132,9 +134,10 @@ export class MigrationUserSeed
                 this.users.map(user => {
                     const userId = this.databaseUtil.createId();
                     const { passwordCreated, passwordExpired, passwordHash } =
-                        this.authUtil.createPassword(user.password);
-                    const { reference, token, type } =
+                        this.authUtil.createPassword(userId, user.password);
+                    const { reference, hashedToken, type } =
                         this.userUtil.verificationCreateVerification(
+                            userId,
                             EnumVerificationType.email
                         );
 
@@ -182,7 +185,7 @@ export class MigrationUserSeed
                                     expiredAt: this.helperService.dateCreate(),
                                     verifiedAt: this.helperService.dateCreate(),
                                     reference,
-                                    token,
+                                    token: hashedToken,
                                     type,
                                     createdBy: userId,
                                     to: user.email,
@@ -234,6 +237,21 @@ export class MigrationUserSeed
                                     })),
                                 },
                             },
+                            notificationSettings: {
+                                createMany: {
+                                    data: Object.values(EnumNotificationChannel)
+                                        .map(channel =>
+                                            Object.values(
+                                                EnumNotificationType
+                                            ).map(type => ({
+                                                channel,
+                                                type,
+                                                isActive: true,
+                                            }))
+                                        )
+                                        .flat(),
+                                },
+                            },
                             twoFactor: {
                                 create: {
                                     enabled: false,
@@ -259,6 +277,7 @@ export class MigrationUserSeed
 
         try {
             await this.databaseService.$transaction([
+                this.databaseService.twoFactor.deleteMany({}),
                 this.databaseService.session.deleteMany({}),
                 this.databaseService.userMobileNumber.deleteMany({}),
                 this.databaseService.verification.deleteMany({}),
@@ -266,6 +285,7 @@ export class MigrationUserSeed
                 this.databaseService.forgotPassword.deleteMany({}),
                 this.databaseService.activityLog.deleteMany({}),
                 this.databaseService.termPolicyUserAcceptance.deleteMany({}),
+                this.databaseService.notificationUserSetting.deleteMany({}),
                 this.databaseService.user.deleteMany({}),
             ]);
         } catch (error: unknown) {

@@ -1,4 +1,4 @@
-export enum EnumUserStatus_CODE_ERROR {
+export enum EnumUserStatusCodeError {
     notFound = 5150,
     notSelf = 5151,
     emailExist = 5152,
@@ -17,11 +17,10 @@ export enum EnumUserStatus_CODE_ERROR {
     usernameNotAllowed = 5165,
     usernameContainBadWord = 5166,
     emailNotVerified = 5167,
-    loginWithNotSupported = 5168,
-    passwordNotSet = 5169,
-    tokenInvalid = 5170,
-    emailAlreadyVerified = 5171,
-    mobileNumberExist = 5172,
-    verificationEmailResendLimitExceeded = 5173,
-    forgotPasswordRequestLimitExceeded = 5174,
+    passwordNotSet = 5168,
+    tokenInvalid = 5169,
+    emailAlreadyVerified = 5170,
+    mobileNumberExist = 5171,
+    verificationEmailResendLimitExceeded = 5172,
+    forgotPasswordRequestLimitExceeded = 5173,
 }

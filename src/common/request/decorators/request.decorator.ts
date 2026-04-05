@@ -16,6 +16,9 @@ import { EnumAppEnvironment } from '@app/enums/app.enum';
 import { RealIp } from 'nestjs-real-ip';
 import { IRequestApp } from '@common/request/interfaces/request.interface';
 import { UAParser } from 'ua-parser-js';
+import { getClientIp } from '@supercharge/request-ip';
+import geoIp from 'geoip-lite';
+import { GeoLocation } from '@generated/prisma-client';
 
 /**
  * Request timeout decorator for route handlers.
@@ -36,7 +39,9 @@ export function RequestTimeout(seconds: ms.StringValue): MethodDecorator {
  * @param {...EnumAppEnvironment[]} envs - Array of application environments where the route should be accessible
  * @returns {MethodDecorator} A method decorator that applies environment-based access control
  */
-export function RequestEnvProtected(...envs: EnumAppEnvironment[]): MethodDecorator {
+export function RequestEnvProtected(
+    ...envs: EnumAppEnvironment[]
+): MethodDecorator {
     return applyDecorators(
         UseGuards(RequestEnvGuard),
         SetMetadata(RequestEnvMetaKey, envs)
@@ -49,6 +54,38 @@ export function RequestEnvProtected(...envs: EnumAppEnvironment[]): MethodDecora
  * @returns The IP address as a string
  */
 export const RequestIPAddress = RealIp;
+
+/**
+ * Parameter decorator to extract geolocation information based on the request's IP address
+ * Uses the geoip-lite package to look up geolocation data.
+ *
+ * @param _ - Unused parameter
+ * @param ctx - Execution context containing the request information
+ * @returns The geolocation information as a GeoLocation object or null if not found
+ */
+export const RequestGeoLocation = createParamDecorator(
+    (_: unknown, ctx: ExecutionContext): GeoLocation | null => {
+        const request = ctx.switchToHttp().getRequest<IRequestApp>();
+        const ip = getClientIp(request);
+
+        if (!ip) {
+            return null;
+        }
+
+        const geo = geoIp.lookup(ip);
+        if (!geo) {
+            return null;
+        }
+
+        return {
+            latitude: geo.ll[0],
+            longitude: geo.ll[1],
+            country: geo.country,
+            region: geo.region,
+            city: geo.city,
+        };
+    }
+);
 
 /**
  * Parameter decorator to extract and parse the User-Agent header from the request

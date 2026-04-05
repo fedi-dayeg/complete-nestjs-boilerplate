@@ -161,6 +161,6 @@ export class ResponseInterceptor<T> implements NestInterceptor {
         response.setHeader('x-version', metadata.version);
         response.setHeader('x-repo-version', metadata.repoVersion);
         response.setHeader('x-request-id', String(metadata.requestId));
-        response.setHeader('x-correlation-id', String(metadata.correlation));
+        response.setHeader('x-correlation-id', String(metadata.correlationId));
     }
 }

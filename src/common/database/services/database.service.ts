@@ -5,7 +5,7 @@ import {
     OnModuleInit,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@generated/prisma-client';
 import { IDatabaseService } from '@common/database/interfaces/database.service.interface';
 import { HealthIndicatorResult } from '@nestjs/terminus';
 /**

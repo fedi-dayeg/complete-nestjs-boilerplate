@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MessageModule } from '@common/message/message.module';
 import { HelperModule } from '@common/helper/helper.module';
 import { RequestModule } from '@common/request/request.module';
-
+import configs from '@config';
 import { PolicyModule } from '@modules/policy/policy.module';
 import { FileModule } from '@common/file/file.module';
 import { AuthModule } from '@modules/auth/auth.module';
@@ -17,14 +17,15 @@ import { CacheMainModule } from '@common/cache/cache.module';
 import { LoggerModule } from '@common/logger/logger.module';
 import { QueueRegisterModule } from 'src/queues/queue.register.module';
 import { TermPolicyModule } from '@modules/term-policy/term-policy.module';
-import configs from '@configs/index';
 import { SessionModule } from '@modules/session/session.module';
+import { FirebaseModule } from '@common/firebase/firebase.module';
+import { ActivityLogModule } from '@modules/activity-log/activity-log.module';
+import { NotificationModule } from '@modules/notification/notification.module';
 
 /**
  * Common module that provides shared functionality across the application.
- * Configures global services including configuration, caching, logging, database, authentication, and pagination.
+ * All services within this module are marked as global and available across the application.
  */
-
 @Module({
     controllers: [],
     providers: [],
@@ -47,14 +48,17 @@ import { SessionModule } from '@modules/session/session.module';
         HelperModule,
         PaginationModule,
         FileModule,
+        FirebaseModule,
 
+        ActivityLogModule,
         ApiKeyModule,
         AuthModule,
-        PolicyModule,
-        RoleModule,
         FeatureFlagModule,
+        RoleModule,
+        PolicyModule,
         TermPolicyModule,
         SessionModule,
+        NotificationModule,
     ],
 })
 export class CommonModule {}

@@ -17,10 +17,9 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
     EnumVerificationType,
-    PasswordHistory,
     TwoFactor,
     User,
-} from '@prisma/client';
+} from '@generated/prisma-client';
 import { plainToInstance } from 'class-transformer';
 import { Duration } from 'luxon';
 import { Profanity } from '@2toad/profanity';
@@ -67,7 +66,7 @@ export class UserUtil {
             'user.uploadPhotoProfilePath'
         );
 
-        this.homeUrl = this.configService.get('app.homeUrl');
+        this.homeUrl = this.configService.get('home.url');
 
         this.forgotPasswordReferencePrefix = this.configService.get(
             'forgotPassword.reference.prefix'
@@ -198,19 +197,6 @@ export class UserUtil {
         };
     }
 
-    checkPasswordPeriod(
-        histories: PasswordHistory[],
-        password: string
-    ): PasswordHistory | null {
-        for (const history of histories) {
-            if (this.helperService.bcryptCompare(password, history.password)) {
-                return history;
-            }
-        }
-
-        return null;
-    }
-
     forgotPasswordCreateReference(): string {
         const random = this.helperService.randomString(
             this.forgotPasswordReferenceLength
@@ -224,7 +210,7 @@ export class UserUtil {
     }
 
     forgotPasswordSetExpiredDate(): Date {
-        const now = new Date();
+        const now = this.helperService.dateCreate();
 
         return this.helperService.dateForward(
             now,
@@ -232,16 +218,21 @@ export class UserUtil {
         );
     }
 
-    forgotPasswordCreate(): IUserForgotPasswordCreate {
+    forgotPasswordCreate(userId: string): IUserForgotPasswordCreate {
         const token = this.forgotPasswordCreateToken();
+        const hashedToken = this.helperService.sha256Hash(token);
+        const link = `${this.homeUrl}/${this.forgotLinkBaseUrl}/${token}`;
+        const encryptedLink = this.encryptedLink(userId, link);
 
         return {
             reference: this.forgotPasswordCreateReference(),
             expiredAt: this.forgotPasswordSetExpiredDate(),
             token,
+            hashedToken,
             expiredInMinutes: this.forgotExpiredInMinutes,
             resendInMinutes: this.forgotResendInMinutes,
-            link: `${this.homeUrl}/${this.forgotLinkBaseUrl}/${token}`,
+            link,
+            encryptedLink,
         };
     }
 
@@ -262,7 +253,7 @@ export class UserUtil {
     }
 
     verificationSetExpiredDate(): Date {
-        const now = new Date();
+        const now = this.helperService.dateCreate();
 
         return this.helperService.dateForward(
             now,
@@ -271,25 +262,45 @@ export class UserUtil {
     }
 
     verificationCreateVerification(
+        userId: string,
         type: EnumVerificationType
     ): IUserVerificationCreate {
         const token =
             type === EnumVerificationType.mobileNumber
                 ? this.verificationCreateOtp()
                 : this.verificationCreateToken();
+        const hashedToken = this.hashedToken(token);
         const link =
             type === EnumVerificationType.mobileNumber
                 ? null
                 : `${this.homeUrl}/${this.verificationLinkBaseUrl}/${token}`;
+        const encryptedLink =
+            type === EnumVerificationType.mobileNumber
+                ? null
+                : this.encryptedLink(userId, link);
 
         return {
             reference: this.verificationCreateReference(),
             expiredAt: this.verificationSetExpiredDate(),
             type,
             token,
+            hashedToken,
             expiredInMinutes: this.verificationExpiredInMinutes,
             link,
+            encryptedLink,
             resendInMinutes: this.verificationResendInMinutes,
         };
+    }
+
+    hashedToken(token: string): string {
+        return this.helperService.sha256Hash(token);
+    }
+
+    encryptedLink(userId: string, token: string): string {
+        return this.helperService.aes256EncryptSimple(token, userId);
+    }
+
+    decryptedLink(userId: string, encoded: string): string {
+        return this.helperService.aes256DecryptSimple(encoded, userId);
     }
 }

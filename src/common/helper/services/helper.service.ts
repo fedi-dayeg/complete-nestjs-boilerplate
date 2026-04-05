@@ -1,17 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { IHelperService } from '@common/helper/interfaces/helper.service.interface';
-import { ConfigService } from '@nestjs/config';
-import { AES, MD5, SHA256, enc, lib, mode, pad } from 'crypto-js';
-import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
-import { DateObjectUnits, DateTime, Duration, DurationLikeObject } from 'luxon';
 import {
     IHelperDateCreateOptions,
     IHelperEmailValidation,
     IHelperPasswordOptions,
 } from '@common/helper/interfaces/helper.interface';
+import { IHelperService } from '@common/helper/interfaces/helper.service.interface';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { compareSync, genSaltSync, hashSync } from 'bcryptjs';
+import { AES, MD5, SHA256, enc, lib, mode, pad } from 'crypto-js';
+import { DateObjectUnits, DateTime, Duration, DurationLikeObject } from 'luxon';
 import _ from 'lodash';
 import { EnumHelperDateDayOf } from '@common/helper/enums/helper.enum';
 import { hostname } from 'os';
+import { GeoLocation, UserAgent } from '@generated/prisma-client';
 
 /**
  * Comprehensive utility service providing helper functions for common operations.
@@ -21,9 +22,13 @@ import { hostname } from 'os';
 @Injectable()
 export class HelperService implements IHelperService {
     private readonly defTz: string;
+    private readonly encryptionSecretKey: string;
 
     constructor(private readonly configService: ConfigService) {
         this.defTz = this.configService.get<string>('app.timezone');
+        this.encryptionSecretKey = this.configService.get<string>(
+            'app.encryptionSecretKey'
+        );
     }
 
     /**
@@ -148,6 +153,24 @@ export class HelperService implements IHelperService {
     }
 
     /**
+     * Encrypts string using AES-256-CBC with random IV and optional extended key.
+     * Generates random IV and combines it with encrypted data for storage/transmission.
+     * @param {string} data - String to encrypt
+     * @param {string} [extendEncryptionKey] - Optional string to extend the encryption key
+     * @return {string} Encrypted string in format "iv:encryptedData"
+     * @throws {Error} If encryption fails
+     */
+    aes256EncryptSimple(data: string, extendEncryptionKey?: string): string {
+        const randomIv = this.randomString(16);
+        const encryptionKey = extendEncryptionKey
+            ? `${this.encryptionSecretKey}:${extendEncryptionKey}`
+            : this.encryptionSecretKey;
+        const encrypted = this.aes256Encrypt(data, encryptionKey, randomIv);
+
+        return `${randomIv}:${encrypted}`;
+    }
+
+    /**
      * Decrypts AES-256-CBC encrypted data.
      * @template T - Type of decrypted data
      * @param {string} encrypted - Encrypted string
@@ -170,6 +193,29 @@ export class HelperService implements IHelperService {
         }
 
         return JSON.parse(decrypted);
+    }
+
+    /**
+     * Decrypts AES-256-CBC encrypted string that includes IV prefix.
+     * Expects input format "iv:encryptedData".
+     * @param {string} encryptedData - Encrypted string with IV prefix
+     * @param {string} extendEncryptionKey - Optional string to extend the encryption key
+     * @return {string} Decrypted original string
+     * @throws {Error} If input format is invalid or decryption fails
+     */
+    aes256DecryptSimple(
+        encryptedData: string,
+        extendEncryptionKey?: string
+    ): string {
+        const [iv, encrypted] = encryptedData.split(':');
+        if (!iv || !encrypted) {
+            throw new Error('Invalid encrypted data format');
+        }
+
+        const encryptionKey = extendEncryptionKey
+            ? `${this.encryptionSecretKey}:${extendEncryptionKey}`
+            : this.encryptionSecretKey;
+        return this.aes256Decrypt(encrypted, encryptionKey, iv);
     }
 
     /**
@@ -525,6 +571,7 @@ export class HelperService implements IHelperService {
                 if (normalizedPattern === '*') {
                     return true;
                 }
+
                 if (normalizedPattern.endsWith('*')) {
                     const basePattern = normalizedPattern.slice(0, -1);
 
@@ -818,5 +865,38 @@ export class HelperService implements IHelperService {
      */
     getHostname(): string {
         return hostname();
+    }
+
+    /**
+     * Resolves city name from GeoLocation object.
+     * @param {GeoLocation} [geoLocation] - Optional GeoLocation object containing city information
+     * @returns {string} City name if available, otherwise 'Unknown Location'
+     */
+    resolveCity(geoLocation?: GeoLocation): string {
+        return geoLocation?.city ?? 'Unknown Location';
+    }
+
+    /**
+     * Resolves device information from UserAgent object.
+     * Attempts to identify device model and vendor, falling back to OS or browser name if necessary.
+     * @param {UserAgent} userAgent - UserAgent object containing device, OS, and browser information
+     * @returns {string} Resolved device description or 'Unknown Device' if information is insufficient
+     */
+    resolveDevice(userAgent: UserAgent): string {
+        const { device, os, browser } = userAgent;
+
+        if (device?.vendor && device?.model) {
+            return `${device.vendor} ${device.model}`;
+        }
+
+        if (os?.name) {
+            return os.name;
+        }
+
+        if (browser?.name) {
+            return browser.name;
+        }
+
+        return 'Unknown Device';
     }
 }

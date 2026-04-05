@@ -120,7 +120,8 @@ export class UserService {
             this.logger.log(`User created: ${user.id}`);
             return user;
         } catch (error) {
-            this.logger.error(`Failed to create user: ${error.message}`, error.stack);
+            // NOTE: pass object/error first, message string second
+            this.logger.error(error, 'Failed to create user');
             throw error;
         }
     }
@@ -332,7 +333,7 @@ logs/
 When `LOGGER_PRETTIER=false`, logs are written in JSON format:
 
 ```json
-{"severity":"INFO","context":"UserService","timestamp":1764577182750,"msg":"User created: user-123","service":{"name":"CompleteNestjs","environment":"production","version":"8.0.0"},"level":30}
+{"severity":"INFO","context":"UserService","timestamp":1764577182750,"msg":"User created: user-123","service":{"name":"CompleteNestJs","environment":"production","version":"8.0.0"},"level":30}
 ```
 
 ### Example Usage
@@ -368,9 +369,12 @@ When auto-logging is enabled, the following information is automatically capture
 - Route pattern
 - User-Agent
 - Content-Type
+- Referer
+- Remote address and port
 - Client IP address
 - Authenticated user ID
 - Query parameters (sanitized)
+- Route params (sanitized)
 - Request headers (sanitized)
 
 **Response:**
@@ -385,6 +389,8 @@ Routes excluded from auto-logging (defined in `logger.constant.ts`):
 
 ```typescript
 export const LoggerExcludedRoutes: string[] = [
+    '/api/hello',
+    '/api/hello/*',
     '/api/health',
     '/api/health/*',
     '/metrics',
@@ -409,6 +415,8 @@ To exclude additional routes, modify the constant in `src/common/logger/constant
 
 ```typescript
 export const LoggerExcludedRoutes: string[] = [
+    '/api/hello',
+    '/api/hello/*',
     '/api/health',
     '/api/health/*',
     '/metrics',
@@ -448,7 +456,7 @@ Development-friendly colored output with structured formatting using `pino-prett
 ```
 INFO [2025-12-29 15:18:54.496 +0700]: [UserService] Creating new user
     service: {
-      "name": "CompleteNestjs",
+      "name": "CompleteNestJs",
       "environment": "local",
       "version": "8.0.0"
     }
@@ -641,10 +649,8 @@ export class PaymentService {
             // Process payment logic
         } catch (error) {
             // This error will be sent to Sentry automatically
-            this.logger.error(
-                `Payment processing failed for order: ${orderId}`,
-                error.stack
-            );
+            // NOTE: pass object/error first, message string second
+            this.logger.error(error, `Payment processing failed for order: ${orderId}`);
             throw error;
         }
     }
@@ -658,7 +664,7 @@ The logger automatically includes the following context in Sentry reports:
 ```json
 {
   "service": {
-    "name": "CompleteNestjs",
+    "name": "CompleteNestJs",
     "environment": "production",
     "version": "8.0.0"
   },
@@ -683,7 +689,6 @@ To disable Sentry integration, simply remove or comment out the `SENTRY_DSN` env
 When DSN is not configured, errors are only logged locally without being sent to Sentry.
 
 <!-- REFERENCES -->
-
 [ref-nestjs]: http://nestjs.com
 [ref-doc-configuration]: configuration.md
 [ref-doc-environment]: environment.md

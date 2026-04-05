@@ -8,7 +8,7 @@ import { EnumDocRequestBodyType } from '@common/doc/enums/doc.enum';
 import { AuthTokenResponseDto } from '@modules/auth/dtos/response/auth.token.response.dto';
 import { UserForgotPasswordResetRequestDto } from '@modules/user/dtos/request/user.forgot-password-reset.request.dto';
 import { UserForgotPasswordRequestDto } from '@modules/user/dtos/request/user.forgot-password.request.dto';
-import { UserLoginEnableTwoFactorRequestDto } from '@modules/user/dtos/request/user.login-enable-two-factor.request.dto';
+import { UserLoginSetupTwoFactorRequestDto } from '@modules/user/dtos/request/user.login-setup-two-factor.request.dto';
 import { UserLoginVerifyTwoFactorRequestDto } from '@modules/user/dtos/request/user.login-verify-two-factor.request.dto';
 import { UserLoginRequestDto } from '@modules/user/dtos/request/user.login.request.dto';
 import { UserSendEmailVerificationRequestDto } from '@modules/user/dtos/request/user.send-email-verification.request.dto';
@@ -160,20 +160,20 @@ export function UserPublicLoginVerifyTwoFactorDoc(): MethodDecorator {
     );
 }
 
-export function UserPublicLoginEnableTwoFactorDoc(): MethodDecorator {
+export function UserPublicLoginSetupTwoFactorDoc(): MethodDecorator {
     return applyDecorators(
         Doc({
             summary:
-                'User enable two factor during login, for required setup 2FA flow',
+                'User enable two factor during login after reset by admin. Required setup 2FA flow',
         }),
         DocAuth({
             xApiKey: true,
         }),
         DocRequest({
             bodyType: EnumDocRequestBodyType.json,
-            dto: UserLoginEnableTwoFactorRequestDto,
+            dto: UserLoginSetupTwoFactorRequestDto,
         }),
-        DocResponse('user.loginEnableTwoFactor', {
+        DocResponse('user.loginSetupTwoFactor', {
             dto: UserTwoFactorEnableResponseDto,
         })
     );

@@ -2,10 +2,9 @@
 
 This documentation explains **Environment**: Located at `.env.example`
 
-
 ## Overview
 
-This document provides a comprehensive guide to configuring the Compelete NestJS Boilerplate using environment variables. The project uses a `.env` file to store all configuration settings including database connections, authentication, AWS services, and other application settings.
+This document provides a comprehensive guide to configuring the Complete NestJS Boilerplate using environment variables. The project uses a `.env` file to store all configuration settings including database connections, authentication, AWS services, and other application settings.
 
 All environment variables are validated using the `AppEnvDto` class to ensure required variables are present and properly formatted before the application starts.
 
@@ -16,35 +15,34 @@ All environment variables are validated using the `AppEnvDto` class to ensure re
 - [Database Documentation][ref-doc-database] - For database connection details
 - [Authentication Documentation][ref-doc-authentication] - For JWT and OAuth configuration
 
-
 ## Table of Contents
-
 
 - [Overview](#overview)
 - [Related Documents](#related-documents)
 - [Environment Validation](#environment-validation)
 - [Example Configuration](#example-configuration)
 - [Environment Variables](#environment-variables)
-    - [Application Settings](#application-settings)
-    - [Home/Organization Settings](#homeorganization-settings)
-    - [HTTP Server Settings](#http-server-settings)
-    - [Logging Settings](#logging-settings)
-    - [CORS Settings](#cors-settings)
-    - [URL Versioning Settings](#url-versioning-settings)
-    - [Database Settings](#database-settings)
-    - [Authentication Settings](#authentication-settings)
-    - [Social Authentication Settings](#social-authentication-settings)
-    - [Two-Factor Authentication Settings](#two-factor-authentication-settings)
-    - [AWS Settings](#aws-settings)
-    - [Redis Settings](#redis-settings)
-    - [Debug Settings](#debug-settings)
+  - [Application Settings](#application-settings)
+  - [Home/Organization Settings](#homeorganization-settings)
+  - [HTTP Server Settings](#http-server-settings)
+  - [Logging Settings](#logging-settings)
+  - [CORS Settings](#cors-settings)
+  - [URL Versioning Settings](#url-versioning-settings)
+  - [Database Settings](#database-settings)
+  - [Authentication Settings](#authentication-settings)
+  - [Social Authentication Settings](#social-authentication-settings)
+  - [Two-Factor Authentication Settings](#two-factor-authentication-settings)
+  - [AWS Settings](#aws-settings)
+  - [Email Settings](#email-settings)
+  - [Firebase Settings](#firebase-settings)
+  - [Redis Settings](#redis-settings)
+  - [Debug Settings](#debug-settings)
 
 ## Environment Validation
 
 Environment variables are validated using the `AppEnvDto` class with `class-validator` decorators. This validation occurs in `src/main.ts` during application bootstrap:
 
 ```typescript
-
 // Validate environment variables
 const classEnv = plainToInstance(AppEnvDto, process.env);
 const errors = await validate(classEnv);
@@ -72,14 +70,15 @@ Below is an example `.env` file based on the current `.env.example`:
 
 ```bash
 # Application Settings
-APP_NAME=ACKNestJs
+APP_NAME=CompleteNestJs
 APP_ENV=local
 APP_LANGUAGE=en
 APP_TIMEZONE=Asia/Jakarta
+APP_ENCRYPTION_SECRET_KEY=qwerty1234567890abcdefghijklmnop
 
 # Home/Organization
-HOME_URL=https://example.id
-HOME_NAME=ACKNestJs
+HOME_URL=https://example.com
+HOME_NAME=CompleteNestJs
 
 # HTTP Server
 HTTP_HOST=localhost
@@ -100,29 +99,29 @@ URL_VERSIONING_ENABLE=true
 URL_VERSION=1
 
 # Database
-DATABASE_URL=mongodb://localhost:27017/CompleteNestJsBoilerplate?retryWrites=true&w=majority&replicaSet=rs0
+DATABASE_URL=mongodb://localhost:27017/CompleteNestJsNestJs?retryWrites=true&w=majority&replicaSet=rs0
 DATABASE_DEBUG=true
 
 # JWT Authentication
-AUTH_JWT_ISSUER=https://example.id
-AUTH_JWT_AUDIENCE=CompleteNestJsBoilerplate
+AUTH_JWT_ISSUER=https://example.com
+AUTH_JWT_AUDIENCE=CompleteNestJsNestJs
 
 # Access Token Configuration
 AUTH_JWT_ACCESS_TOKEN_JWKS_URI=http://localhost:3011/.well-known/access-jwks.json
-AUTH_JWT_ACCESS_TOKEN_KID=complete-access-2024-001
+AUTH_JWT_ACCESS_TOKEN_KID=CompleteNestJs-access-2024-001
 AUTH_JWT_ACCESS_TOKEN_PRIVATE_KEY=qwerty1234567890
 AUTH_JWT_ACCESS_TOKEN_PUBLIC_KEY=qwerty1234567890
 AUTH_JWT_ACCESS_TOKEN_EXPIRED=1h
 
 # Refresh Token Configuration
 AUTH_JWT_REFRESH_TOKEN_JWKS_URI=http://localhost:3011/.well-known/refresh-jwks.json
-AUTH_JWT_REFRESH_TOKEN_KID=complete-refresh-2024-001
+AUTH_JWT_REFRESH_TOKEN_KID=CompleteNestJs-refresh-2024-001
 AUTH_JWT_REFRESH_TOKEN_PRIVATE_KEY=qwerty1234567890
 AUTH_JWT_REFRESH_TOKEN_PUBLIC_KEY=qwerty1234567890
 AUTH_JWT_REFRESH_TOKEN_EXPIRED=30d
 
 # Two-Factor Authentication
-AUTH_TWO_FACTOR_ISSUER=ACKCompleteNestJsTwoFactor
+AUTH_TWO_FACTOR_ISSUER=CompleteNestJsNestJsTwoFactor
 AUTH_TWO_FACTOR_ENCRYPTION_KEY=qwerty1234567890
 
 # Social Authentication (Optional)
@@ -140,17 +139,26 @@ AWS_S3_PUBLIC_BUCKET=
 AWS_S3_PUBLIC_CDN=
 AWS_S3_PRIVATE_BUCKET=
 AWS_S3_PRIVATE_CDN=
-AWS_SES_CREDENTIAL_KEY=
 
 # AWS SES Configuration (Optional)
 AWS_SES_IAM_CREDENTIAL_KEY=
 AWS_SES_IAM_CREDENTIAL_SECRET=
 AWS_SES_IAM_ARN=
+AWS_SES_REGION=ap-southeast-3
+
+# Email
+EMAIL_NO_REPLY=no-reply@mail.com
+EMAIL_SUPPORT=support@mail.com
+EMAIL_ADMIN=admin@mail.com
+
+# Firebase (Optional)
+FIREBASE_PROJECT_ID=
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_PRIVATE_KEY=
 
 # Redis
 CACHE_REDIS_URL=redis://localhost:6379/0
 QUEUE_REDIS_URL=redis://localhost:6379/1
-
 
 # Debug (Optional)
 SENTRY_DSN=
@@ -165,7 +173,7 @@ All environment variables are validated using the `AppEnvDto` class to ensure re
 **`APP_NAME`** *(required)*  
 The name of your application. Used throughout the system for identification.
 ```bash
-APP_NAME=CompleteNestJsBoilerplate
+APP_NAME=CompleteNestJsNestJs
 ```
 
 **`APP_ENV`** *(required)*  
@@ -183,7 +191,13 @@ APP_LANGUAGE=en
 **`APP_TIMEZONE`** *(required)*  
 Default timezone for date operations. Example: `Asia/Jakarta`, `UTC`
 ```bash
-APP_TIMEZONE=Europe/Paris
+APP_TIMEZONE=Asia/Jakarta
+```
+
+**`APP_ENCRYPTION_SECRET_KEY`** *(required)*  
+Secret key used to derive an AES-256 encryption key for encrypting sensitive data (recommended 32+ characters).
+```bash
+APP_ENCRYPTION_SECRET_KEY=qwerty1234567890abcdefghijklmnop
 ```
 
 ### Home/Organization Settings
@@ -191,13 +205,13 @@ APP_TIMEZONE=Europe/Paris
 **`HOME_NAME`** *(required)*  
 Display name for your organization/home page.
 ```bash
-HOME_NAME=CompleteNestJsBoilerplate
+HOME_NAME=CompleteNestJsNestJs
 ```
 
 **`HOME_URL`** *(required)*  
 URL for your home/landing page.
 ```bash
-HOME_URL=https://example.id
+HOME_URL=https://example.com
 ```
 
 ### HTTP Server Settings
@@ -249,24 +263,54 @@ LOGGER_AUTO=false
 ### CORS Settings
 
 **`CORS_ALLOWED_ORIGIN`** *(required)*  
-Comma-separated list of allowed CORS origins. Supports subdomain wildcards but not port wildcards.
+Comma-separated list of allowed CORS origins. Supports subdomain wildcards and explicit ports, but not port wildcards.
+
+**Syntax:**
+- `*` — Allow all origins (credentials disabled)
+- `hostname` — Single origin (e.g., `example.com`)
+- `*.subdomain` — Wildcard subdomains (e.g., `*.example.com` matches `api.example.com` and `example.com`)
+- `hostname:port` — Specific hostname with port (e.g., `api.example.com:3000`)
+- `*.subdomain:port` — Wildcard with explicit port (e.g., `*.example.com:3000`)
 
 **Examples:**
 ```bash
-# Allow all origins (development only)
+# Allow all origins (development only) — credentials NOT allowed
 CORS_ALLOWED_ORIGIN=*
 
 # Specific origins
 CORS_ALLOWED_ORIGIN=example.com,app.example.com
 
-# Subdomain wildcard (supported)
+# Subdomain wildcard (matches api.example.com and example.com)
 CORS_ALLOWED_ORIGIN=*.example.com,api.myapp.com
 
-# Multiple domains with subdomains
-CORS_ALLOWED_ORIGIN=*.example.com,*.myapp.com,localhost:3000
+# Multiple domains with explicit ports
+CORS_ALLOWED_ORIGIN=*.example.com:3000,api.myapp.com:8080,localhost:3000
+
+# Mixed — wildcards and specific ports
+CORS_ALLOWED_ORIGIN=*.example.com,api.production.com:443,localhost:3000
 ```
 
-> **Note**: While subdomain wildcards (`*.example.com`) are supported, port wildcards (`example.com:*`) are not supported. Specify exact ports when needed.
+**Port Matching Behavior:**
+```bash
+# ✅ SUPPORTED — Exact port matching
+CORS_ALLOWED_ORIGIN=api.example.com:3000  # Matches: http://api.example.com:3000, https://api.example.com:3000
+
+# ❌ NOT SUPPORTED — Port wildcards
+CORS_ALLOWED_ORIGIN=api.example.com:*     # Does NOT work
+
+# ✅ SUPPORTED — Default port (implicit)
+CORS_ALLOWED_ORIGIN=api.example.com       # Matches: http://api.example.com, https://api.example.com (no explicit port)
+```
+
+**Protocol Behavior:**
+- Both `http` and `https` are automatically allowed for the same origin
+- Protocol is **not** part of the pattern (no need to specify `https://` in the pattern)
+
+**Credentials Behavior:**
+- **Wildcard (`*`)**: Credentials are **disabled** (CORS security restriction)
+- **Specific origins**: Credentials are **enabled**
+
+> **Best Practice**: For production, always specify explicit origins instead of using wildcard. Wildcard origins with credentials disabled should only be used in development environments.
 
 ### URL Versioning Settings
 
@@ -288,10 +332,10 @@ URL_VERSION=1
 MongoDB connection string. Must include replica set for transactions.
 ```bash
 # Local MongoDB with replica set
-DATABASE_URL=mongodb://localhost:27017/CompleteNestJsBoilerplate?retryWrites=true&w=majority&replicaSet=rs0
+DATABASE_URL=mongodb://localhost:27017/CompleteNestJsNestJs?retryWrites=true&w=majority&replicaSet=rs0
 
 # MongoDB Atlas example
-# DATABASE_URL=mongodb+srv://username:password@cluster.mongodb.net/CompleteNestJsBoilerplate
+# DATABASE_URL=mongodb+srv://username:password@cluster.mongodb.net/CompleteNestJsNestJs
 ```
 
 **`DATABASE_DEBUG`** *(required)*  
@@ -305,13 +349,13 @@ DATABASE_DEBUG=true
 **`AUTH_JWT_ISSUER`** *(required)*  
 JWT issuer claim value (usually your domain).
 ```bash
-AUTH_JWT_ISSUER=https://example.id
+AUTH_JWT_ISSUER=https://example.com
 ```
 
 **`AUTH_JWT_AUDIENCE`** *(required)*  
 JWT audience claim value (usually your application name).
 ```bash
-AUTH_JWT_AUDIENCE=CompelteNestJs
+AUTH_JWT_AUDIENCE=CompleteNestJsNestJs
 ```
 
 #### Access Token Settings
@@ -325,7 +369,7 @@ AUTH_JWT_ACCESS_TOKEN_JWKS_URI=http://localhost:3011/.well-known/access-jwks.jso
 **`AUTH_JWT_ACCESS_TOKEN_KID`** *(required)*  
 Key ID for access token. Generated automatically by `pnpm generate:keys`.
 ```bash
-AUTH_JWT_ACCESS_TOKEN_KID=complete-access-2024-001
+AUTH_JWT_ACCESS_TOKEN_KID=CompleteNestJs-access-2024-001
 ```
 
 **`AUTH_JWT_ACCESS_TOKEN_PRIVATE_KEY`** *(required)*  
@@ -357,7 +401,7 @@ AUTH_JWT_REFRESH_TOKEN_JWKS_URI=http://localhost:3011/.well-known/refresh-jwks.j
 **`AUTH_JWT_REFRESH_TOKEN_KID`** *(required)*  
 Key ID for refresh token. Generated automatically by `pnpm generate:keys`.
 ```bash
-AUTH_JWT_REFRESH_TOKEN_KID=compelete-refresh-2024-001
+AUTH_JWT_REFRESH_TOKEN_KID=Complete-refresh-2024-001
 ```
 
 **`AUTH_JWT_REFRESH_TOKEN_PRIVATE_KEY`** *(required)*  
@@ -408,20 +452,17 @@ AUTH_SOCIAL_APPLE_SIGN_IN_CLIENT_ID=
 
 ### Two-Factor Authentication Settings
 
-
 **`AUTH_TWO_FACTOR_ISSUER`** *(optional)*  
 Issuer name displayed in authenticator apps.
 ```bash
-AUTH_TWO_FACTOR_ISSUER=COMPLETE
+AUTH_TWO_FACTOR_ISSUER=CompleteNestJsTwoFactor
 ```
-
 
 **`AUTH_TWO_FACTOR_ENCRYPTION_KEY`** *(required for 2FA)*  
 Secret used to derive an AES-256 key for encrypting TOTP secrets (recommended 32+ chars).
 ```bash
 AUTH_TWO_FACTOR_ENCRYPTION_KEY=qwerty1234567890
 ```
-
 
 ### AWS Settings
 
@@ -437,7 +478,6 @@ AWS_S3_IAM_CREDENTIAL_KEY=
 
 **`AWS_S3_IAM_CREDENTIAL_SECRET`** *(optional/required for file uploads)*  
 AWS IAM secret access key for S3 bucket operations.
-
 ```bash
 AWS_S3_IAM_CREDENTIAL_SECRET=
 ```
@@ -453,7 +493,6 @@ AWS_S3_IAM_ARN=
 > - Better security through role assumption
 > - Fine-grained access control
 > - Automatic credential rotation
-
 
 **`AWS_S3_REGION`** *(optional/required for file uploads)*  
 AWS region for S3 services.
@@ -474,6 +513,7 @@ AWS_S3_PUBLIC_CDN=
 ```
 
 #### S3 Private Bucket (for private files)
+
 **`AWS_S3_PRIVATE_BUCKET`** *(optional/required for private file uploads)*  
 Name of the private S3 bucket for secure file storage.
 ```bash
@@ -487,6 +527,7 @@ AWS_S3_PRIVATE_CDN=
 ```
 
 #### SES (Email Service)
+
 **`AWS_SES_IAM_CREDENTIAL_KEY`** *(optional/required for email features)*  
 AWS IAM access key ID for SES email service.
 ```bash
@@ -511,11 +552,54 @@ AWS_SES_IAM_ARN=
 > - Fine-grained access control
 > - Automatic credential rotation
 
-
 **`AWS_SES_REGION`** *(optional/required for email features)*  
 AWS region for SES service.
 ```bash
 AWS_SES_REGION=ap-southeast-3
+```
+
+### Email Settings
+
+> **Note**: Email settings are optional.
+
+**`EMAIL_NO_REPLY`** *(optional/required for email features)*  
+Sender email address used for no-reply emails (e.g., transactional, notifications).
+```bash
+EMAIL_NO_REPLY=no-reply@mail.com
+```
+
+**`EMAIL_SUPPORT`** *(optional/required for email features)*  
+Support email address shown in email templates.
+```bash
+EMAIL_SUPPORT=support@mail.com
+```
+
+**`EMAIL_ADMIN`** *(optional/required for email features)*  
+Admin email address for internal notifications.
+```bash
+EMAIL_ADMIN=admin@mail.com
+```
+
+### Firebase Settings
+
+> **Note**: Firebase settings are optional. Required only if push notification features are enabled.
+
+**`FIREBASE_PROJECT_ID`** *(optional/required for push notifications)*  
+Firebase project ID from your Firebase console.
+```bash
+FIREBASE_PROJECT_ID=
+```
+
+**`FIREBASE_CLIENT_EMAIL`** *(optional/required for push notifications)*  
+Firebase service account client email.
+```bash
+FIREBASE_CLIENT_EMAIL=
+```
+
+**`FIREBASE_PRIVATE_KEY`** *(optional/required for push notifications)*  
+Firebase service account private key. Replace newlines with `\n` when storing in `.env`.
+```bash
+FIREBASE_PRIVATE_KEY=
 ```
 
 ### Redis Settings
@@ -541,92 +625,10 @@ SENTRY_DSN=
 ```
 
 
+
 <!-- REFERENCES -->
 
-<!-- BADGE LINKS -->
-
-[ack-contributors-shield]: https://img.shields.io/github/contributors/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-forks-shield]: https://img.shields.io/github/forks/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-stars-shield]: https://img.shields.io/github/stars/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-issues-shield]: https://img.shields.io/github/issues/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-license-shield]: https://img.shields.io/github/license/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[nestjs-shield]: https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white
-[nodejs-shield]: https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white
-[typescript-shield]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
-[mongodb-shield]: https://img.shields.io/badge/MongoDB-white?style=for-the-badge&logo=mongodb&logoColor=4EA94B
-[jwt-shield]: https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white
-[jest-shield]: https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white
-[pnpm-shield]: https://img.shields.io/badge/pnpm-%232C8EBB.svg?style=for-the-badge&logo=pnpm&logoColor=white&color=F9AD00
-[docker-shield]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
-[github-shield]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
-[linkedin-shield]: https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white
-
-<!-- CONTACTS -->
-
-[ref-author-linkedin]: https://www.linkedin.com/in/fedi-dayeg-192288369/
-[ref-author-email]: mailto:contact@fedidayeg.fr
-[ref-author-github]: https://github.com/fedi-dayeg
-[ref-author-paypal]: https://paypal.me/Fedidayeg25
-[ref-author-kofi]: https://ko-fi.com/fedidayeg
-
-<!-- Repo LINKS -->
-
-[ref-ack]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate
-[ref-ack-issues]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/issues
-[ref-ack-stars]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/stargazers
-[ref-ack-forks]:https://github.com/fedi-dayeg/complete-nestjs-boilerplate/network/members
-[ref-ack-contributors]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/graphs/contributors
-[ref-ack-license]: LICENSE.md
-
-<!-- THIRD PARTY -->
-
-[ref-nestjs]: http://nestjs.com
-[ref-nestjs-swagger]: https://docs.nestjs.com/openapi/introduction
-[ref-nestjs-swagger-types]: https://docs.nestjs.com/openapi/types-and-parameters
-[ref-prisma]: https://www.prisma.io
-[ref-prisma-mongodb]: https://www.prisma.io/docs/orm/overview/databases/mongodb#commonalities-with-other-database-provider
-[ref-prisma-setup]: https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project#switching-databases
-[ref-mongodb]: https://docs.mongodb.com/
-[ref-redis]: https://redis.io
-[ref-bullmq]: https://bullmq.io
-[ref-nodejs]: https://nodejs.org/
-[ref-typescript]: https://www.typescriptlang.org/
-[ref-docker]: https://docs.docker.com
-[ref-dockercompose]: https://docs.docker.com/compose/
-[ref-pnpm]: https://pnpm.io
-[ref-12factor]: https://12factor.net
-[ref-commander]: https://nest-commander.jaymcdoniel.dev
-[ref-package-json]: package.json
-[ref-jwt]: https://jwt.io
-[ref-jest]: https://jestjs.io/docs/getting-started
-[ref-git]: https://git-scm.com
-[ref-google-console]: https://console.cloud.google.com/
-[ref-google-client-secret]: https://developers.google.com/identity/protocols/oauth2
-
-<!-- DOCUMENTS -->
-
-[ref-doc-root]: ../readme.md
-[ref-doc-activity-log]: activity-log.md
-[ref-doc-authentication]: authentication.md
-[ref-doc-authorization]: authorization.md
-[ref-doc-cache]: cache.md
 [ref-doc-configuration]: configuration.md
-[ref-doc-database]: database.md
-[ref-doc-environment]: environment.md
-[ref-doc-feature-flag]: feature-flag.md
-[ref-doc-file-upload]: file-upload.md
-[ref-doc-handling-error]: handling-error.md
 [ref-doc-installation]: installation.md
-[ref-doc-logger]: logger.md
-[ref-doc-message]: message.md
-[ref-doc-pagination]: pagination.md
-[ref-doc-project-structure]: project-structure.md
-[ref-doc-queue]: queue.md
-[ref-doc-request-validation]: request-validation.md
-[ref-doc-response]: response.md
-[ref-doc-security-and-middleware]: security-and-middleware.md
-[ref-doc-doc]: doc.md
-[ref-doc-third-party-integration]: third-party-integration.md
-[ref-doc-presign]: presign.md
-[ref-doc-term-policy]: term-policy.md
-[ref-doc-two-factor]: two-factor.md
+[ref-doc-database]: database.md
+[ref-doc-authentication]: authentication.md

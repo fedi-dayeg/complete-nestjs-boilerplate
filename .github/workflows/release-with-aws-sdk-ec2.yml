@@ -44,13 +44,13 @@ jobs:
           echo Version is: ${{ steps.version.outputs.current-version }}
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@master
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@master
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@main
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -93,12 +93,11 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@main
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-
 
       - name: Set EC2 instance variable
         if: ${{ github.ref_name == matrix.branch }}
@@ -110,7 +109,6 @@ jobs:
           elif [ "${{ matrix.env }}" = "staging" ]; then
             echo "EC2_INSTANCE=${{ secrets.STAGING_AWS_INSTANCE_ID }}" >> $GITHUB_ENV
           fi
-
 
       - name: Update AWS EC2 Instance
         if: ${{ github.ref_name == matrix.branch }}
@@ -126,6 +124,7 @@ jobs:
                   "docker network create app-network --driver=bridge 2>/dev/null || true",
                   "docker run -itd --env NODE_ENV=${{ matrix.env }} --hostname ${{ vars.DOCKER_CONTAINER_NAME }} --publish ${{ vars.DOCKER_CONTAINER_PORT }}:3000 --network app-network --volume /home/ec2-user/${{ vars.DOCKER_CONTAINER_NAME }}/.env:/app/.env --volume /home/ec2-user/${{ vars.DOCKER_CONTAINER_NAME }}/keys/:/app/keys/ --volume /home/ec2-user/${{ vars.DOCKER_CONTAINER_NAME }}/logs/:/app/logs/ --restart unless-stopped --name ${{ vars.DOCKER_CONTAINER_NAME }} ${{ vars.AWS_ECR_REPO_URL }}:${{ matrix.env }}"
               ]'
+
   clean:
     needs: [deploy]
     runs-on: ubuntu-latest
@@ -145,7 +144,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@main
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

@@ -52,7 +52,8 @@
         "Vnwnyr",
         "weakpassword",
         "Zgoh",
-        "passwordHasheds"
+        "passwordHasheds",
+        "Upserted"
     ],
     "ignorePaths": [
         "node_modules/**",

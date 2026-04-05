@@ -54,12 +54,12 @@ export function UserSharedProfileDoc(): MethodDecorator {
         Doc({
             summary: 'get profile',
         }),
+        DocGuard({
+            termPolicy: true,
+        }),
         DocAuth({
             xApiKey: true,
             jwtAccessToken: true,
-        }),
-        DocGuard({
-            termPolicy: true,
         }),
         DocResponse<UserProfileResponseDto>('user.profile', {
             dto: UserProfileResponseDto,

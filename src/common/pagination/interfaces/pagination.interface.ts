@@ -10,14 +10,18 @@ export type IPaginationQueryFilter = Record<
     string | number | boolean | Array<string | number | boolean> | Date
 >;
 
+export type IPaginationOrderBy = Record<
+    string,
+    EnumPaginationOrderDirectionType
+>;
+
 export interface IPaginationQuery {
     search?: string;
     filters?: IPaginationQueryFilter;
     page: number;
     perPage: number;
     cursor?: string;
-    orderBy: string;
-    orderDirection: EnumPaginationOrderDirectionType;
+    orderBy: IPaginationOrderBy[];
     availableSearch: string[];
     availableOrderBy: string[];
 }
@@ -35,28 +39,33 @@ export interface IPaginationQueryCursorOptions {
     cursorField?: string;
 }
 
-export type IPaginationOrderBy = Record<
-    string,
-    EnumPaginationOrderDirectionType
->;
-
-export interface IPaginationQueryReturn {
-    where?: {
-        or: Record<string, { contains: string }>[];
-        [key: string]: unknown;
-    };
-    orderBy?: IPaginationOrderBy;
-    limit: number;
-    include: unknown;
+export interface IPaginationQueryDefaultWhere {
+    or?: Record<string, { contains?: string }>[];
+    [key: string]: unknown;
 }
 
-export interface IPaginationQueryOffsetParams extends IPaginationQueryReturn {
-    select?: unknown;
+export interface IPaginationQueryReturn<
+    TArgsWhere = IPaginationQueryDefaultWhere,
+> {
+    where?: TArgsWhere;
+    orderBy?: IPaginationOrderBy[];
+    limit: number;
+    include?: unknown;
+}
+
+export interface IPaginationQueryOffsetParams<
+    TArgsSelect = unknown,
+    TArgsWhere = unknown,
+> extends IPaginationQueryReturn<TArgsWhere> {
+    select?: TArgsSelect;
     skip: number;
 }
 
-export interface IPaginationQueryCursorParams extends IPaginationQueryReturn {
-    select?: unknown;
+export interface IPaginationQueryCursorParams<
+    TArgsSelect = unknown,
+    TArgsWhere = unknown,
+> extends IPaginationQueryReturn<TArgsWhere> {
+    select?: TArgsSelect;
     cursor?: string;
     cursorField?: string;
     includeCount?: boolean;
@@ -137,6 +146,6 @@ export interface IPaginationRepository {
 
 export interface IPaginationCursorValue {
     cursor: string;
-    orderBy: IPaginationOrderBy;
+    orderBy: IPaginationOrderBy[];
     where: unknown;
 }

@@ -1,5 +1,18 @@
 import { _Object } from '@aws-sdk/client-s3';
 import {
+    AwsS3MultipartDto,
+    AwsS3MultipartPartDto,
+} from '@common/aws/dtos/aws.s3-multipart.dto';
+import { AwsS3Dto } from '@common/aws/dtos/aws.s3.dto';
+import {
+    AwsS3PresignDto,
+    AwsS3PresignPartDto,
+} from '@common/aws/dtos/aws.s3-presign.dto';
+import {
+    AwsS3PresignPartRequestDto,
+    AwsS3PresignRequestDto,
+} from '@common/aws/dtos/request/aws.s3-presign.request.dto';
+import {
     IAwsS3CreateMultiplePart,
     IAwsS3DeleteDirOptions,
     IAwsS3GetItemsOptions,
@@ -7,36 +20,24 @@ import {
     IAwsS3Options,
     IAwsS3PresignGetItemOptions,
     IAwsS3PresignPutItemOptions,
+    IAwsS3PresignPutItemPartOptions,
     IAwsS3PutItem,
     IAwsS3PutItemOptions,
-} from 'src/common/aws/interfaces/aws.interface';
-import { AwsS3Dto } from '@common/aws/dtos/aws.s3.dto';
-import {
-    AwsS3MultipartDto,
-    AwsS3MultipartPartDto,
-} from '@common/aws/dtos/aws.s3-multipart.dto';
-import {
-    AwsS3PresignPartRequestDto,
-    AwsS3PresignRequestDto,
-} from '@common/aws/dtos/request/aws.s3-presign.request.dto';
-import {
-    AwsS3PresignDto,
-    AwsS3PresignPartDto,
-} from '@common/aws/dtos/aws.s3-presign.dto';
+} from '@common/aws/interfaces/aws.interface';
 
 export interface IAwsS3Service {
     checkConnection(): Promise<boolean>;
     checkBucket(options?: IAwsS3Options): Promise<boolean>;
-    checkItem(key: string, options?: IAwsS3Options): Promise<AwsS3Dto>;
+    checkItem(key: string, options?: IAwsS3Options): Promise<AwsS3Dto | null>;
     getItems(
         path: string,
         options?: IAwsS3GetItemsOptions
     ): Promise<AwsS3Dto[]>;
-    getItem(key: string, options?: IAwsS3Options): Promise<AwsS3Dto>;
+    getItem(key: string, options?: IAwsS3Options): Promise<AwsS3Dto | null>;
     putItem(
         file: IAwsS3PutItem,
         options?: IAwsS3PutItemOptions
-    ): Promise<AwsS3Dto>;
+    ): Promise<AwsS3Dto | null>;
     deleteItem(key: string, options?: IAwsS3Options): Promise<void>;
     deleteItems(keys: string[], options?: IAwsS3Options): Promise<void>;
     deleteDir(
@@ -47,7 +48,7 @@ export interface IAwsS3Service {
         file: IAwsS3CreateMultiplePart,
         maxPartNumber: number,
         options?: IAwsS3PutItemOptions
-    ): Promise<AwsS3MultipartDto>;
+    ): Promise<AwsS3MultipartDto | null>;
     putItemMultiPart(
         multipart: AwsS3MultipartDto,
         partNumber: number,
@@ -68,15 +69,15 @@ export interface IAwsS3Service {
     presignGetItem(
         key: string,
         options?: IAwsS3PresignGetItemOptions
-    ): Promise<AwsS3PresignDto>;
+    ): Promise<AwsS3PresignDto | null>;
     presignPutItem(
         { key, size }: AwsS3PresignRequestDto,
         options?: IAwsS3PresignPutItemOptions
-    ): Promise<AwsS3PresignDto>;
+    ): Promise<AwsS3PresignDto | null>;
     presignPutItemPart(
         { key, size, uploadId, partNumber }: AwsS3PresignPartRequestDto,
-        options?: IAwsS3PresignPutItemOptions
-    ): Promise<AwsS3PresignPartDto>;
+        options?: IAwsS3PresignPutItemPartOptions
+    ): Promise<AwsS3PresignPartDto | null>;
     mapPresign(
         { key, size }: AwsS3PresignRequestDto,
         options?: IAwsS3Options
@@ -85,7 +86,7 @@ export interface IAwsS3Service {
         source: AwsS3Dto,
         destination: string,
         options?: IAwsS3MoveItemOptions
-    ): Promise<AwsS3Dto>;
+    ): Promise<AwsS3Dto | null>;
     moveItems(
         sources: AwsS3Dto[],
         destination: string,

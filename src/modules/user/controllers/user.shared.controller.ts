@@ -4,14 +4,16 @@ import { EnumFileExtensionImage } from '@common/file/enums/file.enum';
 import { IFile } from '@common/file/interfaces/file.interface';
 import { FileExtensionPipe } from '@common/file/pipes/file.extension.pipe';
 import {
+    RequestGeoLocation,
     RequestIPAddress,
     RequestTimeout,
     RequestUserAgent,
 } from '@common/request/decorators/request.decorator';
-import { RequestUserAgentDto } from '@common/request/dtos/request.user-agent.dto';
+import { RequestIsValidObjectIdPipe } from '@common/request/pipes/request.is-valid-object-id.pipe';
 import { RequestRequiredPipe } from '@common/request/pipes/request.required.pipe';
 import { Response } from '@common/response/decorators/response.decorator';
 import { IResponseReturn } from '@common/response/interfaces/response.interface';
+import { GeoLocation, UserAgent } from '@generated/prisma-client';
 import { ApiKeyProtected } from '@modules/api-key/decorators/api-key.decorator';
 import {
     AuthJwtAccessProtected,
@@ -20,6 +22,7 @@ import {
     AuthJwtToken,
 } from '@modules/auth/decorators/auth.jwt.decorator';
 import { AuthTokenResponseDto } from '@modules/auth/dtos/response/auth.token.response.dto';
+import { FeatureFlagProtected } from '@modules/feature-flag/decorators/feature-flag.decorator';
 import { TermPolicyAcceptanceProtected } from '@modules/term-policy/decorators/term-policy.decorator';
 import {
     UserCurrent,
@@ -43,18 +46,24 @@ import {
     UserSharedUpdateProfileDoc,
     UserSharedUploadPhotoProfileDoc,
 } from '@modules/user/docs/user.shared.doc';
-import { UserTwoFactorDisableRequestDto } from '@modules/user/dtos/request/user.two-factor-disable.request.dto';
-import { UserTwoFactorEnableRequestDto } from '@modules/user/dtos/request/user.two-factor-enable.request.dto';
 import { UserChangePasswordRequestDto } from '@modules/user/dtos/request/user.change-password.request.dto';
-import { UserTwoFactorEnableResponseDto } from '@modules/user/dtos/response/user.two-factor-enable.response.dto';
-import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
-import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
+import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
 import { UserGeneratePhotoProfileRequestDto } from '@modules/user/dtos/request/user.generate-photo-profile.request.dto';
+import {
+    UserAddMobileNumberRequestDto,
+    UserUpdateMobileNumberRequestDto,
+} from '@modules/user/dtos/request/user.mobile-number.request.dto';
 import {
     UserUpdateProfilePhotoRequestDto,
     UserUpdateProfileRequestDto,
 } from '@modules/user/dtos/request/user.profile.request.dto';
+import { UserTwoFactorDisableRequestDto } from '@modules/user/dtos/request/user.two-factor-disable.request.dto';
+import { UserTwoFactorEnableRequestDto } from '@modules/user/dtos/request/user.two-factor-enable.request.dto';
 import { UserProfileResponseDto } from '@modules/user/dtos/response/user.profile.response.dto';
+import { UserTwoFactorEnableResponseDto } from '@modules/user/dtos/response/user.two-factor-enable.response.dto';
+import { UserTwoFactorSetupResponseDto } from '@modules/user/dtos/response/user.two-factor-setup.response.dto';
+import { UserTwoFactorStatusResponseDto } from '@modules/user/dtos/response/user.two-factor-status.response.dto';
+import { UserMobileNumberResponseDto } from '@modules/user/dtos/user.mobile-number.dto';
 import { IUser } from '@modules/user/interfaces/user.interface';
 import { UserService } from '@modules/user/services/user.service';
 import {
@@ -71,13 +80,6 @@ import {
     UploadedFile,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import {
-    UserAddMobileNumberRequestDto,
-    UserUpdateMobileNumberRequestDto,
-} from '../dtos/request/user.mobile-number.request.dto';
-import { UserMobileNumberResponseDto } from '../dtos/user.mobile-number.dto';
-import { UserClaimUsernameRequestDto } from '@modules/user/dtos/request/user.claim-username.request.dto';
-import { FeatureFlagProtected } from '@modules/feature-flag/decorators/feature-flag.decorator';
 
 @ApiTags('modules.shared.user')
 @Controller({
@@ -99,11 +101,13 @@ export class UserSharedController {
         @UserCurrent() user: IUser,
         @AuthJwtToken() refreshToken: string,
         @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
+        @RequestUserAgent() userAgent: UserAgent,
+        @RequestGeoLocation() geoLocation: GeoLocation | null
     ): Promise<IResponseReturn<AuthTokenResponseDto>> {
-        return this.userService.refreshToken(user, refreshToken, {
+        return this.userService.refresh(user, refreshToken, {
             ipAddress,
             userAgent,
+            geoLocation,
         });
     }
 
@@ -134,11 +138,13 @@ export class UserSharedController {
         @Body()
         body: UserUpdateProfileRequestDto,
         @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
+        @RequestUserAgent() userAgent: UserAgent,
+        @RequestGeoLocation() geoLocation: GeoLocation | null
     ): Promise<IResponseReturn<void>> {
         return this.userService.updateProfile(userId, body, {
             ipAddress,
             userAgent,
+            geoLocation,
         });
     }
 
@@ -170,11 +176,13 @@ export class UserSharedController {
         userId: string,
         @Body() body: UserUpdateProfilePhotoRequestDto,
         @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
+        @RequestUserAgent() userAgent: UserAgent,
+        @RequestGeoLocation() geoLocation: GeoLocation | null
     ): Promise<IResponseReturn<void>> {
         return this.userService.updatePhotoProfile(userId, body, {
             ipAddress,
             userAgent,
+            geoLocation,
         });
     }
 
@@ -201,11 +209,13 @@ export class UserSharedController {
         )
         file: IFile,
         @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
+        @RequestUserAgent() userAgent: UserAgent,
+        @RequestGeoLocation() geoLocation: GeoLocation | null
     ): Promise<IResponseReturn<void>> {
         return this.userService.uploadPhotoProfile(userId, file, {
             ipAddress,
             userAgent,
+            geoLocation,
         });
     }
 
@@ -221,11 +231,13 @@ export class UserSharedController {
         @UserCurrent() user: IUser,
         @Body() body: UserChangePasswordRequestDto,
         @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
+        @RequestUserAgent() userAgent: UserAgent,
+        @RequestGeoLocation() geoLocation: GeoLocation | null
     ): Promise<IResponseReturn<void>> {
         return this.userService.changePassword(user, body, {
             ipAddress,
             userAgent,
+            geoLocation,
         });
     }
 
@@ -241,11 +253,13 @@ export class UserSharedController {
         @Body()
         body: UserAddMobileNumberRequestDto,
         @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
+        @RequestUserAgent() userAgent: UserAgent,
+        @RequestGeoLocation() geoLocation: GeoLocation | null
     ): Promise<IResponseReturn<UserMobileNumberResponseDto>> {
         return this.userService.addMobileNumber(userId, body, {
             ipAddress,
             userAgent,
+            geoLocation,
         });
     }
 
@@ -258,11 +272,17 @@ export class UserSharedController {
     @Put('/mobile-number/update/:mobileNumberId')
     async updateMobileNumber(
         @AuthJwtPayload('userId') userId: string,
-        @Param('mobileNumberId') mobileNumberId: string,
+        @Param(
+            'mobileNumberId',
+            RequestRequiredPipe,
+            RequestIsValidObjectIdPipe
+        )
+        mobileNumberId: string,
         @Body()
         body: UserUpdateMobileNumberRequestDto,
         @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
+        @RequestUserAgent() userAgent: UserAgent,
+        @RequestGeoLocation() geoLocation: GeoLocation | null
     ): Promise<IResponseReturn<UserMobileNumberResponseDto>> {
         return this.userService.updateMobileNumber(
             userId,
@@ -271,6 +291,7 @@ export class UserSharedController {
             {
                 ipAddress,
                 userAgent,
+                geoLocation,
             }
         );
     }
@@ -284,13 +305,20 @@ export class UserSharedController {
     @Delete('/mobile-number/delete/:mobileNumberId')
     async deleteMobileNumber(
         @AuthJwtPayload('userId') userId: string,
-        @Param('mobileNumberId') mobileNumberId: string,
+        @Param(
+            'mobileNumberId',
+            RequestRequiredPipe,
+            RequestIsValidObjectIdPipe
+        )
+        mobileNumberId: string,
         @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
+        @RequestUserAgent() userAgent: UserAgent,
+        @RequestGeoLocation() geoLocation: GeoLocation | null
     ): Promise<IResponseReturn<UserMobileNumberResponseDto>> {
         return this.userService.deleteMobileNumber(userId, mobileNumberId, {
             ipAddress,
             userAgent,
+            geoLocation,
         });
     }
 
@@ -307,11 +335,13 @@ export class UserSharedController {
         @Body()
         body: UserClaimUsernameRequestDto,
         @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
+        @RequestUserAgent() userAgent: UserAgent,
+        @RequestGeoLocation() geoLocation: GeoLocation | null
     ): Promise<IResponseReturn<void>> {
         return this.userService.claimUsername(userId, body, {
             ipAddress,
             userAgent,
+            geoLocation,
         });
     }
 
@@ -339,11 +369,13 @@ export class UserSharedController {
     async setupTwoFactor(
         @UserCurrent() user: IUser,
         @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
+        @RequestUserAgent() userAgent: UserAgent,
+        @RequestGeoLocation() geoLocation: GeoLocation | null
     ): Promise<IResponseReturn<UserTwoFactorSetupResponseDto>> {
         return this.userService.setupTwoFactor(user, {
             ipAddress,
             userAgent,
+            geoLocation,
         });
     }
 
@@ -359,11 +391,13 @@ export class UserSharedController {
         @UserCurrent() user: IUser,
         @Body() body: UserTwoFactorEnableRequestDto,
         @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
+        @RequestUserAgent() userAgent: UserAgent,
+        @RequestGeoLocation() geoLocation: GeoLocation | null
     ): Promise<IResponseReturn<UserTwoFactorEnableResponseDto>> {
         return this.userService.enableTwoFactor(user, body, {
             ipAddress,
             userAgent,
+            geoLocation,
         });
     }
 
@@ -379,11 +413,13 @@ export class UserSharedController {
         @UserCurrent() user: IUser,
         @Body() body: UserTwoFactorDisableRequestDto,
         @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
+        @RequestUserAgent() userAgent: UserAgent,
+        @RequestGeoLocation() geoLocation: GeoLocation | null
     ): Promise<IResponseReturn<void>> {
         return this.userService.disableTwoFactor(user, body, {
             ipAddress,
             userAgent,
+            geoLocation,
         });
     }
 
@@ -397,13 +433,17 @@ export class UserSharedController {
     async regenerateTwoFactorBackupCodes(
         @UserCurrent() user: IUser,
         @RequestIPAddress() ipAddress: string,
-        @RequestUserAgent() userAgent: RequestUserAgentDto
+        @RequestUserAgent() userAgent: UserAgent,
+        @RequestGeoLocation() geoLocation: GeoLocation | null
     ): Promise<IResponseReturn<UserTwoFactorEnableResponseDto>> {
         return this.userService.regenerateTwoFactorBackupCodes(user, {
             ipAddress,
             userAgent,
+            geoLocation,
         });
     }
+
+    // TODO: LAST - Implement logout api
 
     // TODO: Verify number implementation, but which provider?
 }

@@ -22,66 +22,87 @@ import {
     EnumUserStatus,
     Prisma,
     TermPolicy,
-} from '@prisma/client';
+} from '@generated/prisma-client';
 
 @Injectable()
 export class TermPolicyRepository {
     constructor(
         private readonly databaseService: DatabaseService,
-        private readonly databaseUtil: DatabaseUtil,
         private readonly paginationService: PaginationService,
-        private readonly helperService: HelperService
+        private readonly helperService: HelperService,
+        private readonly databaseUtil: DatabaseUtil
     ) {}
 
     async find(
-        { where, ...others }: IPaginationQueryOffsetParams,
+        {
+            where,
+            ...others
+        }: IPaginationQueryOffsetParams<
+            Prisma.TermPolicySelect,
+            Prisma.TermPolicyWhereInput
+        >,
         type?: Record<string, IPaginationIn>,
         status?: Record<string, IPaginationIn>
     ): Promise<IResponsePagingReturn<TermPolicy>> {
-        return this.paginationService.offset<TermPolicy>(
-            this.databaseService.termPolicy,
-            {
-                ...others,
-                where: {
-                    ...where,
-                    ...type,
-                    ...status,
-                },
-            }
-        );
+        return this.paginationService.offset<
+            TermPolicy,
+            Prisma.TermPolicySelect,
+            Prisma.TermPolicyWhereInput
+        >(this.databaseService.termPolicy, {
+            ...others,
+            where: {
+                ...where,
+                ...type,
+                ...status,
+            },
+        });
     }
 
     async findPublished(
-        { where, ...others }: IPaginationQueryCursorParams,
+        {
+            where,
+            ...others
+        }: IPaginationQueryCursorParams<
+            Prisma.TermPolicySelect,
+            Prisma.TermPolicyWhereInput
+        >,
         type?: Record<string, IPaginationIn>
     ): Promise<IResponsePagingReturn<TermPolicy>> {
-        return this.paginationService.cursor<TermPolicy>(
-            this.databaseService.termPolicy,
-            {
-                ...others,
-                where: {
-                    ...where,
-                    ...type,
-                    status: EnumTermPolicyStatus.published,
-                },
-            }
-        );
+        return this.paginationService.cursor<
+            TermPolicy,
+            Prisma.TermPolicySelect,
+            Prisma.TermPolicyWhereInput
+        >(this.databaseService.termPolicy, {
+            ...others,
+            where: {
+                ...where,
+                ...type,
+                status: EnumTermPolicyStatus.published,
+            },
+        });
     }
 
     async findUserAccepted(
         userId: string,
-        { where, ...others }: IPaginationQueryCursorParams
+        {
+            where,
+            ...others
+        }: IPaginationQueryCursorParams<
+            Prisma.TermPolicyUserAcceptanceSelect,
+            Prisma.TermPolicyUserAcceptanceWhereInput
+        >
     ): Promise<IResponsePagingReturn<ITermPolicyUserAcceptance>> {
-        return this.paginationService.cursor<ITermPolicyUserAcceptance>(
-            this.databaseService.termPolicyUserAcceptance,
-            {
-                ...others,
-                where: {
-                    userId,
-                    ...where,
-                },
-            }
-        );
+        return this.paginationService.cursor<
+            ITermPolicyUserAcceptance,
+            Prisma.TermPolicyUserAcceptanceSelect,
+            Prisma.TermPolicyUserAcceptanceWhereInput
+        >(this.databaseService.termPolicyUserAcceptance, {
+            ...others,
+            where: {
+                userId,
+                ...where,
+            },
+        });
     }
 
     async findOneById(termPolicyId: string): Promise<TermPolicy | null> {
@@ -94,6 +115,8 @@ export class TermPolicyRepository {
 
     async existLatestPublishedByType(type: EnumTermPolicyType): Promise<{
         id: string;
+        type: EnumTermPolicyType;
+        version: number;
     } | null> {
         return this.databaseService.termPolicy.findFirst({
             where: {
@@ -102,6 +125,11 @@ export class TermPolicyRepository {
             },
             orderBy: {
                 version: Prisma.SortOrder.desc,
+            },
+            select: {
+                id: true,
+                type: true,
+                version: true,
             },
         });
     }
@@ -114,6 +142,9 @@ export class TermPolicyRepository {
             where: {
                 userId,
                 termPolicyId,
+            },
+            select: {
+                id: true,
             },
         });
     }
@@ -143,7 +174,7 @@ export class TermPolicyRepository {
         user: IUser,
         termPolicyId: string,
         type: EnumTermPolicyType,
-        { ipAddress, userAgent }: IRequestLog
+        { ipAddress, userAgent, geoLocation }: IRequestLog
     ): Promise<ITermPolicyUserAcceptance> {
         const acceptedAt = this.helperService.dateCreate();
         const [userAcceptance] = await this.databaseService.$transaction([
@@ -175,6 +206,8 @@ export class TermPolicyRepository {
                             ipAddress,
                             userAgent:
                                 this.databaseUtil.toPlainObject(userAgent),
+                            geoLocation:
+                                this.databaseUtil.toPlainObject(geoLocation),
                             createdBy: user.id,
                             metadata: {
                                 termPolicyType: type,

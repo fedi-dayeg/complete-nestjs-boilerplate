@@ -8,11 +8,12 @@ Complete NestJS Boilerplate standardizes API responses through decorators that a
 
 ## Table of Contents
 
+- [Overview](#overview)
 - [Related Documents](#related-documents)
 - [Response Decorators](#response-decorators)
-    - [@Response](#response)
-    - [@ResponsePaging](#responsepaging)
-    - [@ResponseFile](#responsefile)
+  - [@Response](#response)
+  - [@ResponsePaging](#responsepaging)
+  - [@ResponseFile](#responsefile)
 - [Response Structure](#response-structure)
   - [Standard](#standard)
   - [Paginated](#paginated)
@@ -36,7 +37,7 @@ Standard API response decorator with optional caching.
 **Parameters:**
 - `messagePath` (string): Path to response message for localization
 - `options` (optional): Configuration options
-    - `cache` (boolean | object): Enable caching
+  - `cache` (boolean | object): Enable caching
 
 **Interceptor:** `ResponseInterceptor` - transforms responses into standard format with metadata and localized messages via [MessageService][ref-doc-message]
 
@@ -60,7 +61,7 @@ async getUser(@Param('id') id: string): Promise<IResponseReturn<UserDto>> {
 async createUser(@Body() dto: CreateUserDto): Promise<IResponseReturn<UserDto>> {
   try {
     const data = await this.userService.create(dto);
-
+    
     // Response: { statusCode: 201, message: "...", data: {...}, metadata: {...} }
     return {
       data,
@@ -107,7 +108,7 @@ Paginated API response decorator with optional caching. Supports both offset-bas
 **Parameters:**
 - `messagePath` (string): Path to response message for localization
 - `options` (optional): Configuration options
-    - `cache` (boolean | object): Enable caching
+  - `cache` (boolean | object): Enable caching
 
 **Requirements:**
 - Request must include pagination parameters (see [Pagination Documentation][ref-doc-pagination])
@@ -122,25 +123,21 @@ Paginated API response decorator with optional caching. Supports both offset-bas
 @ResponsePaging('user.list')
 @Get('/list')
 async listUsers(
-  @PaginationQuery() { page, perPage, orderBy, orderDirection }: PaginationListDto
+  @PaginationOffsetQuery() query: IPaginationQuery
 ): Promise<IResponsePagingReturn<UserDto>> {
-  const { data, totalPage, count } = await this.userService.findAll({
-    page,
-    perPage,
-    orderBy,
-    orderDirection
-  });
+  const { data, totalPage, count } = await this.userService.findAll(query);
   
   return {
     type: 'offset',
     data,
     totalPage,
-    page,
-    perPage,
+    page: query.page,
+    perPage: query.perPage,
     count,
-    hasNext: page < totalPage,
-    nextPage: page < totalPage ? page + 1 : undefined,
-    previousPage: page > 1 ? page - 1 : undefined
+    hasNext: query.page < totalPage,
+    hasPrevious: query.page > 1,
+    nextPage: query.page < totalPage ? query.page + 1 : undefined,
+    previousPage: query.page > 1 ? query.page - 1 : undefined
   };
 }
 ```
@@ -151,7 +148,7 @@ async listUsers(
 @ResponsePaging('user.list')
 @Get('/list')
 async listUsers(
-  @PaginationQuery() query: PaginationListDto
+  @PaginationCursorQuery() query: IPaginationQuery
 ): Promise<IResponsePagingReturn<UserDto>> {
   const { data, cursor, count, hasNext } = await this.userService.findAllCursor(query);
   
@@ -179,7 +176,6 @@ File download response decorator that handles CSV and PDF file downloads with pr
 - PDF data must be a Buffer
 - Optional `filename` - if not provided, generates timestamped filename: `export-{timestamp}.{extension}`
 
-
 **Interceptor:** `ResponseFileInterceptor` - validates data based on extension type, converts to Buffer, sets content headers (Content-Type, Content-Disposition, Content-Length), returns StreamableFile
 
 **CSV Export (Auto-generated Filename):**
@@ -188,6 +184,7 @@ File download response decorator that handles CSV and PDF file downloads with pr
 @ResponseFile()
 @Get('/export/csv')
 async exportUsersCsv(): Promise<IResponseCsvReturn> {
+  const users = await this.userService.findAll();
   const csvData = this.fileService.writeCsv(users);
   
   return {
@@ -222,14 +219,14 @@ async exportUsersCustom(): Promise<IResponseCsvReturn> {
 @Get('/export/report')
 async exportUsersReport(): Promise<IResponseCsvReturn> {
   const users = await this.userService.findAll();
-
+  
   const formattedData = users.map(user => ({
     Name: user.name,
     Email: user.email,
     'Created At': new Date(user.createdAt).toLocaleDateString(),
     Status: user.isActive ? 'Active' : 'Inactive'
   }));
-
+  
   const csvData = this.fileService.writeCsv(formattedData);
   
   return {
@@ -328,29 +325,27 @@ async exportUsers(@Query('format') format: 'csv' | 'pdf'): Promise<IResponseFile
     correlationId: string;
     
     // Pagination metadata
-    type: 'offset' | 'cursor'; // Pagination type
+    type: 'offset' | 'cursor';
     search?: string;
     filters?: Record<string, any>;
     perPage: number;
-
+    count?: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+    orderBy: IPaginationOrderBy[];   // e.g. [{ createdAt: 'desc' }]
+    availableSearch: string[];
+    availableOrderBy: string[];
+    
     // Offset-specific fields (when type = 'offset')
     page?: number;
     totalPage?: number;
-    count?: number;
     nextPage?: number;
     previousPage?: number;
-
+    hasPrevious?: boolean;
+    
     // Cursor-specific fields (when type = 'cursor')
     nextCursor?: string;
     previousCursor?: string;
-    count?: number; // Optional, included if requested
-
-    // Common fields
-    hasNext: boolean;
-    orderBy: string;
-    orderDirection: 'asc' | 'desc';
-    availableSearch: string[];
-    availableOrderBy: string[];
   };
   data: T[];
 }
@@ -384,6 +379,7 @@ async getUser(@Param('id') id: string): Promise<IResponseReturn<UserDto>> {
   return { data: await this.userService.findById(id) };
 }
 ```
+
 **Cache Key:**
 
 ```text
@@ -419,99 +415,14 @@ All responses automatically include these headers (set by interceptors):
 - `x-request-id`: Unique request identifier
 - `x-correlation-id`: Request correlation identifier
 
-<!-- BADGE LINKS -->
 
-[ack-contributors-shield]: https://img.shields.io/github/contributors/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-forks-shield]: https://img.shields.io/github/forks/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-stars-shield]: https://img.shields.io/github/stars/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-issues-shield]: https://img.shields.io/github/issues/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-license-shield]: https://img.shields.io/github/license/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[nestjs-shield]: https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white
-[nodejs-shield]: https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white
-[typescript-shield]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
-[mongodb-shield]: https://img.shields.io/badge/MongoDB-white?style=for-the-badge&logo=mongodb&logoColor=4EA94B
-[jwt-shield]: https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white
-[jest-shield]: https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white
-[pnpm-shield]: https://img.shields.io/badge/pnpm-%232C8EBB.svg?style=for-the-badge&logo=pnpm&logoColor=white&color=F9AD00
-[docker-shield]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
-[github-shield]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
-[linkedin-shield]: https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white
 
-<!-- CONTACTS -->
+<!-- REFERENCES -->
 
-[ref-author-linkedin]: https://www.linkedin.com/in/fedi-dayeg-192288369/
-
-[ref-author-email]: mailto:contact@fedidayeg.fr
-
-[ref-author-github]: https://github.com/fedi-dayeg
-
-[ref-author-paypal]: https://paypal.me/Fedidayeg25
-
-[ref-author-kofi]: https://ko-fi.com/fedidayeg
-
-<!-- Repo LINKS -->
-
-[ref-ack]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate
-
-[ref-ack-issues]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/issues
-
-[ref-ack-stars]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/stargazers
-
-[ref-ack-forks]:https://github.com/fedi-dayeg/complete-nestjs-boilerplate/network/members
-
-[ref-ack-contributors]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/graphs/contributors
-
-[ref-ack-license]: LICENSE.md
-
-<!-- THIRD PARTY -->
-
-[ref-nestjs]: http://nestjs.com
-[ref-nestjs-swagger]: https://docs.nestjs.com/openapi/introduction
-[ref-nestjs-swagger-types]: https://docs.nestjs.com/openapi/types-and-parameters
-[ref-prisma]: https://www.prisma.io
-[ref-prisma-mongodb]: https://www.prisma.io/docs/orm/overview/databases/mongodb#commonalities-with-other-database-provider
-[ref-prisma-setup]: https://www.prisma.io/docs/getting-started/setup-prisma/add-to-existing-project#switching-databases
-[ref-mongodb]: https://docs.mongodb.com/
-[ref-redis]: https://redis.io
-[ref-bullmq]: https://bullmq.io
-[ref-nodejs]: https://nodejs.org/
-[ref-typescript]: https://www.typescriptlang.org/
-[ref-docker]: https://docs.docker.com
-[ref-dockercompose]: https://docs.docker.com/compose/
-[ref-pnpm]: https://pnpm.io
-[ref-12factor]: https://12factor.net
-[ref-commander]: https://nest-commander.jaymcdoniel.dev
-[ref-package-json]: package.json
-[ref-jwt]: https://jwt.io
-[ref-jest]: https://jestjs.io/docs/getting-started
-[ref-git]: https://git-scm.com
-[ref-google-console]: https://console.cloud.google.com/
-[ref-google-client-secret]: https://developers.google.com/identity/protocols/oauth2
-
-<!-- DOCUMENTS -->
-
-[ref-doc-root]: ../readme.md
-[ref-doc-activity-log]: activity-log.md
-[ref-doc-authentication]: authentication.md
-[ref-doc-authorization]: authorization.md
-[ref-doc-cache]: cache.md
-[ref-doc-configuration]: configuration.md
-[ref-doc-database]: database.md
-[ref-doc-environment]: environment.md
-[ref-doc-feature-flag]: feature-flag.md
-[ref-doc-file-upload]: file-upload.md
-[ref-doc-handling-error]: handling-error.md
-[ref-doc-installation]: installation.md
-[ref-doc-logger]: logger.md
 [ref-doc-message]: message.md
-[ref-doc-pagination]: pagination.md
-[ref-doc-project-structure]: project-structure.md
-[ref-doc-queue]: queue.md
-[ref-doc-request-validation]: request-validation.md
-[ref-doc-response]: response.md
-[ref-doc-security-and-middleware]: security-and-middleware.md
+[ref-doc-handling-error]: handling-error.md
 [ref-doc-doc]: doc.md
-[ref-doc-third-party-integration]: third-party-integration.md
-[ref-doc-presign]: presign.md
-[ref-doc-term-policy]: term-policy.md
-[ref-doc-two-factor]: two-factor.md
+[ref-doc-file-upload]: file-upload.md
+[ref-doc-pagination]: pagination.md
+[ref-doc-activity-log]: activity-log.md
+[ref-doc-cache]: cache.md

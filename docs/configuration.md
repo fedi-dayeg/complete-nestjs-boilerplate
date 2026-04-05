@@ -1,12 +1,10 @@
-
 # Configuration Documentation
 
 This documentation explains the features and usage of **Config Module**: Located at `src/configs`
 
-
 ## Overview
 
-This document provides a detailed explanation of how configuration works in the Complete NestJs Boilerplate project, including the configuration files structure and their interfaces.
+This document provides a detailed explanation of how configuration works in the Complete NestJS Boilerplate project, including the configuration files structure and their interfaces.
 
 The project uses a modular configuration approach through the NestJS `ConfigModule`. Configuration is split into multiple dedicated files for different aspects of the application, making it easier to maintain and understand.
 
@@ -40,8 +38,8 @@ The project uses a modular configuration approach through the NestJS `ConfigModu
 - [Term Policy Configuration](#term-policy-configuration)
 - [Feature Flag Configuration](#feature-flag-configuration)
 - [Response Configuration](#response-configuration)
+- [Firebase Configuration](#firebase-configuration)
 - [Conclusion](#conclusion)
-
 
 ## Configuration Structure
 
@@ -50,7 +48,6 @@ All configuration files are located in the `src/configs` directory. Each configu
 The configuration modules are imported and registered in `src/configs/index.ts` as an array and this configuration array is then loaded in `src/common/common.module.ts`:
 
 ```typescript
-
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -132,6 +129,11 @@ urlVersion: {
 }
 ```
 
+**`encryptionSecretKey`** - AES-256 encryption secret key
+```typescript
+encryptionSecretKey: string     // Secret key used to derive AES-256 encryption key for sensitive data
+```
+
 ### Auth Configuration
 
 **File**: `src/configs/auth.config.ts`
@@ -185,8 +187,10 @@ password: {
 ```typescript
 twoFactor: {
   issuer: string;                 // Issuer name for OTP (TOTP)
+  strategy: string;               // OTP strategy (default: 'totp')
+  algorithm: string;              // Hash algorithm for OTP (default: 'sha1')
   digits: number;                 // Number of digits in OTP
-  step: number;                   // Time step in seconds for OTP validity
+  periodInSeconds: number;        // Time period in seconds for OTP validity
   window: number;                 // Allowed window for OTP validation
   secretLength: number;           // Length of OTP secret
   challengeTtlInMs: number;       // Challenge TTL in milliseconds
@@ -200,7 +204,6 @@ twoFactor: {
   };
 }
 ```
-
 
 **`apple`** - Apple OAuth configuration
 ```typescript
@@ -239,7 +242,6 @@ This configuration manages database connection settings for MongoDB.
 
 > **Environment Variables**: See [Environment Documentation](environment.md) for detailed environment variable configuration.
 
-
 #### Configuration Keys:
 
 **`url`** - Database connection string
@@ -257,7 +259,7 @@ debug: boolean                  // Enable/disable database query logging
 **File**: `src/configs/aws.config.ts`
 **Interface**: `IConfigAws`
 
-This configuration handles AWS service integration including S3 and SES services with support for IAM role-based authentication.This configuration handles AWS service integration including S3 and SES services.
+This configuration handles AWS service integration including S3 and SES services with support for IAM role-based authentication.
 
 > **Environment Variables**: See [Environment Documentation](environment.md) for detailed environment variable configuration.
 
@@ -292,6 +294,7 @@ s3: {
   };
 }
 ```
+
 > **IAM Configuration Notes**:
 > - The `iam.key` and `iam.secret` are used for standard IAM user credentials
 > - The `iam.arn` is used for IAM role assumption (recommended for production)
@@ -302,19 +305,19 @@ s3: {
 **`ses`** - Simple Email Service configuration
 ```typescript
 ses: {
-    iam: {
-        key?: string;                 // AWS IAM access key ID for SES
-        secret?: string;              // AWS IAM secret access key for SES
-        arn?: string;                 // AWS IAM Role ARN for SES operations
-    };
-    region?: string;                // AWS region for SES
+  iam: {
+    key?: string;                 // AWS IAM access key ID for SES
+    secret?: string;              // AWS IAM secret access key for SES
+    arn?: string;                 // AWS IAM Role ARN for SES operations
+  };
+  region?: string;                // AWS region for SES
 }
 ```
+
 > **SES IAM Configuration**:
 > - Similar to S3, SES supports both standard credentials and IAM role-based access
 > - Using IAM roles (`iam.arn`) is recommended for better security
 > - Credentials are used for sending emails and managing SES operations
-
 
 ### Logger Configuration
 
@@ -403,17 +406,22 @@ timeoutInMs: number             // Request timeout in milliseconds (default: 300
 ```typescript
 cors: {
   allowedMethod: string[];        // Allowed HTTP methods (GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS)
-  allowedOrigin: string[];        // Allowed origins (from CORS_ALLOWED_ORIGIN env variable, supports subdomain wildcards)
+    allowedOrigin: string[] | string | boolean;  // Allowed origins (from CORS_ALLOWED_ORIGIN env variable)
+                                                 // - string[]: Array of origins (e.g., ["*.example.com", "api.myapp.com"])
+                                                 // - string: Single origin or wildcard (e.g., "*.example.com" or "*")
+                                                 // - boolean: true=allow all, false=deny all
   allowedHeader: string[];        // Allowed headers for CORS requests
 }
 ```
 
 > **CORS Configuration Notes**:
-> - `allowedOrigin` is populated from `CORS_ALLOWED_ORIGIN` environment variable
-> - Multiple origins can be specified using comma separation
-> - Subdomain wildcards are supported (e.g., `*.example.com`)
-> - Default headers include standard headers plus custom headers like `x-api-key`, `x-timezone`, etc.
-
+> - `allowedOrigin` is populated from `CORS_ALLOWED_ORIGIN` environment variable or configuration
+> - Multiple origins can be specified using comma separation (converted to array)
+> - **Subdomain wildcards** are supported (e.g., `*.example.com` matches `api.example.com` and `example.com`)
+> - **Exact port matching** is supported (e.g., `api.example.com:3000`) — port wildcards are NOT supported
+> - **Protocol-agnostic** — both HTTP and HTTPS are allowed for the same hostname
+> - **Credentials** are automatically allowed only for specific origins; wildcard (`*`) disables credentials
+> - Default headers include standard headers plus custom headers like `x-api-key`, `x-timezone`, `x-request-id`, etc.
 
 **`throttle`** - Rate limiting configuration
 ```typescript
@@ -477,6 +485,7 @@ uploadPhotoProfilePath: string  // Path template for user profile photo uploads
 
 ### Documentation Configuration
 
+
 **File**: `src/configs/doc.config.ts`
 **Interface**: `IConfigDoc`
 
@@ -506,7 +515,6 @@ prefix: string                  // URL prefix for API documentation (default: '/
 version: string                 // Static version for Swagger documentation (default: '3.1.0')
 ```
 
-
 ### Message Configuration
 
 **File**: `src/configs/message.config.ts`
@@ -533,7 +541,9 @@ language: string                // Default application language
 **File**: `src/configs/email.config.ts`
 **Interface**: `IConfigEmail`
 
-This configuration manages default email addresses for system communications.
+This configuration manages default email addresses for system communications. Email addresses (`noreply`, `support`, `admin`) can be overridden via environment variables. If not set, they fall back to hardcoded default values.
+
+> **Environment Variables**: See [Environment Documentation](environment.md) for detailed environment variable configuration.
 
 #### Configuration Keys:
 
@@ -550,6 +560,11 @@ support: string                 // Support/contact email address
 **`admin`** - Admin email address
 ```typescript
 admin: string                   // Administrator email address
+```
+
+**`batchSize`** - Email batch size
+```typescript
+batchSize: number               // Maximum number of emails per batch (default: 100)
 ```
 
 ### Verification Configuration
@@ -723,91 +738,37 @@ This configuration handles API response caching settings.
 cachePrefix: string             // Cache prefix for API response data
 ```
 
+### Firebase Configuration
+
+**File**: `src/configs/firebase.config.ts`  
+**Interface**: `IConfigFirebase`
+
+This configuration manages Firebase integration settings for push notification delivery via FCM.
+
+> **Environment Variables**: See [Environment Documentation](environment.md) for detailed environment variable configuration.
+
+#### Configuration Keys:
+
+**`projectId`** - Firebase project ID
+```typescript
+projectId?: string              // Firebase project ID from Firebase console
+```
+
+**`clientEmail`** - Firebase service account email
+```typescript
+clientEmail?: string            // Firebase service account client email
+```
+
+**`privateKey`** - Firebase service account private key
+```typescript
+privateKey?: string             // Firebase service account private key
+```
+
+> **Note**: All Firebase config fields are optional. They are required only when push notification features are enabled. The `FirebaseConfig` is registered in `src/configs/index.ts` alongside other config modules.
+
 
 <!-- REFERENCES -->
 
-<!-- BADGE LINKS -->
-
-[ack-contributors-shield]: https://img.shields.io/github/contributors/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-forks-shield]: https://img.shields.io/github/forks/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-stars-shield]: https://img.shields.io/github/stars/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-issues-shield]: https://img.shields.io/github/issues/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[ack-license-shield]: https://img.shields.io/github/license/andrechristikan/ack-nestjs-boilerplate?style=for-the-badge
-[nestjs-shield]: https://img.shields.io/badge/nestjs-%23E0234E.svg?style=for-the-badge&logo=nestjs&logoColor=white
-[nodejs-shield]: https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white
-[typescript-shield]: https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white
-[mongodb-shield]: https://img.shields.io/badge/MongoDB-white?style=for-the-badge&logo=mongodb&logoColor=4EA94B
-[jwt-shield]: https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white
-[jest-shield]: https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white
-[pnpm-shield]: https://img.shields.io/badge/pnpm-%232C8EBB.svg?style=for-the-badge&logo=pnpm&logoColor=white&color=F9AD00
-[docker-shield]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
-[github-shield]: https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white
-[linkedin-shield]: https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white
-
-<!-- CONTACTS -->
-
-[ref-author-linkedin]: https://www.linkedin.com/in/fedi-dayeg-192288369/
-[ref-author-email]: mailto:contact@fedidayeg.fr
-[ref-author-github]: https://github.com/fedi-dayeg
-[ref-author-paypal]: https://paypal.me/Fedidayeg25
-[ref-author-kofi]: https://ko-fi.com/fedidayeg
-
-<!-- Repo LINKS -->
-
-[ref-ack]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate
-[ref-ack-issues]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/issues
-[ref-ack-stars]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/stargazers
-[ref-ack-forks]:https://github.com/fedi-dayeg/complete-nestjs-boilerplate/network/members
-[ref-ack-contributors]: https://github.com/fedi-dayeg/complete-nestjs-boilerplate/graphs/contributors
-[ref-ack-license]: LICENSE.md
-
-<!-- THIRD PARTY -->
-
-[ref-nestjs]: http://nestjs.com
-[ref-nestjs-swagger]: https://docs.nestjs.com/openapi/introduction
-[ref-nestjs-swagger-types]: https://docs.nestjs.com/openapi/types-and-parameters
-[ref-prisma]: https://www.prisma.io
-[ref-mongodb]: https://docs.mongodb.com/
-[ref-redis]: https://redis.io
-[ref-bullmq]: https://bullmq.io
-[ref-nodejs]: https://nodejs.org/
-[ref-typescript]: https://www.typescriptlang.org/
-[ref-docker]: https://docs.docker.com
-[ref-dockercompose]: https://docs.docker.com/compose/
-[ref-pnpm]: https://pnpm.io
-[ref-12factor]: https://12factor.net
-[ref-commander]: https://nest-commander.jaymcdoniel.dev
-[ref-package-json]: package.json
-[ref-jwt]: https://jwt.io
-[ref-jest]: https://jestjs.io/docs/getting-started
-[ref-git]: https://git-scm.com
-[ref-google-console]: https://console.cloud.google.com/
-[ref-google-client-secret]: https://developers.google.com/identity/protocols/oauth2
-
-<!-- DOCUMENTS -->
-
-[ref-doc-root]: ../readme.md
-[ref-doc-activity-log]: activity-log.md
-[ref-doc-authentication]: authentication.md
-[ref-doc-authorization]: authorization.md
-[ref-doc-cache]: cache.md
-[ref-doc-configuration]: configuration.md
-[ref-doc-database]: database.md
 [ref-doc-environment]: environment.md
-[ref-doc-feature-flag]: feature-flag.md
-[ref-doc-file-upload]: file-upload.md
-[ref-doc-handling-error]: handling-error.md
-[ref-doc-installation]: installation.md
-[ref-doc-logger]: logger.md
-[ref-doc-message]: message.md
-[ref-doc-pagination]: pagination.md
-[ref-doc-project-structure]: project-structure.md
-[ref-doc-queue]: queue.md
-[ref-doc-request-validation]: request-validation.md
-[ref-doc-response]: response.md
-[ref-doc-security-and-middleware]: security-and-middleware.md
-[ref-doc-doc]: doc.md
-[ref-doc-third-party-integration]: third-party-integration.md
-[ref-doc-presign]: presign.md
-[ref-doc-term-policy]: term-policy.md
-[ref-doc-two-factor]: two-factor.md
+[ref-doc-database]: database.md
+[ref-doc-cache]: cache.md

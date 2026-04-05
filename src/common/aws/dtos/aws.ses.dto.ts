@@ -1,4 +1,6 @@
+import { IsCustomEmail } from '@common/request/validations/request.custom-email.validation';
 import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
     ArrayNotEmpty,
     IsArray,
@@ -8,8 +10,6 @@ import {
     IsOptional,
     IsString,
 } from 'class-validator';
-import { Type } from 'class-transformer';
-import { IsCustomEmail } from '@common/request/validations/request.custom-email.validation';
 
 /**
  * DTO for AWS SES email template configuration.
@@ -138,7 +138,7 @@ export class AwsSESSendBulkRecipientsDto extends PickType(AwsSESSendDto, [
  * DTO for sending bulk emails through AWS SES.
  * Allows sending to multiple recipients with individual template data for each recipient.
  */
-export class AwsSESSendBulkDto extends OmitType(AwsSESSendDto, [
+export class AwsSESSendBulkDto<T = unknown> extends OmitType(AwsSESSendDto, [
     'recipients',
     'templateData',
 ]) {
@@ -152,4 +152,12 @@ export class AwsSESSendBulkDto extends OmitType(AwsSESSendDto, [
     @ArrayNotEmpty()
     @Type(() => AwsSESSendBulkRecipientsDto)
     recipients: AwsSESSendBulkRecipientsDto[];
+
+    @ApiProperty({
+        required: false,
+    })
+    @IsOptional()
+    @IsObject()
+    @IsNotEmptyObject()
+    defaultTemplateData?: T;
 }

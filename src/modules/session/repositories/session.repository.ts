@@ -2,6 +2,7 @@ import { DatabaseService } from '@common/database/services/database.service';
 import { DatabaseUtil } from '@common/database/utils/database.util';
 import { HelperService } from '@common/helper/services/helper.service';
 import {
+    IPaginationEqual,
     IPaginationQueryCursorParams,
     IPaginationQueryOffsetParams,
 } from '@common/pagination/interfaces/pagination.interface';
@@ -10,7 +11,11 @@ import { IRequestLog } from '@common/request/interfaces/request.interface';
 import { IResponsePagingReturn } from '@common/response/interfaces/response.interface';
 import { ISession } from '@modules/session/interfaces/session.interface';
 import { Injectable } from '@nestjs/common';
-import { EnumActivityLogAction, Session } from '@prisma/client';
+import {
+    EnumActivityLogAction,
+    Prisma,
+    Session,
+} from '@generated/prisma-client';
 
 @Injectable()
 export class SessionRepository {
@@ -23,43 +28,60 @@ export class SessionRepository {
 
     async findWithPaginationOffsetByAdmin(
         userId: string,
-        { where, ...others }: IPaginationQueryOffsetParams
+        {
+            where,
+            ...others
+        }: IPaginationQueryOffsetParams<
+            Prisma.SessionSelect,
+            Prisma.SessionWhereInput
+        >,
+        isRevoked?: Record<string, IPaginationEqual>
     ): Promise<IResponsePagingReturn<ISession>> {
-        return this.paginationService.offset<ISession>(
-            this.databaseService.session,
-            {
-                ...others,
-                where: {
-                    ...where,
-                    userId,
-                },
-                include: {
-                    user: true,
-                },
-            }
-        );
+        return this.paginationService.offset<
+            ISession,
+            Prisma.SessionSelect,
+            Prisma.SessionWhereInput
+        >(this.databaseService.session, {
+            ...others,
+            where: {
+                ...where,
+                ...isRevoked,
+                userId,
+            },
+            include: {
+                user: true,
+            },
+        });
     }
 
-    async findWithPaginationCursor(
+    async findActiveWithPaginationCursor(
         userId: string,
-        { where, ...others }: IPaginationQueryCursorParams
+        {
+            where,
+            ...others
+        }: IPaginationQueryCursorParams<
+            Prisma.SessionSelect,
+            Prisma.SessionWhereInput
+        >
     ): Promise<IResponsePagingReturn<ISession>> {
-        return this.paginationService.cursor<ISession>(
-            this.databaseService.session,
-            {
-                ...others,
-                where: {
-                    ...where,
-                    userId,
-                },
-                include: {
-                    user: true,
-                },
-            }
-        );
+        return this.paginationService.cursor<
+            ISession,
+            Prisma.SessionSelect,
+            Prisma.SessionWhereInput
+        >(this.databaseService.session, {
+            ...others,
+            where: {
+                ...where,
+                userId,
+                isRevoked: false,
+            },
+            include: {
+                user: true,
+            },
+        });
     }
 
-    async findAll(userId: string): Promise<
+    async findActive(userId: string): Promise<
         {
             id: string;
         }[]
@@ -71,6 +93,29 @@ export class SessionRepository {
                 expiredAt: {
                     gte: this.helperService.dateCreate(),
                 },
+            },
+            select: {
+                id: true,
+            },
+        });
+    }
+
+    async findActiveByDeviceOwnership(
+        userId: string,
+        deviceOwnershipId: string
+    ): Promise<
+        {
+            id: string;
+        }[]
+    > {
+        return this.databaseService.session.findMany({
+            where: {
+                userId,
+                isRevoked: false,
+                expiredAt: {
+                    gte: this.helperService.dateCreate(),
+                },
+                deviceOwnershipId,
             },
             select: {
                 id: true,
@@ -96,7 +141,7 @@ export class SessionRepository {
     async revoke(
         userId: string,
         sessionId: string,
-        { ipAddress, userAgent }: IRequestLog
+        { ipAddress, userAgent, geoLocation }: IRequestLog
     ): Promise<Session> {
         return this.databaseService.session.update({
             where: {
@@ -106,6 +151,11 @@ export class SessionRepository {
             data: {
                 isRevoked: true,
                 revokedAt: this.helperService.dateCreate(),
+                revokedBy: {
+                    connect: {
+                        id: userId,
+                    },
+                },
                 updatedBy: userId,
                 user: {
                     update: {
@@ -115,6 +165,10 @@ export class SessionRepository {
                                 ipAddress,
                                 userAgent:
                                     this.databaseUtil.toPlainObject(userAgent),
+                                geoLocation:
+                                    this.databaseUtil.toPlainObject(
+                                        geoLocation
+                                    ),
                                 createdBy: userId,
                             },
                         },
@@ -126,8 +180,8 @@ export class SessionRepository {
 
     async revokeByAdmin(
         sessionId: string,
-        { ipAddress, userAgent }: IRequestLog,
-        revokeBy: string
+        { ipAddress, userAgent, geoLocation }: IRequestLog,
+        revokedBy: string
     ): Promise<ISession> {
         return this.databaseService.session.update({
             where: {
@@ -136,7 +190,12 @@ export class SessionRepository {
             data: {
                 isRevoked: true,
                 revokedAt: this.helperService.dateCreate(),
-                updatedBy: revokeBy,
+                revokedBy: {
+                    connect: {
+                        id: revokedBy,
+                    },
+                },
+                updatedBy: revokedBy,
                 user: {
                     update: {
                         activityLogs: {
@@ -145,7 +204,11 @@ export class SessionRepository {
                                 ipAddress,
                                 userAgent:
                                     this.databaseUtil.toPlainObject(userAgent),
-                                createdBy: revokeBy,
+                                geoLocation:
+                                    this.databaseUtil.toPlainObject(
+                                        geoLocation
+                                    ),
+                                createdBy: revokedBy,
                             },
                         },
                     },
@@ -155,36 +218,5 @@ export class SessionRepository {
                 user: true,
             },
         });
-    }
-
-    async revokeAllByAdmin(
-        userId: string,
-        { ipAddress, userAgent }: IRequestLog,
-        revokeBy: string
-    ): Promise<void> {
-        await this.databaseService.$transaction([
-            this.databaseService.session.updateMany({
-                where: {
-                    userId,
-                    isRevoked: false,
-                    expiredAt: {
-                        gte: this.helperService.dateCreate(),
-                    },
-                },
-                data: {
-                    isRevoked: true,
-                    revokedAt: this.helperService.dateCreate(),
-                    updatedBy: revokeBy,
-                },
-            }),
-            this.databaseService.activityLog.create({
-                data: {
-                    action: EnumActivityLogAction.userRevokeAllSessionsByAdmin,
-                    ipAddress,
-                    userAgent: this.databaseUtil.toPlainObject(userAgent),
-                    createdBy: revokeBy,
-                },
-            }),
-        ]);
     }
 }
